@@ -1,65 +1,85 @@
 import React, { Component } from "react";
+import { ReactComponent as ADMLogo } from './ADM_ita-bianco.svg';
 
 class Header extends Component {
   render() {
-    return (
+    return (<div>
       <header aria-label="Informazioni e strumenti utente">
-        <div id="agenzia-header" class="d-none d-md-block">
-          <div class="container-fluid py-md-1">
-            <p class="my-1"><a href="www.adm.gov.it">Agenzia delle dogane e dei Monopoli</a></p>
+        <div class="header-top-dark d-none d-md-block">
+          <div class="container py-2">
+            <a href="" class="link-white">
+              <i class="bi bi-arrow-left me-2"></i>Area di provenienza
+            </a>
           </div>
         </div>
-        <div id="page-header">
-          <div class="container-fluid py-3">
-            <div class="row align-items-center">
+        <div class="header-dark">
+          <div class="container py-3 py-md-4">
+            <div class="row align-items-center gx-2 gx-md-4">
+              <div class="col-auto d-block d-md-none">
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false">
+                  <span class="visually-hidden">Apri menu principale</span>
+                  <i class="bi bi-list bi-lg"></i>
+                </button>
+              </div>
               <div class="col-auto">
-                <img src="../assets/img/ADM_logo_152.png" alt="" class="logo" />
+                <ADMLogo className="logo" />
               </div>
               <div class="col">
-                <h1>Monitoraggio PagoPA<small class="mt-md-1">Interrogazioni ed Analisi dei Pagamenti</small></h1>
+                <h1>Monitoraggio PagoPA</h1>
               </div>
               <div class="col-auto">
-                <div class="d-lg-flex flex-lg-column header-links btn-rounded">
-                  <a href="" class="btn btn-primary btn-alt" title="Area di provenienza">
-                    <i class="fas fa-sign-out-alt fa-rotate-270"></i><span class="sr-only">Area di provenienza</span>
-                  </a>
-                  <a href="" target="_blank" class="btn btn-primary btn-alt" title="Info e Assistenza">
-                    <i class="fas fa-info"></i><span class="sr-only">Info e Assistenza: apre una nuova finestra</span>
-                  </a>
+                <div class="dropdown">
+                  <button type="button" id="notification-list" class="btn link-white p-0" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-bell bi-lg"></i>
+                    <span class="badge badge-secondary rounded-circle position-absolute top-0 start-100 translate-middle">2<span class="visually-hidden">nuove notifiche</span>
+                    </span>
+                  </button>
+                  <ul class="dropdown-menu" aria-labelledby="notification-list">
+                    <li>
+                      <a class="dropdown-item" href="">Notifica 1</a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="">Notifica 2</a>
+                    </li>
+                  </ul>
                 </div>
               </div>
-              <div class="col-12 col-lg-auto">
-                <div id="user-info" class="mt-3 mt-lg-0 shadow">
-                  <div class="row">
-                    <div class="col col-md-auto">
-                      <span class="d-none d-md-inline">Utente: </span><strong>utente</strong>
-                    </div>
-                    <div class="col-auto d-block d-md-none">
-                      <button type="button" id="open-user-info" class="collapsed" data-target="#user-collapse" data-toggle="collapse" aria-expanded="false">
-                        <span class="sr-only">Apri menu utente</span>
-                      </button>
-                    </div>
-                  </div>
-                  <div id="user-collapse" class="collapse d-md-block">
-                    <div class="row align-items-end">
-                      <div class="col col-lg-auto">
-                        <p>Seconda voce utente: <strong>valore</strong></p>
-                        <span class="user-links">
-                          <a class="d-block d-sm-inline-block mr-2" href=""><i class="fab fa-font-awesome-flag mr-2"></i>Link utente</a>
-                          <a class="d-block d-sm-inline-block mr-2" href=""><i class="fab fa-font-awesome-flag mr-2"></i>Link utente</a>
-                        </span>
-                      </div>
-                      <div class="col-auto">
-                        <button type="button" class="btn btn-primary"><i class="fas fa-sign-out-alt mr-2"></i>Esci</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div class="col-auto d-none d-md-block">
+                <div class="vr"></div>
+              </div>
+              <div class="col-auto">
+                <span class="d-none d-md-inline">Ciao,<strong class="ms-2">Nome Cognome</strong>
+                </span>
+                <a href="#" class="btn link-white p-0 ms-3">
+                  <i class="bi bi-person-circle bi-lg bi-md-2x"></i>
+                  <span class="visually-hidden">Informazioni utente</span>
+                </a>
               </div>
             </div>
           </div>
         </div>
       </header>
+
+      <nav aria-label="Menu principale">
+        <h1 class="visually-hidden">Menu principale</h1>
+        <div class="navbar navbar-expand-md navbar-dark">
+          <div class="container">
+            <div class="navbar-collapse collapse" id="navbar-menu">
+              <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Informativa</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Legenda</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </nav></div>
     );
   }
 }
