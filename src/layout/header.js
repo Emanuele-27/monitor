@@ -1,87 +1,91 @@
 import React, { Component } from "react";
 import { ReactComponent as ADMLogo } from './ADM_ita-bianco.svg';
+import Content from "./content";
 
 class Header extends Component {
-  render() {
-    return (<div>
-      <header aria-label="Informazioni e strumenti utente">
-        <div class="header-top-dark d-none d-md-block">
-          <div class="container py-2">
-            <a href="" class="link-white">
-              <i class="bi bi-arrow-left me-2"></i>Area di provenienza
-            </a>
-          </div>
-        </div>
-        <div class="header-dark">
-          <div class="container py-3 py-md-4">
-            <div class="row align-items-center gx-2 gx-md-4">
-              <div class="col-auto d-block d-md-none">
-                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false">
-                  <span class="visually-hidden">Apri menu principale</span>
-                  <i class="bi bi-list bi-lg"></i>
-                </button>
-              </div>
-              <div class="col-auto">
-                <ADMLogo className="logo" />
-              </div>
-              <div class="col">
-                <h1>Monitoraggio PagoPA</h1>
-              </div>
-              <div class="col-auto">
-                <div class="dropdown">
-                  <button type="button" id="notification-list" class="btn link-white p-0" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-bell bi-lg"></i>
-                    <span class="badge badge-secondary rounded-circle position-absolute top-0 start-100 translate-middle">2<span class="visually-hidden">nuove notifiche</span>
-                    </span>
-                  </button>
-                  <ul class="dropdown-menu" aria-labelledby="notification-list">
-                    <li>
-                      <a class="dropdown-item" href="">Notifica 1</a>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="">Notifica 2</a>
-                    </li>
-                  </ul>
+    render() {
+        return (<div>
+            <header aria-label="Informazioni e strumenti utente">
+                <div className="header-top-dark d-none d-md-block">
+                    <div className="container py-2">
+                        <a href="" className="link-white">
+                            <i className="bi bi-arrow-left me-2"></i>Area di provenienza
+                        </a>
+                    </div>
                 </div>
-              </div>
-              <div class="col-auto d-none d-md-block">
-                <div class="vr"></div>
-              </div>
-              <div class="col-auto">
-                <span class="d-none d-md-inline">Ciao,<strong class="ms-2">Nome Cognome</strong>
-                </span>
-                <a href="#" class="btn link-white p-0 ms-3">
-                  <i class="bi bi-person-circle bi-lg bi-md-2x"></i>
-                  <span class="visually-hidden">Informazioni utente</span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+                <div className="header-dark">
+                    <div className="container py-3 py-md-4">
+                        <div className="row align-items-center gx-2 gx-md-4">
+                            <div className="col-auto d-block d-md-none">
+                                <button type="button" className="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false">
+                                    <span className="visually-hidden">Apri menu principale</span>
+                                    <i className="bi bi-list bi-lg"></i>
+                                </button>
+                            </div>
+                            <div className="col-auto">
+                                <ADMLogo className="logo" />
+                            </div>
+                            <div className="col">
+                                <h1>Monitoraggio PagoPA</h1>
+                            </div>
+                            <div className="col-auto">
+                                <div className="dropdown">
+                                    <button type="button" id="notification-list" className="btn link-white p-0" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i className="bi bi-bell bi-lg"></i>
+                                        <span className="badge badge-secondary rounded-circle position-absolute top-0 start-100 translate-middle">2<span className="visually-hidden">nuove notifiche</span>
+                                        </span>
+                                    </button>
+                                    <ul className="dropdown-menu" aria-labelledby="notification-list">
+                                        <li>
+                                            <a className="dropdown-item" href="">Notifica 1</a>
+                                        </li>
+                                        <li>
+                                            <a className="dropdown-item" href="">Notifica 2</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div className="col-auto d-none d-md-block">
+                                <div className="vr"></div>
+                            </div>
+                            <div className="col-auto">
+                                <span className="d-none d-md-inline">Ciao,<strong className="ms-2">Nome Cognome</strong>
+                                </span>
+                                <a href="#" className="btn link-white p-0 ms-3">
+                                    <i className="bi bi-person-circle bi-lg bi-md-2x"></i>
+                                    <span className="visually-hidden">Informazioni utente</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
 
-      <nav aria-label="Menu principale">
-        <h1 class="visually-hidden">Menu principale</h1>
-        <div class="navbar navbar-expand-md navbar-dark">
-          <div class="container">
-            <div class="navbar-collapse collapse" id="navbar-menu">
-              <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Home</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Informativa</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Legenda</a>
-                </li>
-              </ul>
-            </div>
-          </div>
+            <nav aria-label="Menu principale">
+                <h1 className="visually-hidden">Menu principale</h1>
+                <div className="navbar navbar-expand-md navbar-dark">
+                    <div className="container">
+                        <div className="navbar-collapse collapse" id="navbar-menu">
+                            <ul className="navbar-nav me-auto">
+                                <li className="nav-item">
+                                    <a className="nav-link" href="#"> <i className="bi bi-house" style={{ paddingRight: "0.2rem" }}></i> Home</a>
+                                </li>
+                                <li className="nav-item">
+                                    <a className="nav-link" href="#"> <i className="bi bi-info-square" style={{ paddingRight: "0.2rem" }}></i> Informativa</a>
+                                </li>
+                                <li className="nav-item">
+                                    <a className="nav-link" href="#"> <i className="bi bi-list-ul" style={{ paddingRight: "0.2rem" }}></i> Legenda</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <Content />
         </div>
-      </nav></div>
-    );
-  }
+        );
+    }
 }
 
 export default Header;

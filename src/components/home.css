@@ -1,0 +1,12 @@
+canvas.pie-chart {
+    width: 300px !important;
+    height: 300px !important;
+}
+
+div#pies canvas{
+    margin: 1rem auto auto auto;
+}
+
+div#pies h6 {
+    text-align: center;
+}

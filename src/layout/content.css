@@ -1,0 +1,9 @@
+body div a.btn.btn-outline-primary.btn-lg.entrypoint {
+    justify-content: center;
+}
+
+.entrypoint-focus{
+    color: #fff;
+    background-color: #295c84;
+    border-color: #295c84;
+  }

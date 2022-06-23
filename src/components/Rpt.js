@@ -1,10 +1,10 @@
 import React, { Component } from "react";
  
-class Content extends Component {
+class Rpt extends Component {
   render() {
     return (
       <div>
-        <h2>HELLO</h2>
+        <h2>Rpt</h2>
         <p>Cras facilisis urna ornare ex volutpat, et
         convallis erat elementum. Ut aliquam, ipsum vitae
         gravida suscipit, metus dui bibendum est, eget rhoncus nibh
@@ -18,4 +18,4 @@ class Content extends Component {
   }
 }
  
-export default Content;
+export default Rpt;
