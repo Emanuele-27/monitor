@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { ReactComponent as ADMLogo } from './ADM_ita-bianco.svg';
-import Content from "./content";
 
 class Header extends Component {
     render() {
@@ -81,8 +80,6 @@ class Header extends Component {
                     </div>
                 </div>
             </nav>
-
-            <Content />
         </div>
         );
     }
