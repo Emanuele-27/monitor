@@ -90,16 +90,6 @@ class Home extends Component {
         this.createChart('monitor-acc-pie', monitorAccountabilityStatus.isOnline === true ? this.dataOK : this.dataKO);
     }
 
-    async componentDidUpdate(){
-        let monitorStatus = await this.monitorClient.welcomeTest();
-        let monitorStatStatus = await this.monitorStatClient.welcomeTest();
-        let monitorAccountabilityStatus = await this.monitorAccountabilityClient.welcomeTest();
-        
-        this.createChart('monitor-pie', monitorStatus.isOnline === true ? this.dataOK : this.dataKO);
-        this.createChart('monitor-stat-pie', monitorStatStatus.isOnline === true ? this.dataOK : this.dataKO);
-        this.createChart('monitor-acc-pie', monitorAccountabilityStatus.isOnline === true ? this.dataOK : this.dataKO);
-    }
-
     createChart(id, data) {
         let chartStatus = Chart.getChart(id);
         if (chartStatus !== undefined)
