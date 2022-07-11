@@ -90,9 +90,9 @@ class Home extends Component {
 
             this.props.blockContent();
 
-            let monitorStatus = await monitorClient.welcomeTest();
-            let monitorStatStatus = await monitorStatClient.welcomeTest();
-            let monitorAccountabilityStatus = await monitorAccountabilityClient.welcomeTest();
+            const monitorStatus = await monitorClient.welcomeTest();
+            const monitorStatStatus = await monitorStatClient.welcomeTest();
+            const monitorAccountabilityStatus = await monitorAccountabilityClient.welcomeTest();
 
             this.createChart('monitor-pie', monitorStatus && monitorStatus.isOnline === true ? this.dataOK : this.dataKO);
             this.createChart('monitor-stat-pie', monitorStatStatus && monitorStatStatus.isOnline === true ? this.dataOK : this.dataKO);
@@ -115,7 +115,7 @@ class Home extends Component {
                 <div className="accordion" id="home-accordion">
                     <div className="accordion-item">
                         <h3 className="accordion-header" id="home-accordion-heading">
-                            <button className="accordion-button collapsed" onClick={this.createCharts} type="button" data-bs-toggle="collapse" data-bs-target="#div-collapsible-1" aria-controls="div-collapsible-1">Monitor</button>
+                            <button className="accordion-button collapsed" onClick={() => this.createCharts()} type="button" data-bs-toggle="collapse" data-bs-target="#div-collapsible-1" aria-controls="div-collapsible-1">Monitor</button>
                         </h3>
                         <div id="div-collapsible-1" className="accordion-collapse collapse" aria-labelledby="home-accordion-heading" data-bs-parent="#home-accordion">
                             <div id="pies" className="accordion-body">
