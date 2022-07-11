@@ -1,15 +1,10 @@
 import React, { Component } from "react";
 import Chart from 'chart.js/auto';
 import './home.css';
-import { MonitorClient } from "clients/MonitorClient";
-import { MonitorStatClient } from "clients/MonitorStatClient";
-import { MonitorAccountabilityClient } from "clients/MonitorAccountabilityClient";
+import {monitorClient, monitorStatClient, monitorAccountabilityClient} from 'clients/clients';
 
 class Home extends Component {
 
-    monitorClient = new MonitorClient('http://localhost:8080', 'application/json', 'it');
-    monitorStatClient = new MonitorStatClient('http://localhost:8091', 'application/json', 'it');
-    monitorAccountabilityClient = new MonitorAccountabilityClient('http://localhost:8084', 'application/json', 'it');
 
     constructor(props) {
         super(props)
@@ -82,9 +77,9 @@ class Home extends Component {
     }
 
     async componentDidMount() {
-        let monitorStatus = await this.monitorClient.welcomeTest();
-        let monitorStatStatus = await this.monitorStatClient.welcomeTest();
-        let monitorAccountabilityStatus = await this.monitorAccountabilityClient.welcomeTest();
+        let monitorStatus = await monitorClient.welcomeTest();
+        let monitorStatStatus = await monitorStatClient.welcomeTest();
+        let monitorAccountabilityStatus = await monitorAccountabilityClient.welcomeTest();
 
         this.createChart('monitor-pie', monitorStatus && monitorStatus.isOnline === true ? this.dataOK : this.dataKO);
         this.createChart('monitor-stat-pie', monitorStatStatus && monitorStatStatus.isOnline === true ? this.dataOK : this.dataKO);

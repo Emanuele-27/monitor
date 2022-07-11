@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { ReactComponent as ADMLogo } from './ADM_ita-bianco.svg';
+import { ReactComponent as ADMLogo } from 'assets/ADM_ita-bianco.svg';
 
 class Header extends Component {
     render() {

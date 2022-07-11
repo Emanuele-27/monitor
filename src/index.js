@@ -13,6 +13,7 @@ import "primereact/resources/themes/bootstrap4-light-blue/theme.css";
 import "primereact/resources/primereact.min.css";      
 import "primeicons/primeicons.css";  
 
+import "./index.css";
 
 const rootElement = document.getElementById('root');
 const root = createRoot(rootElement);
