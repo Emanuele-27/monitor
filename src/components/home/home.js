@@ -1,12 +1,13 @@
 import React, { Component } from "react";
 import Chart from 'chart.js/auto';
 import './home.css';
-import { MonitorClient } from "../clients/MonitorClient";
-import { MonitorStatClient } from "../clients/MonitorStatClient";
-import { MonitorAccountabilityClient } from "../clients/MonitorAccountabilityClient";
+import { MonitorClient } from "clients/MonitorClient";
+import { MonitorStatClient } from "clients/MonitorStatClient";
+import { MonitorAccountabilityClient } from "clients/MonitorAccountabilityClient";
 
 class Home extends Component {
-    monitorClient = new MonitorClient('http://localhost:8093', 'application/json', 'it');
+
+    monitorClient = new MonitorClient('http://localhost:8080', 'application/json', 'it');
     monitorStatClient = new MonitorStatClient('http://localhost:8091', 'application/json', 'it');
     monitorAccountabilityClient = new MonitorAccountabilityClient('http://localhost:8084', 'application/json', 'it');
 
@@ -84,10 +85,10 @@ class Home extends Component {
         let monitorStatus = await this.monitorClient.welcomeTest();
         let monitorStatStatus = await this.monitorStatClient.welcomeTest();
         let monitorAccountabilityStatus = await this.monitorAccountabilityClient.welcomeTest();
-        
-        this.createChart('monitor-pie', monitorStatus.isOnline === true ? this.dataOK : this.dataKO);
-        this.createChart('monitor-stat-pie', monitorStatStatus.isOnline === true ? this.dataOK : this.dataKO);
-        this.createChart('monitor-acc-pie', monitorAccountabilityStatus.isOnline === true ? this.dataOK : this.dataKO);
+
+        this.createChart('monitor-pie', monitorStatus && monitorStatus.isOnline === true ? this.dataOK : this.dataKO);
+        this.createChart('monitor-stat-pie', monitorStatStatus && monitorStatStatus.isOnline === true ? this.dataOK : this.dataKO);
+        this.createChart('monitor-acc-pie', monitorAccountabilityStatus && monitorAccountabilityStatus.isOnline === true ? this.dataOK : this.dataKO);
     }
 
     createChart(id, data) {
@@ -97,10 +98,6 @@ class Home extends Component {
         new Chart(id, data);
     }
     
-    testMethod = () => {
-        this.monitorClient.welcomeTest();
-    }
-
     render() {
         return (
             <div>

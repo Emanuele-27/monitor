@@ -5,10 +5,10 @@ import {
     Routes,
     Link
 } from "react-router-dom";
-import Elenco from "../components/elenco";
-import Giornale from "../components/giornale";
-import Home from "../components/home";
-import Rpt from "../components/Rpt";
+import Elenco from "components/elenco/elenco";
+import Giornale from "components/giornale/giornale";
+import Home from "components/home/home";
+import Rpt from "components/rpt/rpt";
 import './content.css';
 
 class Content extends Component {
