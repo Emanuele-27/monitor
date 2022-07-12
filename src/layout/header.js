@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import { ReactComponent as ADMLogo } from 'assets/ADM_ita-bianco.svg';
 import { Link } from "react-router-dom";
+import './layout.css';
 
 class Header extends Component {
     render() {
-        return (<div>
+        return (<div id="headerDiv">
             <header aria-label="Informazioni e strumenti utente">
                 <div className="header-top-dark d-none d-md-block">
                     <div className="container py-2">

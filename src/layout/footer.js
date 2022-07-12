@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { ReactComponent as ADMLogo } from "assets/ADM_ita-bianco.svg";
+import './layout.css';
 
 class Footer extends Component {
   render() {
