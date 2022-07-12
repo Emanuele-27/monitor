@@ -86,7 +86,7 @@ class Home extends Component {
         // Crea i chart solo se il click espande l'accordion e se non sono già stati creati per quest'istanza
         if (document.getElementsByClassName('collapsed').length === 0 && !this.createdCharts) {
 
-            this.createCharts = true;
+            this.createdCharts = true;
 
             this.props.blockContent();
 
@@ -115,7 +115,7 @@ class Home extends Component {
                 <div className="accordion" id="home-accordion">
                     <div className="accordion-item">
                         <h3 className="accordion-header" id="home-accordion-heading">
-                            <button className="accordion-button collapsed" onClick={() => this.createCharts()} type="button" data-bs-toggle="collapse" data-bs-target="#div-collapsible-1" aria-controls="div-collapsible-1">Monitor</button>
+                            <button className="accordion-button collapsed" onClick={this.createCharts} type="button" data-bs-toggle="collapse" data-bs-target="#div-collapsible-1" aria-controls="div-collapsible-1">Monitor</button>
                         </h3>
                         <div id="div-collapsible-1" className="accordion-collapse collapse" aria-labelledby="home-accordion-heading" data-bs-parent="#home-accordion">
                             <div id="pies" className="accordion-body">
@@ -141,8 +141,8 @@ class Home extends Component {
                 <div className="card card-horizontal" style={{ marginTop: "1rem" }}>
                     <div className="card-body">
                         <p className="card-text">
-                            L’applicazione consente di monitorare lo stato delle transazioni e
-                            permette di disporre delle funzionalità ausiliarie disponibili all’interno del Sistema pagoPA,
+                            L'applicazione consente di monitorare lo stato delle transazioni e
+                            permette di disporre delle funzionalità ausiliarie disponibili all'interno del Sistema pagoPA,
                             funzionalità accessorie per la gestione dei processi correlati alle operazioni di pagamento
                             che possono essere utilizzate dagli Enti Creditori (EC) per il rientro da situazioni anomale.
                         </p>
