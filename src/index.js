@@ -7,7 +7,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from "react-router-dom";
 import Footer from "./layout/footer";
 import Header from "./layout/header";
-import Content from "./layout/content";
+import Body from "layout/body";
 
 import "primereact/resources/themes/bootstrap4-light-blue/theme.css";
 import "primereact/resources/primereact.min.css";      
@@ -22,7 +22,7 @@ root.render(
   // <StrictMode>
     <BrowserRouter>
       <Header />
-      <Content/>
+      <Body/>
       <Footer />
     </BrowserRouter >
   // </StrictMode>,

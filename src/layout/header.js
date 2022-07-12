@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { ReactComponent as ADMLogo } from 'assets/ADM_ita-bianco.svg';
+import { Link } from "react-router-dom";
 
 class Header extends Component {
     render() {
@@ -67,13 +68,13 @@ class Header extends Component {
                         <div className="navbar-collapse collapse" id="navbar-menu">
                             <ul className="navbar-nav me-auto">
                                 <li className="nav-item">
-                                    <a className="nav-link" href="#"> <i className="bi bi-house" style={{ paddingRight: "0.2rem" }}></i> Home</a>
+                                    <Link to="/" className="nav-link"><i className="bi bi-house" style={{ paddingRight: "0.2rem" }}></i> Home</Link>
                                 </li>
                                 <li className="nav-item">
-                                    <a className="nav-link" href="#"> <i className="bi bi-info-square" style={{ paddingRight: "0.2rem" }}></i> Informativa</a>
+                                    <Link to="/informativa" className="nav-link"> <i className="bi bi-info-square" style={{ paddingRight: "0.2rem" }}></i> Informativa</Link>
                                 </li>
                                 <li className="nav-item">
-                                    <a className="nav-link" href="#"> <i className="bi bi-list-ul" style={{ paddingRight: "0.2rem" }}></i> Legenda</a>
+                                    <Link to="/legenda" className="nav-link"> <i className="bi bi-list-ul" style={{ paddingRight: "0.2rem" }}></i> Legenda</Link>
                                 </li>
                             </ul>
                         </div>

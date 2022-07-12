@@ -5,10 +5,10 @@ import {
     Routes,
     Link
 } from "react-router-dom";
-import Elenco from "components/elenco/elenco";
-import Giornale from "components/giornale/giornale";
-import Home from "components/home/home";
-import Rpt from "components/rpt/rpt";
+import Elenco from "./elenco/elenco";
+import Giornale from "./giornale/giornale";
+import Home from "./home/home";
+import Rpt from "./rpt/rpt";
 
 import { BlockUI } from 'primereact/blockui';
 
@@ -45,7 +45,7 @@ class Content extends Component {
             <BlockUI blocked={this.state.blockedContent} >
                 <div>
                     <div className="container-fluid" style={{ width: "85%", paddingTop: "2rem"}}>
-                        <div className="row">
+                        <div id="stepRow" className="row">
                             <div className="col-12 col-md-4 col-xl-3">
                                 <Link to="/home" id="linkHome" className="btn btn-outline-primary btn-lg entrypoint">
                                     HOME
@@ -68,7 +68,7 @@ class Content extends Component {
                             </div>
                         </div>
                     </div>
-                    <div className="container" style={{ marginTop: "2rem", paddingBottom: "2rem"}}>
+                    <div className="container" style={{ paddingTop: "2rem", paddingBottom: "2rem"}}>
                         <Routes>
                             <Route exact path="/" element={<Home blockContent={this.blockContent} unblockContent={this.unblockContent} />} />
                             <Route path="/home" element={<Home blockContent={this.blockContent} unblockContent={this.unblockContent} />} />
@@ -83,13 +83,13 @@ class Content extends Component {
     }
 
     toggleFocusClass(ev) {
-        let links = document.getElementsByTagName('a');
+        let links = document.getElementById('stepRow').getElementsByTagName('a');
         [...links].forEach(elem => elem.classList.remove('entrypoint-focus'));
         document.getElementById(ev.target.id).classList.add('entrypoint-focus')
     }
 
     componentDidMount() {
-        let links = document.getElementsByTagName('a');
+        let links = document.getElementById('stepRow').getElementsByTagName('a');
         [...links].forEach(e => e.addEventListener("click", this.toggleFocusClass))
         document.getElementById('linkHome').classList.add('entrypoint-focus')
     }
