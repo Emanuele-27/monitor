@@ -52,6 +52,7 @@ class Elenco extends Component {
                                         <div className="col-12 col-xs-12 col-md-4">
                                             <label htmlFor="stato" className="form-label">Stato:</label>
                                             <select id="stato" name="stato" className="form-select">
+                                                <option value={undefined}></option>
                                                 {optionsStato}
                                             </select>
                                         </div>
