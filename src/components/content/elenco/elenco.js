@@ -1,7 +1,6 @@
 import React, { Component } from "react";
-import { InputText } from 'primereact/inputtext';
-import { Dropdown } from 'primereact/dropdown';
 import "./elenco.css";
+import { esitiPagamento, stati } from 'model/tuttiIStati';
 
 class Elenco extends Component {
 
@@ -10,21 +9,23 @@ class Elenco extends Component {
         this.state = {
             iuv: '',
             codiceContesto: '',
-            areaSelezionata: '',
-            value4: '',
-            value5: ''
+            stato: ''
         };
 
-        this.aree = [
-            { area: 'Seleziona', value: undefined},
-            { area: 'DOGANE', value: 'DOGANE'},
-            { area: 'MONOPOLI', value: 'MONOPOLI' },
-            { area: 'MEF', value: 'MEF'},
-            { area: 'EQUITALIA', value: 'EQUITALIA' },
-            { area: 'ACCISE', value: 'ACCISE' }
-        ];
     }
+
+    buildOptionsStato() {
+        const esitiFormattati = esitiPagamento.map(esito => {
+            if (esito.label.includes('PAGAMENTO'))
+                esito.label = esito.label.slice(esito.label.indexOf('PAGAMENTO') + 9);
+            return esito.label.replaceAll('_', ' ').trim();
+        })
+        const statiFormattati = stati.filter(stato => stato !== 'RT_ACCETTATA_PA').map(stato => stato.replaceAll('_', ' ').trim());
+        return (esitiFormattati.concat(statiFormattati)).map(option => <option key={option} value={option}>{option}</option>);
+    }
+
     render() {
+        const optionsStato = this.buildOptionsStato();
         return (
             <div>
                 <div className="accordion" id="elenco-accordion">
@@ -36,42 +37,26 @@ class Elenco extends Component {
                         </h3>
                         <div id="div-collapsible-1" className="accordion-collapse collapse" aria-labelledby="elenco-accordion-heading" data-bs-parent="#elenco-accordion">
                             <div className="accordion-body">
-                                <div className="row gy-3">
-
-                                    {/* Riga1 */}
-                                    <div className="col-md-1"></div>
-                                    <div className="col-md-2 elenco-form-label">
-                                        <label htmlFor="iuv" className="block"><b>Iuv:*</b></label>
+                                <form>
+                                    <div className="row gx-5">
+                                        <div className="col-12 col-xs-12 col-md-4">
+                                            <label htmlFor="iuv" className="form-label">Iuv:*</label>
+                                            <input type="text" id="iuv" name="iuv" className="form-control"
+                                                value={this.state.iuv} onChange={(e) => this.setState({ iuv: e.target.value })} />
+                                        </div>
+                                        <div className="col-12 col-xs-12 col-md-4">
+                                            <label htmlFor="contesto" className="form-label">Codice Contesto:*</label>
+                                            <input type="text" id="contesto" name="contesto" className="form-control"
+                                                value={this.state.codiceContesto} onChange={(e) => this.setState({ codiceContesto: e.target.value })} />
+                                        </div>
+                                        <div className="col-12 col-xs-12 col-md-4">
+                                            <label htmlFor="stato" className="form-label">Stato:</label>
+                                            <select id="stato" name="stato" className="form-select">
+                                                {optionsStato}
+                                            </select>
+                                        </div>
                                     </div>
-                                    <div className="col-md-3">
-                                        <InputText id="iuv" value={this.state.iuv} onChange={(e) => this.setState({ iuv: e.target.value })} />
-                                    </div>
-                                    <div className="col-md-2 elenco-form-label">
-                                        <label htmlFor="contesto" className="block"><b>Codice Contesto:*</b></label>
-                                    </div>
-                                    <div className="col-md-3">
-                                        <InputText id="contesto" value={this.state.codiceContesto} onChange={(e) => this.setState({ codiceContesto: e.target.value })} />
-                                    </div>
-                                    <div className="col-md-1"></div>
-
-                                    {/* Riga2 */}
-                                    <div className="col-md-1"></div>
-                                    <div className="col-md-2 elenco-form-label">
-                                        <label htmlFor="area" className="block"><b>Area:</b></label>
-                                    </div>
-                                    <div className="col-md-3">
-                                        <Dropdown id="area" value={this.state.areaSelezionata} options={this.aree} onChange={(e) => this.setState({ areaSelezionata: e.target.value })}
-                                            optionLabel="area" placeholder="Seleziona" />
-                                    </div>
-                                    <div className="col-md-2 elenco-form-label">
-                                        <label htmlFor="categoria" className="block"><b>Categoria:</b></label>
-                                    </div>
-                                    <div className="col-md-3">
-                                        <Dropdown id="categoria" value={this.state.areaSelezionata} options={this.aree} onChange={(e) => this.setState({ codiceContesto: e.target.value })}
-                                            optionLabel="area" placeholder="Seleziona" />
-                                    </div>
-                                    <div className="col-md-1"></div>
-                                </div>
+                                </form>
                             </div>
                         </div>
                     </div>
