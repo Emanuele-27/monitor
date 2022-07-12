@@ -1,8 +1,8 @@
 div#bodyDiv{
-    min-height: 50vh;
+    min-height: 60vh;
 }
 
 footer {
-    min-height: calc(50vh - 217.98px);
+    min-height: calc(40vh - 217.98px);
     background-color: #295c84;
 }
