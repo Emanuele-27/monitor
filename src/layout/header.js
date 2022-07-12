@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { ReactComponent as ADMLogo } from 'assets/ADM_ita-bianco.svg';
 import { Link } from "react-router-dom";
-import './layout.css';
 
 class Header extends Component {
     render() {
