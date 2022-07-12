@@ -81,10 +81,10 @@ class Home extends Component {
         this.createChart = this.createChart.bind(this);
     }
 
-    async createCharts() {
+    async createCharts(event) {
 
         // Crea i chart solo se il click espande l'accordion e se non sono già stati creati per quest'istanza
-        if (document.getElementsByClassName('collapsed').length === 0 && !this.createdCharts) {
+        if (!event.target.classList.contains('collapsed') && !this.createdCharts) {
 
             this.createdCharts = true;
 
