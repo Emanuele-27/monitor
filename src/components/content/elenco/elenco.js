@@ -22,19 +22,19 @@ class Elenco extends Component {
             optionsAree: [],
             list: [
                 {
-                    iuvCodContesto: '30005436298 EQRAV321634986', 
+                    iuvCodContesto: '30005436298 - EQRAV321634986',
                     area: 'ADM',
                     categoria: 'BOLLO',
                     stato: 'RPT ATTIVATA'
                 },
                 {
-                    iuvCodContesto: '30005436298 EQRAV321634986', 
+                    iuvCodContesto: '30005436298 - EQRAV321634986',
                     area: 'DOGANE',
                     categoria: 'ALCOL',
                     stato: 'RPT ACCETTATA'
                 },
                 {
-                    iuvCodContesto: '30005436298 EQRAV321634986', 
+                    iuvCodContesto: '30005436298 - EQRAV321634986',
                     area: 'ENTRATE',
                     categoria: 'EQRAV',
                     stato: 'RPT INVIATA A PSP'
@@ -97,11 +97,12 @@ class Elenco extends Component {
                     </div>
                 </div>
 
-                <DataTable showGridlines value={this.state.list} responsiveLayout="scroll" style={{ paddingTop: "2rem" }} header="Numero transazioni: 10">
-                    <Column field="iuvCodContesto" header="IUV - Codice Contesto"></Column>
-                    <Column field="area" header="Area"></Column>
-                    <Column field="categoria" header="Categoria"></Column>
-                    <Column field="stato" header="Stato"></Column>
+                <DataTable paginator removableSort stripedRows showGridlines value={this.state.list} rows={10} rowsPerPageOptions={[10,20,50]} responsiveLayout="scroll" header="Numero Transazioni: 3" footer="Numero Transazioni: 3"
+                    style={{ paddingTop: "2rem" }} >
+                    <Column sortable field="iuvCodContesto" header="IUV - Codice Contesto" />
+                    <Column sortable field="area" header="Area" />
+                    <Column sortable field="categoria" header="Categoria" />
+                    <Column sortable field="stato" header="Stato" />
                 </DataTable>
             </div>
         );
