@@ -120,25 +120,20 @@ class Elenco extends Component {
     async buildOptionsServiziEAree() {
         const serviziData = await monitorClient.getServizi();
         const serviziDominioCorrente = serviziData.serviziList.filter(servizio => servizio.idDominio === idDominio);
-        console.log(serviziDominioCorrente)
         const serviziOpt = serviziDominioCorrente.map(servizio =>
             <option key={servizio.servizio} value={servizio.servizio}>{servizio.servizio + ' - ' + servizio.denominazioneServizio}</option>
         );
-        console.log(serviziOpt)
 
-        let aree, areeOpt;
-        aree = areeOpt = [];
+        let areeMap = new Map();
         serviziDominioCorrente.forEach(servizio => {
             let area = servizio.area;
-            if (!aree.includes(area)) {
-                aree.push(area);
-                areeOpt.push(<option key={area} value={area}>{area}</option>);
-            }
+            if (!areeMap.has(area))
+                areeMap.set(area, <option key={area} value={area}>{area}</option>);
         });
 
         this.setState({
             optionsServizi: serviziOpt,
-            optionsAree: areeOpt
+            optionsAree: Array.from(areeMap.values())
         });
     }
 }

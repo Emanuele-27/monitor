@@ -85,9 +85,8 @@ class Content extends Component {
     }
 
     toggleFocusClass(ev) {
-        let links = document.getElementById('stepRow').getElementsByTagName('a');
-        [...links].forEach(elem => elem.classList.remove('entrypoint-focus'));
-        document.getElementById(ev.target.id).classList.add('entrypoint-focus')
+        document.getElementById('stepRow').getElementsByClassName('entrypoint-focus')[0].classList.remove('entrypoint-focus');
+        ev.target.classList.add('entrypoint-focus');
     }
 
     componentDidMount() {
