@@ -9,7 +9,10 @@ export class MonitorClient extends FetchClient{
     }
 
     welcomeTest() {
-        let endpoint = this.host + this.baseUrl + 'welcomeTest';
-        return this.callGET(endpoint);
+        return this.callGET(this.host + this.baseUrl + 'welcomeTest');
+    }
+
+    getServizi() {
+        return this.callPOST(this.host + this.baseUrl + 'getServizi');
     }
 }

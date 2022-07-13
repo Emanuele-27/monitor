@@ -1,6 +1,14 @@
 import React, { Component } from "react";
 import "./elenco.css";
+
 import { esitiPagamento, stati } from 'model/tuttiIStati';
+
+import { monitorClient } from "clients/clients";
+
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+
+import { idDominio } from 'components/content/content';
 
 class Elenco extends Component {
 
@@ -9,23 +17,16 @@ class Elenco extends Component {
         this.state = {
             iuv: '',
             codiceContesto: '',
-            stato: ''
+            stato: '',
+            optionsServizi: [],
+            optionsAree: [],
+            list: []
         };
-
-    }
-
-    buildOptionsStato() {
-        const esitiFormattati = esitiPagamento.map(esito => {
-            if (esito.label.includes('PAGAMENTO'))
-                esito.label = esito.label.slice(esito.label.indexOf('PAGAMENTO') + 9);
-            return esito.label.replaceAll('_', ' ').trim();
-        })
-        const statiFormattati = stati.filter(stato => stato !== 'RT_ACCETTATA_PA').map(stato => stato.replaceAll('_', ' ').trim());
-        return (esitiFormattati.concat(statiFormattati)).map(option => <option key={option} value={option}>{option}</option>);
+        this.optionsStati = this.buildOptionsStati();
+        this.buildOptionsServiziEAree();
     }
 
     render() {
-        const optionsStato = this.buildOptionsStato();
         return (
             <div>
                 <div className="accordion" id="elenco-accordion">
@@ -38,7 +39,7 @@ class Elenco extends Component {
                         <div id="div-collapsible-1" className="accordion-collapse collapse" aria-labelledby="elenco-accordion-heading" data-bs-parent="#elenco-accordion">
                             <div className="accordion-body">
                                 <form>
-                                    <div className="row gx-5">
+                                    <div className="row gx-5 gy-3">
                                         <div className="col-12 col-xs-12 col-md-4">
                                             <label htmlFor="iuv" className="form-label">Iuv:*</label>
                                             <input type="text" id="iuv" name="iuv" className="form-control"
@@ -52,8 +53,22 @@ class Elenco extends Component {
                                         <div className="col-12 col-xs-12 col-md-4">
                                             <label htmlFor="stato" className="form-label">Stato:</label>
                                             <select id="stato" name="stato" className="form-select">
-                                                <option value={undefined}></option>
-                                                {optionsStato}
+                                                <option value={null}></option>
+                                                {this.optionsStati}
+                                            </select>
+                                        </div>
+                                        <div className="col-12 col-xs-12 col-md-4">
+                                            <label htmlFor="area" className="form-label">Area:</label>
+                                            <select id="area" name="area" className="form-select">
+                                                <option value={null}></option>
+                                                {this.state.optionsAree}
+                                            </select>
+                                        </div>
+                                        <div className="col-12 col-xs-12 col-md-4">
+                                            <label htmlFor="categoria" className="form-label">Categoria:</label>
+                                            <select id="categoria" name="categoria" className="form-select">
+                                                <option value={null}></option>
+                                                {this.state.optionsServizi}
                                             </select>
                                         </div>
                                     </div>
@@ -62,8 +77,52 @@ class Elenco extends Component {
                         </div>
                     </div>
                 </div>
+
+                {/* <div className="card"> */}
+                    <DataTable showGridlines value={this.state.list} responsiveLayout="scroll" style={{paddingTop: "2rem"}} header="Numero transazioni: 10" headerStyle={{backgroundColor:"black"}}>
+                        <Column field="code" header="IUV - Codice Contesto"></Column>
+                        <Column field="name" header="Area"></Column>
+                        <Column field="category" header="Categoria"></Column>
+                        <Column field="quantity" header="Stato"></Column>
+                    </DataTable>
+                {/* </div> */}
             </div>
         );
+    }
+
+    buildOptionsStati() {
+        const esitiFormattati = esitiPagamento.map(esito => {
+            if (esito.label.includes('PAGAMENTO'))
+                esito.label = esito.label.slice(esito.label.indexOf('PAGAMENTO') + 9);
+            return esito.label.replaceAll('_', ' ').trim();
+        })
+        const statiFormattati = stati.filter(stato => stato !== 'RT_ACCETTATA_PA').map(stato => stato.replaceAll('_', ' ').trim());
+        return (esitiFormattati.concat(statiFormattati)).map(option => <option key={option} value={option}>{option}</option>);
+    }
+
+    async buildOptionsServiziEAree() {
+        const serviziData = await monitorClient.getServizi();
+        const serviziDominioCorrente = serviziData.serviziList.filter(servizio => servizio.idDominio === idDominio);
+        console.log(serviziDominioCorrente)
+        const serviziOpt = serviziDominioCorrente.map(servizio =>
+            <option key={servizio.servizio} value={servizio.servizio}>{servizio.servizio + ' - ' + servizio.denominazioneServizio}</option>
+        );
+        console.log(serviziOpt)
+
+        let aree, areeOpt;
+        aree = areeOpt = [];
+        serviziDominioCorrente.forEach(servizio => {
+            let area = servizio.area;
+            if (!aree.includes(area)) {
+                aree.push(area);
+                areeOpt.push(<option key={area} value={area}>{area}</option>);
+            }
+        });
+
+        this.setState({
+            optionsServizi: serviziOpt,
+            optionsAree: areeOpt
+        });
     }
 }
 

@@ -16,6 +16,8 @@ import './content.css';
 
 export const blockContent = () => this.setState({ blockedContent: true });
 
+export const idDominio = process.env.REACT_APP_ID_DOMINIO;
+
 class Content extends Component {
 
     constructor() {
