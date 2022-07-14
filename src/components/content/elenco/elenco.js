@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./elenco.css";
 
-import { esitiPagamento, stati } from 'model/tuttiIStati';
+import { esitiPagamento, statiPagamento, formatEsito, replaceUnderscore } from 'model/tuttiIStati';
 
 import { monitorClient } from "clients/clients";
 
@@ -10,16 +10,30 @@ import { Column } from 'primereact/column';
 
 import { idDominio } from 'components/content/content';
 
+const localeIT = 'it-IT';
+
 class Elenco extends Component {
+
 
     constructor(props) {
         super(props);
         this.state = {
-            iuv: '',
-            codiceContesto: '',
-            stato: '',
+            flussoForm: {
+                //idDominio: idDominio, Commentato sennò non trovo dati n'agg
+                idServizio: '',
+                iuv: '',
+                codiceContesto: '',
+                statoPagamento: '',
+                esitoPagamento: '',
+                tempStatoOrEsito: '',
+                area: '',
+                servizio: '',
+                idPagatore: '',
+                idVersante: '',
+            },
             optionsServizi: [],
             optionsAree: [],
+            optionsStatiAndEsito: [],
             loading: false,
             totalRecords: 0,
             flussiList: [],
@@ -36,13 +50,25 @@ class Elenco extends Component {
         this.loadLazyData = this.loadLazyData.bind(this);
         this.onPage = this.onPage.bind(this);
         this.onSort = this.onSort.bind(this);
+    }
 
-        this.optionsStati = this.buildOptionsStati();
-        this.buildOptionsServiziEAree();
+    normalizeObject(state) {
+        delete state.tempStatoOrEsito;
+        return this.deleteUndefinedValues(state);
+    }
+
+    deleteUndefinedValues(obj){
+        Object.keys(obj).forEach(key => {
+            if (!obj[key])
+                delete obj[key];
+        });
+        return obj;
     }
 
     loadLazyData() {
         this.props.blockContent();
+
+        let flussoNormalized = this.normalizeObject(structuredClone(this.state.flussoForm));
 
         // TO DO model
         let flussoData = {
@@ -52,25 +78,15 @@ class Elenco extends Component {
                 numRiga: 0,
                 count: 0,
                 impTotale: 0,
-                flusso: {
-                    idDominio: null,
-                    idServizio: 0,
-                    iuv: null,
-                    codiceContesto: null,
-                    statoPagamento: null,
-                    idPagatore: null,
-                    esitoPagamento: null,
-                    idVersante: null,
-                    marcaDaBollo: []
-                }
+                flusso: flussoNormalized
             },
             flussoList: []
         }
 
-        monitorClient.getFlussi(flussoData).then(flussi => {
+        monitorClient.getFlussi(flussoData).then(flussoData => {
             this.setState({
-                totalRecords: flussi.filtroFlusso.count,
-                flussiList: flussi.flussoList,
+                totalRecords: flussoData.filtroFlusso.count,
+                flussiList: flussoData.flussoList,
                 loading: false
             });
             this.props.unblockContent();
@@ -87,21 +103,81 @@ class Elenco extends Component {
 
     componentDidMount() {
         this.loadLazyData();
+        this.buildOptionsStatiEsiti();
+        this.buildOptionsServiziEAree();
     }
 
-    columnIUVCodContesto(rowData){
+    columnIUVCodContesto(rowData) {
         return rowData.iuv + ' - ' + rowData.codiceContesto;
     }
 
-    columnPagatoreVersante(rowData){
+    columnPagatoreVersante(rowData) {
         return rowData.idPagatore + ' - ' + rowData.idVersante;
     }
 
-    columnImporto(rowData){
-        return rowData.importo.toLocaleString('it-IT', {
+    columnImporto(rowData) {
+        return rowData.importo.toLocaleString(localeIT, {
             style: 'currency',
             currency: 'EUR',
-        }); 
+        });
+    }
+
+    columnDataRichiesta(rowData) {
+        if (rowData.dataRichiesta)
+            return new Date(rowData.dataRichiesta).toLocaleString(localeIT).replace(',', '');
+        return '';
+    }
+
+    columnDataRicevuta(rowData) {
+        if (rowData.dataRicevuta)
+            return new Date(rowData.dataRicevuta).toLocaleString(localeIT).replace(',', '');
+        return '';
+    }
+
+    columnStato(rowData) {
+        if (rowData.esitoPagamento)
+            return formatEsito(rowData.esitoPagamento);
+        else if (rowData.statoPagamento)
+            return replaceUnderscore(rowData.statoPagamento);
+        return '';
+    }
+
+    handleChangeForm(e, attribute) {
+        this.changeState(e.target.value.trim(), attribute);
+    }
+
+    changeState(value, attribute){
+        let newFlussoForm = this.state.flussoForm;
+        newFlussoForm[attribute] = value;
+        this.setState({
+            flussoForm: newFlussoForm
+        });
+    }
+
+    handleChangeStato(e){
+
+        this.changeState(e.target.value, 'tempStatoOrEsito');
+        
+        let found = false;
+
+        for(const esito of esitiPagamento){
+            if(esito.name === e.target.value){
+                this.changeState(esito.name, 'esitoPagamento');
+                this.changeState('', 'statoPagamento')
+                found = true;
+                break;
+            }
+        }
+
+        if(!found){
+            for(const stato of statiPagamento){
+                if(stato === e.target.value){
+                    this.changeState(stato, 'statoPagamento');
+                    this.changeState('', 'esitoPagamento');
+                    break;
+                }
+            }
+        }
     }
 
     render() {
@@ -116,41 +192,48 @@ class Elenco extends Component {
                         </h3>
                         <div id="div-collapsible-1" className="accordion-collapse collapse" aria-labelledby="elenco-accordion-heading" data-bs-parent="#elenco-accordion">
                             <div className="accordion-body">
-                                <form>
+                                <form id="elenco-form">
                                     <div className="row gx-5 gy-3">
                                         <div className="col-12 col-xs-12 col-md-4">
                                             <label htmlFor="iuv" className="form-label">Iuv:*</label>
                                             <input type="text" id="iuv" name="iuv" className="form-control"
-                                                value={this.state.iuv} onChange={(e) => this.setState({ iuv: e.target.value })} />
+                                                value={this.state.flussoForm.iuv} onChange={(e) => this.handleChangeForm(e, 'iuv')} />
                                         </div>
                                         <div className="col-12 col-xs-12 col-md-4">
                                             <label htmlFor="contesto" className="form-label">Codice Contesto:*</label>
                                             <input type="text" id="contesto" name="contesto" className="form-control"
-                                                value={this.state.codiceContesto} onChange={(e) => this.setState({ codiceContesto: e.target.value })} />
+                                                value={this.state.flussoForm.codiceContesto} onChange={(e) => this.handleChangeForm(e, 'codiceContesto')} />
                                         </div>
                                         <div className="col-12 col-xs-12 col-md-4">
                                             <label htmlFor="stato" className="form-label">Stato:</label>
-                                            <select id="stato" name="stato" className="form-select">
+                                            <select id="stato" name="stato" className="form-select" value={this.state.flussoForm.tempStatoOrEsito}
+                                                onChange={(e) => this.handleChangeStato(e)}>
                                                 <option value={null}></option>
-                                                {this.optionsStati}
+                                                {this.state.optionsStatiAndEsito}
                                             </select>
                                         </div>
                                         <div className="col-12 col-xs-12 col-md-4">
                                             <label htmlFor="area" className="form-label">Area:</label>
-                                            <select id="area" name="area" className="form-select">
+                                            <select id="area" name="area" className="form-select" value={this.state.flussoForm.area}
+                                                onChange={(e) => this.handleChangeForm(e, 'area')}>
                                                 <option value={null}></option>
                                                 {this.state.optionsAree}
                                             </select>
                                         </div>
                                         <div className="col-12 col-xs-12 col-md-4">
-                                            <label htmlFor="categoria" className="form-label">Categoria:</label>
-                                            <select id="categoria" name="categoria" className="form-select">
+                                            <label htmlFor="servizio" className="form-label">Categoria:</label>
+                                            <select id="servizio" name="servizio" className="form-select" value={this.state.flussoForm.servizio}
+                                                onChange={(e) => this.handleChangeForm(e, 'servizio')}>
                                                 <option value={null}></option>
                                                 {this.state.optionsServizi}
                                             </select>
                                         </div>
                                     </div>
                                 </form>
+                                <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
+                                    <button type="button" className="btn btn-primary" form="elenco-form" style={{ fontWeight: "600", marginRight: "0.1rem" }} onClick={this.loadLazyData}>Cerca</button>
+                                    <button type="button" className="btn btn-primary" form="elenco-form" style={{ fontWeight: "600", marginLeft: "0.1rem" }}>Reset Filtri</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -163,11 +246,11 @@ class Elenco extends Component {
                     <Column header="IUV - Codice Contesto" body={this.columnIUVCodContesto} />
                     <Column field="area" header="Area" />
                     <Column field="servizio" header="Categoria" />
-                    <Column sortable field="dataRichiesta" header="Data Richiesta" />{/*TO DO: formato*/}
-                    <Column sortable field="dataRicevuta" header="Data Ricevuta" />{/*TO DO: formato*/}
-                    <Column header="Pagatore - Versante" body={this.columnPagatoreVersante}  />
+                    <Column sortable field="dataRichiesta" header="Data Richiesta" body={this.columnDataRichiesta} />
+                    <Column sortable field="dataRicevuta" header="Data Ricevuta" body={this.columnDataRicevuta} />
+                    <Column header="Pagatore - Versante" body={this.columnPagatoreVersante} />
                     <Column header="Importo" body={this.columnImporto} />
-                    <Column field="statoPagamento" header="Stato"  />{/*TO DO: gestione esito/stato*/}
+                    <Column header="Stato" body={this.columnStato} />
                     {/* TO DO Opzioni, Opzioni comuni */}
                     {/* <Column header="Opzioni" body={this.columnPagatoreVersante}  />
                     <Column header="Opzioni Comuni" body={this.columnPagatoreVersante}  /> */}
@@ -176,14 +259,13 @@ class Elenco extends Component {
         );
     }
 
-    buildOptionsStati() {
-        const esitiFormattati = esitiPagamento.map(esito => {
-            if (esito.label.includes('PAGAMENTO'))
-                esito.label = esito.label.slice(esito.label.indexOf('PAGAMENTO') + 9);
-            return esito.label.replaceAll('_', ' ').trim();
-        })
-        const statiFormattati = stati.filter(stato => stato !== 'RT_ACCETTATA_PA').map(stato => stato.replaceAll('_', ' ').trim());
-        return (esitiFormattati.concat(statiFormattati)).map(option => <option key={option} value={option}>{option}</option>);
+    buildOptionsStatiEsiti() {
+        const esitiOptions = esitiPagamento.map(esito => <option key={esito.name} value={esito.name}>{formatEsito(esito.name)}</option>);
+        const statiOptions = statiPagamento.filter(stato => stato !== 'RT_ACCETTATA_PA').map(stato => <option key={stato} value={stato}>{replaceUnderscore(stato)}</option>);
+
+        this.setState({
+            optionsStatiAndEsito: esitiOptions.concat(statiOptions)
+        });
     }
 
     async buildOptionsServiziEAree() {

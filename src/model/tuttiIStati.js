@@ -1,12 +1,12 @@
 const esitiPagamento = [
-    { label: 'PAGAMENTO_ESEGUITO', value: 0 },
-    { label: 'PAGAMENTO_NON_ESEGUITO', value: 1 },
-    { label: 'PAGAMENTO_PARZIALMENTE_ESEGUITO', value: 2 },
-    { label: 'DECORRENZA_TERMINI', value: 3 },
-    { label: 'DECORRENZA_TERMINI_PARZIALE', value: 4 }
+    { name: 'PAGAMENTO_ESEGUITO', value: 0 },
+    { name: 'PAGAMENTO_NON_ESEGUITO', value: 1 },
+    { name: 'PAGAMENTO_PARZIALMENTE_ESEGUITO', value: 2 },
+    { name: 'DECORRENZA_TERMINI', value: 3 },
+    { name: 'DECORRENZA_TERMINI_PARZIALE', value: 4 }
 ];
 
-const stati = [
+const statiPagamento = [
     'RPT_ATTIVATA',
     'RPT_ERRORE_INVIO_A_NODO',
     'RPT_INVIO_A_NODO_FALLITO',
@@ -24,4 +24,14 @@ const stati = [
     'RT_ESITO_SCONOSCIUTO_PA'
 ]
 
-export { esitiPagamento, stati }
+function formatEsito(string){
+    if(string.includes('PAGAMENTO'))
+        string = string.slice(string.indexOf('PAGAMENTO') + 9);
+    return replaceUnderscore(string);
+}
+
+function replaceUnderscore(string){
+    return string.replaceAll('_', ' ').trim();
+}
+
+export { esitiPagamento, statiPagamento, formatEsito, replaceUnderscore}
