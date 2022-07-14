@@ -20,29 +20,88 @@ class Elenco extends Component {
             stato: '',
             optionsServizi: [],
             optionsAree: [],
-            list: [
-                {
-                    iuvCodContesto: '30005436298 - EQRAV321634986',
-                    area: 'ADM',
-                    categoria: 'BOLLO',
-                    stato: 'RPT ATTIVATA'
-                },
-                {
-                    iuvCodContesto: '30005436298 - EQRAV321634986',
-                    area: 'DOGANE',
-                    categoria: 'ALCOL',
-                    stato: 'RPT ACCETTATA'
-                },
-                {
-                    iuvCodContesto: '30005436298 - EQRAV321634986',
-                    area: 'ENTRATE',
-                    categoria: 'EQRAV',
-                    stato: 'RPT INVIATA A PSP'
-                }
-            ]
+            loading: false,
+            totalRecords: 0,
+            flussiList: [],
+            lazyParams: {
+                first: 0,
+                rows: 10,
+                page: 1,
+                sortField: null,
+                sortOrder: null,
+                filters: null
+            }
         };
+
+        this.loadLazyData = this.loadLazyData.bind(this);
+        this.onPage = this.onPage.bind(this);
+        this.onSort = this.onSort.bind(this);
+
         this.optionsStati = this.buildOptionsStati();
         this.buildOptionsServiziEAree();
+    }
+
+    loadLazyData() {
+        this.props.blockContent();
+
+        // TO DO model
+        let flussoData = {
+            filtroFlusso: {
+                da: (this.state.lazyParams.first + 1),
+                a: (this.state.lazyParams.first + this.state.lazyParams.rows),
+                numRiga: 0,
+                count: 0,
+                impTotale: 0,
+                flusso: {
+                    idDominio: null,
+                    idServizio: 0,
+                    iuv: null,
+                    codiceContesto: null,
+                    statoPagamento: null,
+                    idPagatore: null,
+                    esitoPagamento: null,
+                    idVersante: null,
+                    marcaDaBollo: []
+                }
+            },
+            flussoList: []
+        }
+
+        monitorClient.getFlussi(flussoData).then(flussi => {
+            this.setState({
+                totalRecords: flussi.filtroFlusso.count,
+                flussiList: flussi.flussoList,
+                loading: false
+            });
+            this.props.unblockContent();
+        });
+    }
+
+    onPage(event) {
+        this.setState({ lazyParams: event }, this.loadLazyData);
+    }
+
+    onSort(event) {
+        this.setState({ lazyParams: event }, this.loadLazyData);
+    }
+
+    componentDidMount() {
+        this.loadLazyData();
+    }
+
+    columnIUVCodContesto(rowData){
+        return rowData.iuv + ' - ' + rowData.codiceContesto;
+    }
+
+    columnPagatoreVersante(rowData){
+        return rowData.idPagatore + ' - ' + rowData.idVersante;
+    }
+
+    columnImporto(rowData){
+        return rowData.importo.toLocaleString('it-IT', {
+            style: 'currency',
+            currency: 'EUR',
+        }); 
     }
 
     render() {
@@ -97,12 +156,21 @@ class Elenco extends Component {
                     </div>
                 </div>
 
-                <DataTable paginator removableSort stripedRows showGridlines value={this.state.list} rows={10} rowsPerPageOptions={[10,20,50]} responsiveLayout="scroll" header="Numero Transazioni: 3" footer="Numero Transazioni: 3"
-                    style={{ paddingTop: "2rem" }} >
-                    <Column sortable field="iuvCodContesto" header="IUV - Codice Contesto" />
-                    <Column sortable field="area" header="Area" />
-                    <Column sortable field="categoria" header="Categoria" />
-                    <Column sortable field="stato" header="Stato" />
+                {/*TO DO: sort*/}
+                <DataTable id="elenco-table" lazy paginator showGridlines stripedRows removableSort value={this.state.flussiList} rows={10} rowsPerPageOptions={[10, 25, 50]} responsiveLayout="scroll"
+                    header={"Numero Transazioni: " + this.state.totalRecords} footer={"Numero Transazioni: " + this.state.totalRecords} totalRecords={this.state.totalRecords}
+                    first={this.state.lazyParams.first} onPage={this.onPage} onSort={this.onSort} loading={this.state.loading} paginatorPosition="bottom" style={{ paddingTop: "2rem" }} >
+                    <Column header="IUV - Codice Contesto" body={this.columnIUVCodContesto} />
+                    <Column field="area" header="Area" />
+                    <Column field="servizio" header="Categoria" />
+                    <Column sortable field="dataRichiesta" header="Data Richiesta" />{/*TO DO: formato*/}
+                    <Column sortable field="dataRicevuta" header="Data Ricevuta" />{/*TO DO: formato*/}
+                    <Column header="Pagatore - Versante" body={this.columnPagatoreVersante}  />
+                    <Column header="Importo" body={this.columnImporto} />
+                    <Column field="statoPagamento" header="Stato"  />{/*TO DO: gestione esito/stato*/}
+                    {/* TO DO Opzioni, Opzioni comuni */}
+                    {/* <Column header="Opzioni" body={this.columnPagatoreVersante}  />
+                    <Column header="Opzioni Comuni" body={this.columnPagatoreVersante}  /> */}
                 </DataTable>
             </div>
         );

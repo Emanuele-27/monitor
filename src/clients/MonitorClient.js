@@ -15,4 +15,8 @@ export class MonitorClient extends FetchClient{
     getServizi() {
         return this.callPOST(this.host + this.baseUrl + 'getServizi');
     }
+
+    getFlussi(flussoData) {
+        return this.callPOST(this.host + this.baseUrl + 'getFlussi', flussoData);
+    }
 }

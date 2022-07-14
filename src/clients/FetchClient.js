@@ -5,6 +5,7 @@ export class FetchClient {
     constructor(accept, acceptLanguage) {
         this.headers = {
             'Accept': accept,
+            'Content-Type': accept,
             'Accept-Language': acceptLanguage
         }
     }
