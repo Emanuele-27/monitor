@@ -10,7 +10,32 @@ import { Column } from 'primereact/column';
 
 import { idDominio } from 'components/content/content';
 
+import { columnMapper, sortMapper } from 'util/util';
+
 const localeIT = 'it-IT';
+
+const initialLazyParams = {
+    first: 0,
+    rows: 10,
+    page: 1,
+    sortField: null,
+    sortOrder: null,
+    filters: null
+}
+
+const initialFlussoForm = {
+    // idDominio: idDominio, Commentato sennò non trovo dati n'agg
+    idServizio: '',
+    iuv: '',
+    codiceContesto: '',
+    statoPagamento: '',
+    esitoPagamento: '',
+    tempStatoOrEsito: '',
+    area: '',
+    servizio: '',
+    idPagatore: '',
+    idVersante: '',
+}
 
 class Elenco extends Component {
 
@@ -18,36 +43,18 @@ class Elenco extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            flussoForm: {
-                //idDominio: idDominio, Commentato sennò non trovo dati n'agg
-                idServizio: '',
-                iuv: '',
-                codiceContesto: '',
-                statoPagamento: '',
-                esitoPagamento: '',
-                tempStatoOrEsito: '',
-                area: '',
-                servizio: '',
-                idPagatore: '',
-                idVersante: '',
-            },
+            flussoForm: structuredClone(initialFlussoForm),
             optionsServizi: [],
             optionsAree: [],
             optionsStatiAndEsito: [],
             loading: false,
             totalRecords: 0,
             flussiList: [],
-            lazyParams: {
-                first: 0,
-                rows: 10,
-                page: 1,
-                sortField: null,
-                sortOrder: null,
-                filters: null
-            }
+            lazyParams: structuredClone(initialLazyParams)
         };
 
         this.loadLazyData = this.loadLazyData.bind(this);
+        this.resetFiltri = this.resetFiltri.bind(this);
         this.onPage = this.onPage.bind(this);
         this.onSort = this.onSort.bind(this);
     }
@@ -57,7 +64,7 @@ class Elenco extends Component {
         return this.deleteUndefinedValues(state);
     }
 
-    deleteUndefinedValues(obj){
+    deleteUndefinedValues(obj) {
         Object.keys(obj).forEach(key => {
             if (!obj[key])
                 delete obj[key];
@@ -65,32 +72,36 @@ class Elenco extends Component {
         return obj;
     }
 
-    loadLazyData() {
+    async loadLazyData() {
         this.props.blockContent();
 
         let flussoNormalized = this.normalizeObject(structuredClone(this.state.flussoForm));
 
-        // TO DO model
         let flussoData = {
             filtroFlusso: {
                 da: (this.state.lazyParams.first + 1),
                 a: (this.state.lazyParams.first + this.state.lazyParams.rows),
-                numRiga: 0,
-                count: 0,
-                impTotale: 0,
+                orderBy: columnMapper.get(this.state.lazyParams.sortField),
+                orderType: sortMapper.get(this.state.lazyParams.sortOrder),
                 flusso: flussoNormalized
-            },
-            flussoList: []
+            }
         }
 
-        monitorClient.getFlussi(flussoData).then(flussoData => {
-            this.setState({
-                totalRecords: flussoData.filtroFlusso.count,
-                flussiList: flussoData.flussoList,
-                loading: false
-            });
-            this.props.unblockContent();
+        const fdResult = await monitorClient.getFlussi(flussoData);
+        this.setState({
+            totalRecords: fdResult.filtroFlusso.count,
+            flussiList: fdResult.flussoList,
+            loading: false
         });
+
+        this.props.unblockContent();
+    }
+
+    resetFiltri() {
+        this.setState({
+            flussoForm: structuredClone(initialFlussoForm),
+            lazyParams: structuredClone(initialLazyParams)
+        }, this.loadLazyData);
     }
 
     onPage(event) {
@@ -124,7 +135,7 @@ class Elenco extends Component {
 
     columnDataRichiesta(rowData) {
         if (rowData.dataRichiesta)
-            return new Date(rowData.dataRichiesta).toLocaleString(localeIT).replace(',', '');
+            return new Date(rowData.dataRichiesta).toLocaleString(localeIT);
         return '';
     }
 
@@ -142,11 +153,7 @@ class Elenco extends Component {
         return '';
     }
 
-    handleChangeForm(e, attribute) {
-        this.changeState(e.target.value.trim(), attribute);
-    }
-
-    changeState(value, attribute){
+    changeState(value, attribute) {
         let newFlussoForm = this.state.flussoForm;
         newFlussoForm[attribute] = value;
         this.setState({
@@ -154,14 +161,15 @@ class Elenco extends Component {
         });
     }
 
-    handleChangeStato(e){
+    handleChangeForm(e, attribute) {
+        this.changeState(e.target.value.trim(), attribute);
+    }
 
+    handleChangeStato(e) {
         this.changeState(e.target.value, 'tempStatoOrEsito');
-        
         let found = false;
-
-        for(const esito of esitiPagamento){
-            if(esito.name === e.target.value){
+        for (const esito of esitiPagamento) {
+            if (esito.name === e.target.value) {
                 this.changeState(esito.name, 'esitoPagamento');
                 this.changeState('', 'statoPagamento')
                 found = true;
@@ -169,9 +177,9 @@ class Elenco extends Component {
             }
         }
 
-        if(!found){
-            for(const stato of statiPagamento){
-                if(stato === e.target.value){
+        if (!found) {
+            for (const stato of statiPagamento) {
+                if (stato === e.target.value) {
                     this.changeState(stato, 'statoPagamento');
                     this.changeState('', 'esitoPagamento');
                     break;
@@ -232,17 +240,17 @@ class Elenco extends Component {
                                 </form>
                                 <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
                                     <button type="button" className="btn btn-primary" form="elenco-form" style={{ fontWeight: "600", marginRight: "0.1rem" }} onClick={this.loadLazyData}>Cerca</button>
-                                    <button type="button" className="btn btn-primary" form="elenco-form" style={{ fontWeight: "600", marginLeft: "0.1rem" }}>Reset Filtri</button>
+                                    <button type="button" className="btn btn-primary" form="elenco-form" style={{ fontWeight: "600", marginLeft: "0.1rem" }} onClick={this.resetFiltri}>Reset Filtri</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/*TO DO: sort*/}
-                <DataTable id="elenco-table" lazy paginator showGridlines stripedRows removableSort value={this.state.flussiList} rows={10} rowsPerPageOptions={[10, 25, 50]} responsiveLayout="scroll"
+                <DataTable id="elenco-table" lazy showGridlines stripedRows value={this.state.flussiList} rows={10} rowsPerPageOptions={[10, 25, 50]} responsiveLayout="scroll"
                     header={"Numero Transazioni: " + this.state.totalRecords} footer={"Numero Transazioni: " + this.state.totalRecords} totalRecords={this.state.totalRecords}
-                    first={this.state.lazyParams.first} onPage={this.onPage} onSort={this.onSort} loading={this.state.loading} paginatorPosition="bottom" style={{ paddingTop: "2rem" }} >
+                    first={this.state.lazyParams.first} onPage={this.onPage} loading={this.state.loading} paginator paginatorPosition="bottom" style={{ paddingTop: "2rem" }}
+                    removableSort onSort={this.onSort} sortField={this.state.lazyParams.sortField} sortOrder={this.state.lazyParams.sortOrder}>
                     <Column header="IUV - Codice Contesto" body={this.columnIUVCodContesto} />
                     <Column field="area" header="Area" />
                     <Column field="servizio" header="Categoria" />
