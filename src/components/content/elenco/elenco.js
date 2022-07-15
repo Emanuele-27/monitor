@@ -28,15 +28,10 @@ const initialFlussoForm = {
     // idDominio: idDominio, Commentato sennò non trovo dati D:
     iuv: '',
     codiceContesto: '',
-    statoPagamento: '',
-    esitoPagamento: '',
-    tempStatoOrEsito: '',
     area: '',
     servizio: '',
     idPagatore: '',
     idVersante: '',
-    dataRichiesta: null,
-    dataRicevuta: null,
 }
 
 class Elenco extends Component {
@@ -46,6 +41,9 @@ class Elenco extends Component {
         super(props);
         this.state = {
             flussoForm: structuredClone(initialFlussoForm),
+            tempStatoOrEsito: '',
+            dataRichiestaList: null,
+            dataRicevutaList: null,
             optionsServizi: [],
             optionsAree: [],
             optionsStatiAndEsito: [],
@@ -63,11 +61,6 @@ class Elenco extends Component {
         addLocale(acceptLanguage, localeDate);
     }
 
-    normalizeObject(state) {
-        delete state.tempStatoOrEsito;
-        return this.deleteUndefinedValues(state);
-    }
-
     deleteUndefinedValues(obj) {
         Object.keys(obj).forEach(key => {
             if (!obj[key])
@@ -76,10 +69,48 @@ class Elenco extends Component {
         return obj;
     }
 
+    addStatoOrEsito(flusso, statoOrEsito) {
+        if (statoOrEsito) {
+            let found = false;
+            for (const esito of esitiPagamento) {
+                if (esito.name === statoOrEsito) {
+                    flusso.esitoPagamento = esito.name;
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                for (const stato of statiPagamento) {
+                    if (stato === statoOrEsito) {
+                        flusso.statoPagamento = stato
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    addDate(flusso, dataList, attribute) {
+        if (dataList) {
+            flusso[attribute + 'Da'] = dataList[0];
+            if (dataList.length > 1 && dataList[1])
+                flusso[attribute + 'A'] = dataList[1];
+        }
+    }
+
     loadLazyData() {
         this.props.blockContent();
 
-        let flussoNormalized = this.normalizeObject(structuredClone(this.state.flussoForm));
+        // Copia il flusso di state e elimina i valori non validi
+        let flussoNormalized = this.deleteUndefinedValues(structuredClone(this.state.flussoForm));
+
+        // Aggiunge esito o stato al flusso in base al valore selezionato
+        this.addStatoOrEsito(flussoNormalized, this.state.tempStatoOrEsito);
+
+        // Aggiunge data da e/o data a in base ai valori selezionati
+        this.addDate(flussoNormalized, this.state.dataRichiestaList, 'dataRichiesta');
+        this.addDate(flussoNormalized, this.state.dataRicevutaList, 'dataRicevuta');
 
         let flussoData = {
             filtroFlusso: {
@@ -104,6 +135,9 @@ class Elenco extends Component {
     resetFiltri() {
         this.setState({
             flussoForm: structuredClone(initialFlussoForm),
+            tempStatoOrEsito: '',
+            dataRichiestaList: null,
+            dataRicevutaList: null,
             lazyParams: structuredClone(initialLazyParams)
         }, this.loadLazyData);
     }
@@ -157,6 +191,7 @@ class Elenco extends Component {
         return '';
     }
 
+    // Gestion onChange di componenti di Flusso
     changeStateForm(value, attribute) {
         let flussoFormNew = Object.assign({}, this.state.flussoForm);
         flussoFormNew[attribute] = value;
@@ -165,32 +200,17 @@ class Elenco extends Component {
         });
     }
 
-    // Gestisce onChange di input type=text
-    handleChangeText(e) {
-        this.changeStateForm(removeSpecialChars(e.target.value).toUpperCase(),  e.target.name);
+    // Gestisce onChange di componenti che salvano lo stato
+    // fuori da flusso perchè necessitano di altre operaz.
+    changeState(value, attribute) {
+        let stateNew = Object.assign({}, this.state);
+        stateNew[attribute] = value;
+        this.setState(stateNew);
     }
-    
-    handleChangeStato(e) {
-        this.changeStateForm(e.target.value, 'tempStatoOrEsito');
-        let found = false;
-        for (const esito of esitiPagamento) {
-            if (esito.name === e.target.value) {
-                this.changeStateForm(esito.name, 'esitoPagamento');
-                this.changeStateForm('', 'statoPagamento')
-                found = true;
-                break;
-            }
-        }
 
-        if (!found) {
-            for (const stato of statiPagamento) {
-                if (stato === e.target.value) {
-                    this.changeStateForm(stato, 'statoPagamento');
-                    this.changeStateForm('', 'esitoPagamento');
-                    break;
-                }
-            }
-        }
+    // Gestisce onChange di componenti di Flusso e input type=text
+    handleChangeText(e) {
+        this.changeStateForm(removeSpecialChars(e.target.value).toUpperCase(), e.target.name);
     }
 
     render() {
@@ -221,8 +241,8 @@ class Elenco extends Component {
                                         </div>
                                         <div className="col-12 col-xs-12 col-md-4">
                                             <label htmlFor="stato" className="form-label">Stato:</label>
-                                            <select id="stato" name="stato" className="form-select" value={this.state.flussoForm.tempStatoOrEsito}
-                                                onChange={(e) => this.handleChangeStato(e)}>
+                                            <select id="stato" name="tempStatoOrEsito" className="form-select" value={this.state.tempStatoOrEsito}
+                                                onChange={(e) => this.changeState(e.target.value, e.target.name)}>
                                                 <option value={null}></option>
                                                 {this.state.optionsStatiAndEsito}
                                             </select>
@@ -230,7 +250,7 @@ class Elenco extends Component {
                                         <div className="col-12 col-xs-12 col-md-4">
                                             <label htmlFor="area" className="form-label">Area:</label>
                                             <select id="area" name="area" className="form-select" value={this.state.flussoForm.area}
-                                                onChange={(e) => this.handleChangeForm(e)}>
+                                                onChange={(e) => this.changeStateForm(e.target.value, e.target.name)}>
                                                 <option value={null}></option>
                                                 {this.state.optionsAree}
                                             </select>
@@ -238,7 +258,7 @@ class Elenco extends Component {
                                         <div className="col-12 col-xs-12 col-md-4">
                                             <label htmlFor="servizio" className="form-label">Categoria:</label>
                                             <select id="servizio" name="servizio" className="form-select" value={this.state.flussoForm.servizio}
-                                                onChange={(e) => this.handleChangeForm(e)}>
+                                                onChange={(e) => this.changeStateForm(e.target.value, e.target.name)}>
                                                 <option value={null}></option>
                                                 {this.state.optionsServizi}
                                             </select>
@@ -257,13 +277,13 @@ class Elenco extends Component {
                                         </div>
                                         <div className="col-12 col-xs-12 col-md-4">
                                             <label htmlFor="dataRichiesta" className="form-label">Data Richiesta:**</label>
-                                            <Calendar id="dataRichiesta" name="dataRichiesta" value={this.state.flussoForm.dataRichiesta} readOnlyInput locale="it"
-                                                onChange={(e) => this.changeStateForm(e.value, e.target.name)} selectionMode="range" dateFormat="dd/mm/y"  />
+                                            <Calendar id="dataRichiesta" name="dataRichiestaList" value={this.state.dataRichiestaList} readOnlyInput locale="it"
+                                                onChange={(e) => this.changeState(e.value, e.target.name)} selectionMode="range" dateFormat="dd/mm/y" />
                                         </div>
                                         <div className="col-12 col-xs-12 col-md-4">
                                             <label htmlFor="dataRicevuta" className="form-label">Data Ricevuta:**</label>
-                                            <Calendar id="dataRicevuta" name="dataRicevuta" value={this.state.dataRicevuta} readOnlyInput locale="it"
-                                                onChange={(e) => this.changeStateForm(e.value, e.target.name)} selectionMode="range" dateFormat="dd/mm/y"  />
+                                            <Calendar id="dataRicevuta" name="dataRicevutaList" value={this.state.dataRicevutaList} readOnlyInput locale="it"
+                                                onChange={(e) => this.changeState(e.value, e.target.name)} selectionMode="range" dateFormat="dd/mm/y" />
                                         </div>
                                     </div>
                                 </form>
