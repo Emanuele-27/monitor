@@ -7,12 +7,13 @@ import { monitorClient } from "clients/clients";
 
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import { Calendar } from 'primereact/calendar';
+import { addLocale } from 'primereact/api';
 
 import { idDominio } from 'components/content/content';
 
-import { columnMapper, sortMapper } from 'util/util';
-
-const localeIT = 'it-IT';
+import { columnMapper, sortMapper, localeIT, localeDate, acceptLanguage } from 'util/util';
+import { removeSpecialChars } from 'util/stringUtil';
 
 const initialLazyParams = {
     first: 0,
@@ -24,8 +25,7 @@ const initialLazyParams = {
 }
 
 const initialFlussoForm = {
-    // idDominio: idDominio, Commentato sennò non trovo dati n'agg
-    idServizio: '',
+    // idDominio: idDominio, Commentato sennò non trovo dati D:
     iuv: '',
     codiceContesto: '',
     statoPagamento: '',
@@ -35,6 +35,8 @@ const initialFlussoForm = {
     servizio: '',
     idPagatore: '',
     idVersante: '',
+    dataRichiesta: null,
+    dataRicevuta: null,
 }
 
 class Elenco extends Component {
@@ -57,6 +59,8 @@ class Elenco extends Component {
         this.resetFiltri = this.resetFiltri.bind(this);
         this.onPage = this.onPage.bind(this);
         this.onSort = this.onSort.bind(this);
+
+        addLocale(acceptLanguage, localeDate);
     }
 
     normalizeObject(state) {
@@ -72,7 +76,7 @@ class Elenco extends Component {
         return obj;
     }
 
-    async loadLazyData() {
+    loadLazyData() {
         this.props.blockContent();
 
         let flussoNormalized = this.normalizeObject(structuredClone(this.state.flussoForm));
@@ -86,15 +90,15 @@ class Elenco extends Component {
                 flusso: flussoNormalized
             }
         }
-
-        const fdResult = await monitorClient.getFlussi(flussoData);
-        this.setState({
-            totalRecords: fdResult.filtroFlusso.count,
-            flussiList: fdResult.flussoList,
-            loading: false
-        });
-
-        this.props.unblockContent();
+        monitorClient.getFlussi(flussoData).then(fdResult => {
+            this.setState({
+                totalRecords: fdResult.filtroFlusso.count,
+                flussiList: fdResult.flussoList,
+                loading: false
+            });
+        })
+        .catch(error => console.log(error))
+        .finally(() => this.props.unblockContent());
     }
 
     resetFiltri() {
@@ -153,25 +157,26 @@ class Elenco extends Component {
         return '';
     }
 
-    changeState(value, attribute) {
-        let newFlussoForm = this.state.flussoForm;
-        newFlussoForm[attribute] = value;
+    changeStateForm(value, attribute) {
+        let flussoFormNew = Object.assign({}, this.state.flussoForm);
+        flussoFormNew[attribute] = value;
         this.setState({
-            flussoForm: newFlussoForm
+            flussoForm: flussoFormNew
         });
     }
 
-    handleChangeForm(e, attribute) {
-        this.changeState(e.target.value.trim(), attribute);
+    // Gestisce onChange di input type=text
+    handleChangeText(e) {
+        this.changeStateForm(removeSpecialChars(e.target.value).toUpperCase(),  e.target.name);
     }
-
+    
     handleChangeStato(e) {
-        this.changeState(e.target.value, 'tempStatoOrEsito');
+        this.changeStateForm(e.target.value, 'tempStatoOrEsito');
         let found = false;
         for (const esito of esitiPagamento) {
             if (esito.name === e.target.value) {
-                this.changeState(esito.name, 'esitoPagamento');
-                this.changeState('', 'statoPagamento')
+                this.changeStateForm(esito.name, 'esitoPagamento');
+                this.changeStateForm('', 'statoPagamento')
                 found = true;
                 break;
             }
@@ -180,8 +185,8 @@ class Elenco extends Component {
         if (!found) {
             for (const stato of statiPagamento) {
                 if (stato === e.target.value) {
-                    this.changeState(stato, 'statoPagamento');
-                    this.changeState('', 'esitoPagamento');
+                    this.changeStateForm(stato, 'statoPagamento');
+                    this.changeStateForm('', 'esitoPagamento');
                     break;
                 }
             }
@@ -205,12 +210,14 @@ class Elenco extends Component {
                                         <div className="col-12 col-xs-12 col-md-4">
                                             <label htmlFor="iuv" className="form-label">Iuv:*</label>
                                             <input type="text" id="iuv" name="iuv" className="form-control"
-                                                value={this.state.flussoForm.iuv} onChange={(e) => this.handleChangeForm(e, 'iuv')} />
+                                                value={this.state.flussoForm.iuv} onChange={(e) => this.handleChangeText(e)}
+                                                maxLength={24} />
                                         </div>
                                         <div className="col-12 col-xs-12 col-md-4">
                                             <label htmlFor="contesto" className="form-label">Codice Contesto:*</label>
-                                            <input type="text" id="contesto" name="contesto" className="form-control"
-                                                value={this.state.flussoForm.codiceContesto} onChange={(e) => this.handleChangeForm(e, 'codiceContesto')} />
+                                            <input type="text" id="contesto" name="codiceContesto" className="form-control"
+                                                value={this.state.flussoForm.codiceContesto} onChange={(e) => this.handleChangeText(e)}
+                                                maxLength={35} />
                                         </div>
                                         <div className="col-12 col-xs-12 col-md-4">
                                             <label htmlFor="stato" className="form-label">Stato:</label>
@@ -223,7 +230,7 @@ class Elenco extends Component {
                                         <div className="col-12 col-xs-12 col-md-4">
                                             <label htmlFor="area" className="form-label">Area:</label>
                                             <select id="area" name="area" className="form-select" value={this.state.flussoForm.area}
-                                                onChange={(e) => this.handleChangeForm(e, 'area')}>
+                                                onChange={(e) => this.handleChangeForm(e)}>
                                                 <option value={null}></option>
                                                 {this.state.optionsAree}
                                             </select>
@@ -231,16 +238,38 @@ class Elenco extends Component {
                                         <div className="col-12 col-xs-12 col-md-4">
                                             <label htmlFor="servizio" className="form-label">Categoria:</label>
                                             <select id="servizio" name="servizio" className="form-select" value={this.state.flussoForm.servizio}
-                                                onChange={(e) => this.handleChangeForm(e, 'servizio')}>
+                                                onChange={(e) => this.handleChangeForm(e)}>
                                                 <option value={null}></option>
                                                 {this.state.optionsServizi}
                                             </select>
                                         </div>
+                                        <div className="col-12 col-xs-12 col-md-4">
+                                            <label htmlFor="pagatore" className="form-label">Pagatore:</label>
+                                            <input type="text" id="pagatore" name="idPagatore" className="form-control"
+                                                value={this.state.flussoForm.idPagatore} onChange={(e) => this.handleChangeText(e)}
+                                                maxLength={17} />
+                                        </div>
+                                        <div className="col-12 col-xs-12 col-md-4">
+                                            <label htmlFor="versante" className="form-label">Versante:</label>
+                                            <input type="text" id="versante" name="idVersante" className="form-control"
+                                                value={this.state.flussoForm.idVersante} onChange={(e) => this.handleChangeText(e)}
+                                                maxLength={24} />
+                                        </div>
+                                        <div className="col-12 col-xs-12 col-md-4">
+                                            <label htmlFor="dataRichiesta" className="form-label">Data Richiesta:**</label>
+                                            <Calendar id="dataRichiesta" name="dataRichiesta" value={this.state.flussoForm.dataRichiesta} readOnlyInput locale="it"
+                                                onChange={(e) => this.changeStateForm(e.value, e.target.name)} selectionMode="range" dateFormat="dd/mm/y"  />
+                                        </div>
+                                        <div className="col-12 col-xs-12 col-md-4">
+                                            <label htmlFor="dataRicevuta" className="form-label">Data Ricevuta:**</label>
+                                            <Calendar id="dataRicevuta" name="dataRicevuta" value={this.state.dataRicevuta} readOnlyInput locale="it"
+                                                onChange={(e) => this.changeStateForm(e.value, e.target.name)} selectionMode="range" dateFormat="dd/mm/y"  />
+                                        </div>
                                     </div>
                                 </form>
-                                <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
-                                    <button type="button" className="btn btn-primary" form="elenco-form" style={{ fontWeight: "600", marginRight: "0.1rem" }} onClick={this.loadLazyData}>Cerca</button>
-                                    <button type="button" className="btn btn-primary" form="elenco-form" style={{ fontWeight: "600", marginLeft: "0.1rem" }} onClick={this.resetFiltri}>Reset Filtri</button>
+                                <div style={{ display: "flex", justifyContent: "center", marginTop: "1.5rem" }}>
+                                    <button type="button" className="btn btn-primary" form="elenco-form" style={{ fontWeight: "600", marginRight: "0.05rem" }} onClick={this.loadLazyData}>Cerca</button>
+                                    <button type="button" className="btn btn-primary" form="elenco-form" style={{ fontWeight: "600", marginLeft: "0.05rem" }} onClick={this.resetFiltri}>Reset Filtri</button>
                                 </div>
                             </div>
                         </div>
