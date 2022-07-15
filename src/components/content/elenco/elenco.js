@@ -12,7 +12,7 @@ import { addLocale } from 'primereact/api';
 
 import { idDominio } from 'components/content/content';
 
-import { columnMapper, sortMapper, localeIT, localeDate, acceptLanguage } from 'util/util';
+import { columnMapper, sortMapper, localeIT, localeDate } from 'util/util';
 import { removeSpecialChars } from 'util/stringUtil';
 
 const initialLazyParams = {
@@ -21,7 +21,6 @@ const initialLazyParams = {
     page: 1,
     sortField: null,
     sortOrder: null,
-    filters: null
 }
 
 const initialFlussoForm = {
@@ -54,7 +53,6 @@ class Elenco extends Component {
             optionsStatiAndEsito: [],
             
             // Gestione lazy
-            loading: false,
             totalRecords: 0,
             flussiList: [],
             lazyParams: structuredClone(initialLazyParams)
@@ -65,7 +63,7 @@ class Elenco extends Component {
         this.onPage = this.onPage.bind(this);
         this.onSort = this.onSort.bind(this);
 
-        addLocale(acceptLanguage, localeDate);
+        addLocale('it', localeDate);
     }
 
     deleteUndefinedValues(obj) {
@@ -131,8 +129,7 @@ class Elenco extends Component {
         monitorClient.getFlussi(flussoData).then(fdResult => {
             this.setState({
                 totalRecords: fdResult.filtroFlusso.count,
-                flussiList: fdResult.flussoList,
-                loading: false
+                flussiList: fdResult.flussoList
             });
         })
         .catch(error => console.log(error))
@@ -305,7 +302,7 @@ class Elenco extends Component {
 
                 <DataTable id="elenco-table" lazy showGridlines stripedRows value={this.state.flussiList} rows={10} rowsPerPageOptions={[10, 25, 50]} responsiveLayout="scroll"
                     header={"Numero Transazioni: " + this.state.totalRecords} footer={"Numero Transazioni: " + this.state.totalRecords} totalRecords={this.state.totalRecords}
-                    first={this.state.lazyParams.first} onPage={this.onPage} loading={this.state.loading} paginator paginatorPosition="bottom" style={{ paddingTop: "2rem" }}
+                    first={this.state.lazyParams.first} onPage={this.onPage}  paginator paginatorPosition="bottom" style={{ paddingTop: "2rem" }}
                     removableSort onSort={this.onSort} sortField={this.state.lazyParams.sortField} sortOrder={this.state.lazyParams.sortOrder}>
                     <Column header="IUV - Codice Contesto" body={this.columnIUVCodContesto} />
                     <Column field="area" header="Area" />

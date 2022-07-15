@@ -20,7 +20,10 @@ export class FetchClient {
             method: method,
             headers: this.headers
         };
-        if (body) request.body = JSON.stringify(body);
+        if (body){
+            request.body = JSON.stringify(body);
+            console.log(request.body)
+        }
 
         try{
             let response = await fetch(url, request);
