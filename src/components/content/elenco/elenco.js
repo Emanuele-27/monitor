@@ -43,7 +43,7 @@ class Elenco extends Component {
             // Contiene i dati del form
             flussoForm: structuredClone(initialFlussoForm),
 
-            // Contiene temporaneamente alcuni dati del from
+            // Contiene temporaneamente alcuni dati del form
             tempStatoOrEsito: '',
             dataRichiestaList: null,
             dataRicevutaList: null,

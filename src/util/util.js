@@ -19,6 +19,4 @@ export const localeDate = {
     clear: 'Clear'
 };
 
-export const acceptJson = 'application/json';
-export const acceptLanguage = 'it';
 export const localeIT = 'it-IT';
