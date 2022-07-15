@@ -40,13 +40,20 @@ class Elenco extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            // Contiene i dati del form
             flussoForm: structuredClone(initialFlussoForm),
+
+            // Contiene temporaneamente alcuni dati del from
             tempStatoOrEsito: '',
             dataRichiestaList: null,
             dataRicevutaList: null,
+
+            // Options per select
             optionsServizi: [],
             optionsAree: [],
             optionsStatiAndEsito: [],
+            
+            // Gestione lazy
             loading: false,
             totalRecords: 0,
             flussiList: [],
@@ -108,7 +115,7 @@ class Elenco extends Component {
         // Aggiunge esito o stato al flusso in base al valore selezionato
         this.addStatoOrEsito(flussoNormalized, this.state.tempStatoOrEsito);
 
-        // Aggiunge data da e/o data a in base ai valori selezionati
+        // Aggiunge data da e/o data a, in base ai valori selezionati
         this.addDate(flussoNormalized, this.state.dataRichiestaList, 'dataRichiesta');
         this.addDate(flussoNormalized, this.state.dataRicevutaList, 'dataRicevuta');
 
@@ -316,6 +323,8 @@ class Elenco extends Component {
         );
     }
 
+    // Nel dropdown di stato ci sono sia stati che esiti, in fase  
+    // di ricerca vengono distinti e valorizzati opportunamente
     buildOptionsStatiEsiti() {
         const esitiOptions = esitiPagamento.map(esito => <option key={esito.name} value={esito.name}>{formatEsito(esito.name)}</option>);
         const statiOptions = statiPagamento.filter(stato => stato !== 'RT_ACCETTATA_PA').map(stato => <option key={stato} value={stato}>{replaceUnderscore(stato)}</option>);
@@ -325,6 +334,8 @@ class Elenco extends Component {
         });
     }
 
+    // Vengono recuperati i servizi, filtrati per l'idDominio corrente 
+    // e vengono create le option per le select partendo dai servizi
     async buildOptionsServiziEAree() {
         const serviziData = await monitorClient.getServizi();
         const serviziDominioCorrente = serviziData.serviziList.filter(servizio => servizio.idDominio === idDominio);
