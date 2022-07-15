@@ -270,12 +270,6 @@ class Elenco extends Component {
                                                 maxLength={17} />
                                         </div>
                                         <div className="col-12 col-xs-12 col-md-4">
-                                            <label htmlFor="versante" className="form-label">Versante:</label>
-                                            <input type="text" id="versante" name="idVersante" className="form-control"
-                                                value={this.state.flussoForm.idVersante} onChange={(e) => this.handleChangeText(e)}
-                                                maxLength={24} />
-                                        </div>
-                                        <div className="col-12 col-xs-12 col-md-4">
                                             <label htmlFor="dataRichiesta" className="form-label">Data Richiesta:**</label>
                                             <Calendar id="dataRichiesta" name="dataRichiestaList" value={this.state.dataRichiestaList} readOnlyInput locale="it"
                                                 onChange={(e) => this.changeState(e.value, e.target.name)} selectionMode="range" dateFormat="dd/mm/y" />
@@ -284,6 +278,12 @@ class Elenco extends Component {
                                             <label htmlFor="dataRicevuta" className="form-label">Data Ricevuta:**</label>
                                             <Calendar id="dataRicevuta" name="dataRicevutaList" value={this.state.dataRicevutaList} readOnlyInput locale="it"
                                                 onChange={(e) => this.changeState(e.value, e.target.name)} selectionMode="range" dateFormat="dd/mm/y" />
+                                        </div>
+                                        <div className="col-12 col-xs-12 col-md-4">
+                                            <label htmlFor="versante" className="form-label">Versante:</label>
+                                            <input type="text" id="versante" name="idVersante" className="form-control"
+                                                value={this.state.flussoForm.idVersante} onChange={(e) => this.handleChangeText(e)}
+                                                maxLength={24} />
                                         </div>
                                     </div>
                                 </form>
