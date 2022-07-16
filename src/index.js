@@ -25,5 +25,5 @@ root.render(
       <Body/>
       <Footer />
     </BrowserRouter >
-  // </StrictMode>,
+  // </StrictMode>
 );

@@ -1,7 +1,7 @@
-import Content from "components/content/content";
-import Legenda from "components/legenda/legenda";
-import Informativa from "components/informativa/informativa";
-import React, { Component } from "react";
+import Content from "features/content/content";
+import Legenda from "features/legenda/legenda";
+import Informativa from "features/informativa/informativa";
+import React from "react";
 import './layout.css';
 
 import {
@@ -9,18 +9,14 @@ import {
     Routes
 } from "react-router-dom";
 
-class Body extends Component {
-    render() {
-        return (
-            <div id="bodyDiv">
-                <Routes>
-                    <Route path="/*" element={<Content />} />
-                    <Route path="/informativa" element={<Informativa />} />
-                    <Route path="/legenda" element={<Legenda />} />
-                </Routes>
-            </div>
-        );
-    }
+export default function Body() {
+    return (
+        <div id="bodyDiv">
+            <Routes>
+                <Route path="/*" element={<Content />} />
+                <Route path="/informativa" element={<Informativa />} />
+                <Route path="/legenda" element={<Legenda />} />
+            </Routes>
+        </div>
+    );
 }
-
-export default Body;
