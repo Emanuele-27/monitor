@@ -35,7 +35,6 @@ const initialFlussoForm = {
 
 class Elenco extends Component {
 
-
     constructor(props) {
         super(props);
         this.state = {
