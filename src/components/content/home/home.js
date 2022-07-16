@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import Chart from 'chart.js/auto';
 import './home.css';
 import { monitorClient, monitorStatClient, monitorAccountabilityClient } from 'clients/clients';
-import { blockContent } from "../content";
 
 const chartOptions = {
     aspectRatio: 1,
@@ -87,8 +86,7 @@ class Home extends Component {
                 .finally(() => {
                     this.setState({
                         createdCharts: true
-                    });
-                    this.props.unblockContent();
+                    }, this.props.unblockContent());
                 });
         }
     }
