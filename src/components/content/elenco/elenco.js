@@ -219,7 +219,7 @@ class Elenco extends Component {
 
     render() {
         return (
-            <div>
+            <>
                 <div className="accordion" id="elenco-accordion">
                     <div className="accordion-item">
                         <h3 className="accordion-header" id="elenco-accordion-heading">
@@ -316,7 +316,7 @@ class Elenco extends Component {
                     {/* <Column header="Opzioni" body={this.columnPagatoreVersante}  />
                     <Column header="Opzioni Comuni" body={this.columnPagatoreVersante}  /> */}
                 </DataTable>
-            </div>
+            </>
         );
     }
 

@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 class Header extends Component {
     render() {
         return (
-            <div>
+            <>
                 <header aria-label="Informazioni e strumenti utente">
                     <div className="header-top-dark d-none d-md-block">
                         <div className="container py-2">
@@ -82,7 +82,7 @@ class Header extends Component {
                         </div>
                     </div>
                 </nav>
-            </div>
+            </>
         );
     }
 }
