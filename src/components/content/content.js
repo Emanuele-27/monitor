@@ -11,11 +11,9 @@ import Rpt from "./rpt/rpt";
 
 import { BlockUI } from 'primereact/blockui';
 import { addLocale } from 'primereact/api';
-import {  localeDate } from 'util/util';
+import { localeDate } from 'util/util';
 
 import './content.css';
-
-export const idDominio = process.env.REACT_APP_ID_DOMINIO;
 
 export default function Content() {
 

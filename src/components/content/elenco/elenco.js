@@ -9,7 +9,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Calendar } from 'primereact/calendar';
 
-import { idDominio } from 'components/content/content';
+import { propsDominio } from 'util/config';
 
 import { columnMapper, sortMapper, localeIT} from 'util/util';
 import { removeSpecialChars } from 'util/stringUtil';
@@ -23,7 +23,7 @@ const initialLazyParams = {
 }
 
 const initialFlussoForm = {
-    // idDominio: idDominio, Commentato sennò non trovo dati D:
+    // idDominio: propsDominio.idDominio, Commentato sennò non trovo dati D:
     iuv: '',
     codiceContesto: '',
     area: '',
@@ -223,7 +223,7 @@ export default function Elenco(props) {
     // e vengono create le option per le select partendo dai servizi
     const buildOptionsServiziEAree = async () => {
         const serviziData = await monitorClient.getServizi();
-        const serviziDominioCorrente = serviziData.serviziList.filter(servizio => servizio.idDominio === idDominio);
+        const serviziDominioCorrente = serviziData.serviziList.filter(servizio => servizio.idDominio === propsDominio.idDominio);
         const serviziOpt = serviziDominioCorrente.map(servizio =>
             <option key={servizio.servizio} value={servizio.servizio}>{servizio.servizio + ' - ' + servizio.denominazioneServizio}</option>
         );

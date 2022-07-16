@@ -1,14 +1,13 @@
 import React from "react";
-import { ReactComponent as ADMLogo } from "assets/ADM_ita-bianco.svg";
 
-export default function Footer() {
+export default function Footer(props) {
   return (
     <footer>
       <div className="footer-dark">
         <div className="container py-3 py-md-4">
           <div className="row gx-2 gx-md-4">
             <div className="col-auto">
-              <ADMLogo className="logo" />
+              {props.logo}
             </div>
             <div className="col">
               <h1>

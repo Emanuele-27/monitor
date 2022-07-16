@@ -1,8 +1,8 @@
 import React from "react";
-import { ReactComponent as ADMLogo } from 'assets/ADM_ita-bianco.svg';
 import { Link } from "react-router-dom";
 
-export default function Header() {
+export default function Header(props) {
+
     return (
         <>
             <header aria-label="Informazioni e strumenti utente">
@@ -23,7 +23,7 @@ export default function Header() {
                                 </button>
                             </div>
                             <div className="col-auto">
-                                <ADMLogo className="logo" />
+                                {props.logo}
                             </div>
                             <div className="col">
                                 <h1>Monitoraggio PagoPA</h1>
