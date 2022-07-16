@@ -55,6 +55,7 @@ export default function Elenco(props) {
 
     useEffect(() => {
         loadLazyData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lazyParams]);
 
     useEffect(() => {
