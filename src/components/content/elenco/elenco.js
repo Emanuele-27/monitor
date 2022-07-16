@@ -9,8 +9,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Calendar } from 'primereact/calendar';
 
-
-import { idDominio } from 'features/content/content';
+import { idDominio } from 'components/content/content';
 
 import { columnMapper, sortMapper, localeIT} from 'util/util';
 import { removeSpecialChars } from 'util/stringUtil';

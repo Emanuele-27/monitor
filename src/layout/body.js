@@ -1,6 +1,6 @@
-import Content from "features/content/content";
-import Legenda from "features/legenda/legenda";
-import Informativa from "features/informativa/informativa";
+import Content from "components/content/content";
+import Legenda from "components/legenda/legenda";
+import Informativa from "components/informativa/informativa";
 import React from "react";
 import './layout.css';
 
