@@ -1,45 +1,36 @@
-import React from "react";
+import React, { useState } from "react";
 
 import Footer from "./layout/footer";
 import Header from "./layout/header";
 import Body from "./layout/body";
 import { propsDominio, suffissiDomini } from "util/config";
 
-import { ReactComponent as ADMLogo } from 'assets/adm/ADM_ita-bianco.svg';
-import { ReactComponent as AELogo } from 'assets/ae/ae_bianco.svg';
 
-// Mapping dominio corrente - file css
-const mapperDominioCSS = new Map([
-    [suffissiDomini.suffissoAdm, 'adm'],
-    [suffissiDomini.suffissoAe, 'agenzia-entrate']
-]);
 
+// Mapping dominio corrente - tema
 const mapperDominioLogo = new Map([
-    [suffissiDomini.suffissoAdm,  <ADMLogo className="logo" />],
-    [suffissiDomini.suffissoAe, <AELogo className="logo" />]
+    [suffissiDomini.suffissoAdm, 'dark'],
+    [suffissiDomini.suffissoAe, 'dark'],
+    [suffissiDomini.suffissoAer, 'light'],
+    [suffissiDomini.suffissoSogei, 'dark']
 ]);
 
-export default class App extends React.Component {
+export default function App(props) {
 
-    constructor(props) {
-        super(props);
-        this.addStylesheeBasedOnHostname();
+    const [theme, setTheme] = useState(mapperDominioLogo.get(propsDominio.suffissoDom));
+
+    const switchTheme = () => {
+        if (theme === 'dark')
+            setTheme('light');
+        else if (theme === 'light')
+            setTheme('dark');
     }
 
-    addStylesheeBasedOnHostname() {
-        let link = document.createElement('link');
-        link.setAttribute('rel', 'stylesheet');
-        link.setAttribute('href', '/css/' + mapperDominioCSS.get(propsDominio.suffissoDom) + '.css');
-        document.head.appendChild(link);
-    }
-
-    render() {
-        return (
-            <>
-                <Header logo={mapperDominioLogo.get(propsDominio.suffissoDom)} />
-                <Body />
-                <Footer logo={mapperDominioLogo.get(propsDominio.suffissoDom)} />
-            </>
-        );
-    }
+    return (
+        <>
+            <Header theme={theme} switchTheme={switchTheme} />
+            <Body />
+            <Footer theme={theme} />
+        </>
+    );
 }

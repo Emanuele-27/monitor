@@ -8,18 +8,30 @@ const configProps = {
 // Riconoscimento dominio da host
 const suffissiDomini = {
     suffissoAdm: 'ADM',
-    suffissoAe: 'AE'
+    suffissoAe: 'AE',
+    suffissoAer: 'AER',
+    suffissoSogei: 'SOGEI'
 };
-const hostAdm = process.env.REACT_APP_HOST_ADM;
-const hostAe = process.env.REACT_APP_HOST_AE;
+
+const hostAdm = process.env['REACT_APP_HOST_' + suffissiDomini.suffissoAdm];
+const hostAe = process.env['REACT_APP_HOST_' + suffissiDomini.suffissoAe];
+const hostAer = process.env['REACT_APP_HOST_' + suffissiDomini.suffissoAer];
+const hostSogei = process.env['REACT_APP_HOST_' + suffissiDomini.suffissoSogei];
 
 let suffissoDom;
-switch(window.location.hostname){
+
+switch (window.location.hostname) {
     case hostAdm:
         suffissoDom = suffissiDomini.suffissoAdm;
         break;
     case hostAe:
         suffissoDom = suffissiDomini.suffissoAe;
+        break;
+    case hostAer:
+        suffissoDom = suffissiDomini.suffissoAer;
+        break;
+    case hostSogei:
+        suffissoDom = suffissiDomini.suffissoSogei;
         break;
     default:
         suffissoDom = suffissiDomini.suffissoAdm;
@@ -30,7 +42,9 @@ switch(window.location.hostname){
 // Props per dominio
 const propsDominio = {
     suffissoDom: suffissoDom,
-    idDominio: process.env['REACT_APP_ID_DOMINIO_' + suffissoDom]
+    idDominio: process.env['REACT_APP_ID_DOMINIO_' + suffissoDom],
+    denominazione: process.env['REACT_APP_DENOMINAZIONE_PA_' + suffissoDom],
+    provenienzaUrl: process.env['REACT_APP_PROVENIENZA_URL_' + suffissoDom],
 }
 
 export { configProps, suffissiDomini, propsDominio };

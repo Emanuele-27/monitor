@@ -65,31 +65,35 @@ export default function Elenco(props) {
     const loadLazyData = () => {
         props.blockContent();
 
-        // Copia il flusso di state e elimina i valori non validi
-        let flussoNormalized = deleteUndefinedValues(structuredClone(flussoForm));
-
-        // Aggiunge esito o stato al flusso in base al valore selezionato
-        addStatoOrEsito(flussoNormalized, tempStatoOrEsito);
-
-        // Aggiunge data da e/o data a, in base ai valori selezionati
-        addDate(flussoNormalized, dataRichiestaList, 'dataRichiesta');
-        addDate(flussoNormalized, dataRicevutaList, 'dataRicevuta');
-
-        const flussoData = {
-            filtroFlusso: {
-                da: (lazyParams.first + 1),
-                a: (lazyParams.first + lazyParams.rows),
-                orderBy: columnMapper.get(lazyParams.sortField),
-                orderType: sortMapper.get(lazyParams.sortOrder),
-                flusso: flussoNormalized
-            }
-        }
+        const flussoData = prepareInput();
 
         monitorClient.getFlussi(flussoData).then(fdResult => {
             setTotalRecords(fdResult.filtroFlusso.count);
             setFlussiList(fdResult.flussoList);
         })
             .finally(() => props.unblockContent());
+    };
+
+    const prepareInput = () => {
+        // Copia il flusso di state e elimina i valori non validi
+        let flusso = deleteUndefinedValues(structuredClone(flussoForm));
+
+        // Aggiunge esito o stato al flusso in base al valore selezionato
+        addStatoOrEsito(flusso, tempStatoOrEsito);
+
+        // Aggiunge data da e/o data a, in base ai valori selezionati
+        addDate(flusso, dataRichiestaList, 'dataRichiesta');
+        addDate(flusso, dataRicevutaList, 'dataRicevuta');
+
+        return {
+            filtroFlusso: {
+                da: (lazyParams.first + 1),
+                a: (lazyParams.first + lazyParams.rows),
+                orderBy: columnMapper.get(lazyParams.sortField),
+                orderType: sortMapper.get(lazyParams.sortOrder),
+                flusso: flusso
+            }
+        }
     };
 
     const deleteUndefinedValues = (obj) => {
