@@ -128,28 +128,17 @@ export default function Elenco(props) {
         return obj;
     };
 
+    // Cerco il valore di statoOrEsito tra gli esiti e valorizzo opportunamente
     const addStatoOrEsito = (flusso, statoOrEsito) => {
-        if (statoOrEsito) {
-            let found = false;
-            for (const esito of esitiPagamento) {
-                if (esito.name === statoOrEsito) {
-                    flusso.esitoPagamento = esito.name;
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found) {
-                for (const stato of statiPagamento) {
-                    if (stato === statoOrEsito) {
-                        flusso.statoPagamento = stato
-                        break;
-                    }
-                }
-            }
+        if(statoOrEsito){
+            if(esitiPagamento.filter(esito => esito.name === statoOrEsito).length === 1)
+                flusso.esitoPagamento = statoOrEsito;
+            else 
+                flusso.statoPagamento = statoOrEsito;
         }
     };
 
+    // Valorizza le date del filtro
     const addDate = (flusso, dataList, attribute) => {
         if (dataList) {
             flusso[attribute + 'Da'] = dataList[0];
