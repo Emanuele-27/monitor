@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./elenco.css";
 
 import { esitiPagamento, statiPagamento, formatEsito, replaceUnderscore } from 'model/tuttiIStati';
@@ -11,8 +11,11 @@ import { Calendar } from 'primereact/calendar';
 
 import { propsDominio } from 'util/config';
 
-import { columnMapper, sortMapper, localeIT} from 'util/util';
+import { columnMapper, sortMapper, localeIT } from 'util/util';
 import { removeSpecialChars } from 'util/stringUtil';
+import { getFirstDayOfMonth, getLastDayOfMonth } from "util/dateUtil";
+import { addLocale } from 'primereact/api';
+import { localeDate } from 'util/util';
 
 const initialLazyParams = {
     first: 0,
@@ -38,9 +41,10 @@ export default function Elenco(props) {
     const [flussoForm, setFlussoForm] = useState(structuredClone(initialFlussoForm));
 
     // Contiene temporaneamente alcuni dati del form
-    const [tempStatoOrEsito, setTempStatoOrEsito] = useState('');
+    const [statoOrEsito, setStatoOrEsito] = useState('');
     const [dataRichiestaList, setDataRichiestaList] = useState(null);
     const [dataRicevutaList, setDataRicevutaList] = useState(null);
+    const [finestraTemporale, setFinestraTemporale] = useState(null);
 
     // Options per select
     const [optionsServizi, setOptionsServizi] = useState([]);
@@ -62,6 +66,10 @@ export default function Elenco(props) {
         buildOptionsServiziEAree();;
     }, []);
 
+    useMemo(() => {
+        addLocale('it', localeDate);
+    }, [])
+
     const loadLazyData = () => {
         props.blockContent();
 
@@ -79,11 +87,16 @@ export default function Elenco(props) {
         let flusso = deleteUndefinedValues(structuredClone(flussoForm));
 
         // Aggiunge esito o stato al flusso in base al valore selezionato
-        addStatoOrEsito(flusso, tempStatoOrEsito);
+        addStatoOrEsito(flusso, statoOrEsito);
 
-        // Aggiunge data da e/o data a, in base ai valori selezionati
-        addDate(flusso, dataRichiestaList, 'dataRichiesta');
-        addDate(flusso, dataRicevutaList, 'dataRicevuta');
+        // Se finestraTemporale è disabilitata, valorizzo il filtro con le altre date
+        if(checkInputValues()){
+            addDate(flusso, dataRichiestaList, 'dataRichiesta');
+            addDate(flusso, dataRicevutaList, 'dataRicevuta');
+        } else if(finestraTemporale){ // Altrimenti con la finestraTemporale (gestione mensile per ora)
+            const dateList = [getFirstDayOfMonth(finestraTemporale), getLastDayOfMonth(finestraTemporale)];
+            addDate(flusso, dateList, 'dataRichiesta')
+        }
 
         return {
             filtroFlusso: {
@@ -136,9 +149,10 @@ export default function Elenco(props) {
 
     const resetFiltri = () => {
         setFlussoForm(structuredClone(initialFlussoForm));
-        setTempStatoOrEsito('');
+        setStatoOrEsito('');
         setDataRichiestaList(null);
         setDataRicevutaList(null);
+        setFinestraTemporale(null);
         setLazyParams(structuredClone(initialLazyParams));
     };
 
@@ -192,24 +206,6 @@ export default function Elenco(props) {
         setFlussoForm(flussoFormNew);
     };
 
-    // Gestisce onChange di componenti che salvano lo stato
-    // fuori da flusso perchè necessitano di altre operaz.
-    const changeState = (value, attribute) => {
-        switch (attribute) {
-            case 'tempStatoOrEsito':
-                setTempStatoOrEsito(value);
-                break;
-            case 'dataRichiestaList':
-                setDataRichiestaList(value);
-                break;
-            case 'dataRicevutaList':
-                setDataRicevutaList(value);
-                break;
-            default:
-                break;
-        }
-    };
-
     // Gestisce onChange di componenti di Flusso e input type=text
     const handleChangeText = (e) => {
         changeStateForm(removeSpecialChars(e.target.value).toUpperCase(), e.target.name);
@@ -243,6 +239,14 @@ export default function Elenco(props) {
         setOptionsAree(Array.from(areeMap.values()));
     };
 
+    // Disabled se almeno uno di questi campi è valorizzato
+    const checkInputValues = () => {
+        if (flussoForm.iuv || flussoForm.codiceContesto
+            || dataRichiestaList || dataRicevutaList)
+            return true;
+        return false;
+    }
+
     return (
         <>
             <div className="accordion" id="elenco-accordion">
@@ -254,7 +258,7 @@ export default function Elenco(props) {
                     </h3>
                     <div id="div-collapsible-1" className="accordion-collapse collapse" aria-labelledby="elenco-accordion-heading" data-bs-parent="#elenco-accordion">
                         <div className="accordion-body">
-                            <form id="elenco-form">
+                            <form id="elenco-form" name="elenco-form">
                                 <div className="row gx-5 gy-3">
                                     <div className="col-12 col-xs-12 col-md-4">
                                         <label htmlFor="iuv" className="form-label">Iuv:*</label>
@@ -270,8 +274,8 @@ export default function Elenco(props) {
                                     </div>
                                     <div className="col-12 col-xs-12 col-md-4">
                                         <label htmlFor="stato" className="form-label">Stato:</label>
-                                        <select id="stato" name="tempStatoOrEsito" className="form-select" value={tempStatoOrEsito}
-                                            onChange={(e) => changeState(e.target.value, e.target.name)}>
+                                        <select id="stato" name="tempStatoOrEsito" className="form-select" value={statoOrEsito}
+                                            onChange={(e) => setStatoOrEsito(e.target.value)}>
                                             <option value={null}></option>
                                             {optionsStatiAndEsito}
                                         </select>
@@ -299,14 +303,14 @@ export default function Elenco(props) {
                                             maxLength={17} />
                                     </div>
                                     <div className="col-12 col-xs-12 col-md-4">
-                                        <label htmlFor="dataRichiesta" className="form-label">Data Richiesta:**</label>
+                                        <label htmlFor="dataRichiesta" className="form-label">Data Richiesta:**  (o intervallo)</label>
                                         <Calendar id="dataRichiesta" name="dataRichiestaList" value={dataRichiestaList} readOnlyInput locale="it"
-                                            onChange={(e) => changeState(e.value, e.target.name)} selectionMode="range" dateFormat="dd/mm/y" />
+                                            onChange={(e) => setDataRichiestaList(e.value)} selectionMode="range" dateFormat="dd/mm/y" showIcon />
                                     </div>
                                     <div className="col-12 col-xs-12 col-md-4">
-                                        <label htmlFor="dataRicevuta" className="form-label">Data Ricevuta:**</label>
+                                        <label htmlFor="dataRicevuta" className="form-label">Data Ricevuta:**  (o intervallo)</label>
                                         <Calendar id="dataRicevuta" name="dataRicevutaList" value={dataRicevutaList} readOnlyInput locale="it"
-                                            onChange={(e) => changeState(e.value, e.target.name)} selectionMode="range" dateFormat="dd/mm/y" />
+                                            onChange={(e) => setDataRicevutaList(e.value)} selectionMode="range" dateFormat="dd/mm/y" showIcon />
                                     </div>
                                     <div className="col-12 col-xs-12 col-md-4">
                                         <label htmlFor="versante" className="form-label">Versante:</label>
@@ -314,12 +318,23 @@ export default function Elenco(props) {
                                             value={flussoForm.idVersante} onChange={(e) => handleChangeText(e)}
                                             maxLength={24} />
                                     </div>
+                                    <div className="col-12 col-xs-12 col-md-4">
+                                        <label htmlFor="finestraTemporale" className="form-label">Finestra Temporale:***</label>
+                                        <Calendar visible="false" id="finestraTemporale" value={finestraTemporale} locale="it"
+                                            onChange={(e) => setFinestraTemporale(e.value)} disabled={checkInputValues()} view="month" dateFormat="MM yy" showIcon />
+                                    </div>
                                 </div>
                             </form>
                             <div style={{ display: "flex", justifyContent: "center", marginTop: "1.5rem" }}>
                                 <button type="button" className="btn btn-primary" form="elenco-form" style={{ fontWeight: "600", marginRight: "0.05rem" }} onClick={loadLazyData}>Cerca</button>
                                 <button type="button" className="btn btn-primary" form="elenco-form" style={{ fontWeight: "600", marginLeft: "0.05rem" }} onClick={resetFiltri}>Reset Filtri</button>
                             </div>
+
+                            <p style={{ marginBottom: "0", marginTop: "1.5rem" }}>
+                                <b>*</b> I campi <b>Iuv</b> e <b>Codice Contesto</b> consentono di effettuare una ricerca puntuale entro gli ultimi 12 mesi a meno che venga specificata la <b>data</b>. <br />
+                                <b>**</b> I campi <b>data</b> consentono di effettuare filtro di ricerca per un intervallo massimo di 7 giorni.<br />
+                                <b>***</b> La ricerca per <b>Iuv</b> , <b>Codice Contesto</b> e/o per <b>data</b> disabilita la finestra temporale.
+                            </p>
                         </div>
                     </div>
                 </div>

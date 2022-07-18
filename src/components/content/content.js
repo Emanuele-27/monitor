@@ -10,8 +10,6 @@ import Home from "./home/home";
 import Rpt from "./rpt/rpt";
 
 import { BlockUI } from 'primereact/blockui';
-import { addLocale } from 'primereact/api';
-import { localeDate } from 'util/util';
 
 import './content.css';
 
@@ -35,7 +33,6 @@ export default function Content() {
 
     // Default link focused -> home
     useEffect(() => {
-        addLocale('it', localeDate);
         document.getElementById('linkHome').classList.add('entrypoint-focus')
     }, []);
 
