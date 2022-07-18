@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./elenco.css";
 
 import { esitiPagamento, statiPagamento, formatEsito, replaceUnderscore } from 'model/tuttiIStati';
@@ -13,7 +13,7 @@ import { propsDominio } from 'util/config';
 
 import { columnMapper, sortMapper, localeIT } from 'util/util';
 import { removeSpecialChars } from 'util/stringUtil';
-import { getFirstDayOfMonth, getLastDayOfMonth } from "util/dateUtil";
+import { aggiungiGiorni, aggiungiMesi, getFirstDayOfMonth, getLastDayOfMonth } from "util/dateUtil";
 import { addLocale } from 'primereact/api';
 import { localeDate } from 'util/util';
 
@@ -37,6 +37,9 @@ const initialFlussoForm = {
 
 const isFinestraAbilitata = propsDominio.finestraTemporale === 'true';
 
+const initialMinDate = aggiungiMesi(new Date(Date.now()), parseInt(propsDominio.intervalloDate));
+const today = new Date(Date.now());
+
 export default function Elenco(props) {
 
     // Contiene i dati del form
@@ -57,6 +60,11 @@ export default function Elenco(props) {
     const [totalRecords, setTotalRecords] = useState(0);
     const [flussiList, setFlussiList] = useState([]);
     const [lazyParams, setLazyParams] = useState(structuredClone(initialLazyParams));
+
+    const minDataRichiesta = useRef(initialMinDate);
+    const maxDataRichiesta = useRef(today)
+    const minDataRicevuta = useRef(initialMinDate);
+    const maxDataRicevuta = useRef(today);
 
     useEffect(() => {
         loadLazyData();
@@ -104,6 +112,7 @@ export default function Elenco(props) {
             filtroFlusso: {
                 da: (lazyParams.first + 1),
                 a: (lazyParams.first + lazyParams.rows),
+                count: propsDominio.intervalloDate, //numero di mesi con cui il servizio formerà la default min date per il filtro
                 orderBy: columnMapper.get(lazyParams.sortField),
                 orderType: sortMapper.get(lazyParams.sortOrder),
                 flusso: flusso
@@ -153,6 +162,10 @@ export default function Elenco(props) {
         setFlussoForm(structuredClone(initialFlussoForm));
         setStatoOrEsito('');
         setDataRichiestaList(null);
+        minDataRichiesta.current = initialMinDate;
+        maxDataRichiesta.current = today;
+        minDataRicevuta.current = initialMinDate;
+        maxDataRicevuta.current = today;
         setDataRicevutaList(null);
         setFinestraTemporale(null);
         setLazyParams(structuredClone(initialLazyParams));
@@ -212,6 +225,26 @@ export default function Elenco(props) {
     const handleChangeText = (e) => {
         handleChangeFlusso(removeSpecialChars(e.target.value).toUpperCase(), e.target.name);
     };
+
+    const handleChangeDataRichiesta = (e) => {
+        // La prima data selezionata viene settata come minDate
+        minDataRichiesta.current = e.value[0];
+        // Aggiunge n giorni alla prima data selezionata
+        const maxDate = aggiungiGiorni(new Date(e.value[0]), -parseInt(propsDominio.intervalloFiltroDate));
+        // Se maxDate supera il giorno corrente  maxDate = oggi
+        maxDataRichiesta.current = maxDate > today ? today : maxDate;
+        setDataRichiestaList(e.value);
+    }
+
+    const handleChangeDataRicevuta = (e) => {
+        // La prima data selezionata viene settata come minDate
+        minDataRicevuta.current = e.value[0];
+        // Aggiunge n giorni alla prima data selezionata
+        const maxDate = aggiungiGiorni(new Date(e.value[0]), -parseInt(propsDominio.intervalloFiltroDate));
+        // Se maxDate supera il giorno corrente  maxDate = oggi
+        maxDataRicevuta.current = maxDate > today ? today : maxDate;
+        setDataRicevutaList(e.value);
+    }
 
     // Nel dropdown di stato ci sono sia stati che esiti, in fase  
     // di ricerca vengono distinti e valorizzati opportunamente
@@ -307,12 +340,14 @@ export default function Elenco(props) {
                                     <div className="col-12 col-xs-12 col-md-4">
                                         <label htmlFor="dataRichiesta" className="form-label">Data Richiesta:**  (o intervallo)</label>
                                         <Calendar id="dataRichiesta" name="dataRichiestaList" value={dataRichiestaList} readOnlyInput locale="it"
-                                            onChange={(e) => setDataRichiestaList(e.value)} selectionMode="range" dateFormat="dd/mm/y" showIcon />
+                                            onChange={(e) => handleChangeDataRichiesta(e)} selectionMode="range" dateFormat="dd/mm/y" showIcon
+                                            minDate={minDataRichiesta.current} maxDate={maxDataRichiesta.current} />
                                     </div>
                                     <div className="col-12 col-xs-12 col-md-4">
                                         <label htmlFor="dataRicevuta" className="form-label">Data Ricevuta:**  (o intervallo)</label>
                                         <Calendar id="dataRicevuta" name="dataRicevutaList" value={dataRicevutaList} readOnlyInput locale="it"
-                                            onChange={(e) => setDataRicevutaList(e.value)} selectionMode="range" dateFormat="dd/mm/y" showIcon />
+                                            onChange={(e) => handleChangeDataRicevuta(e)} selectionMode="range" dateFormat="dd/mm/y" showIcon 
+                                            minDate={minDataRicevuta.current} maxDate={maxDataRicevuta.current} />
                                     </div>
                                     <div className="col-12 col-xs-12 col-md-4">
                                         <label htmlFor="versante" className="form-label">Versante:</label>
@@ -334,9 +369,9 @@ export default function Elenco(props) {
                             </div>
 
                             <p style={{ marginBottom: "0", marginTop: "1rem" }}>
-                                <b>*</b> I campi <b>Iuv</b> e <b>Codice Contesto</b> consentono di effettuare una ricerca puntuale entro gli ultimi 12 mesi a meno che venga specificata la <b>data</b>. <br />
-                                <b>**</b> I campi <b>data</b> consentono di effettuare filtro di ricerca per un intervallo massimo di 7 giorni.<br />
-                               {isFinestraAbilitata && (<><b>***</b> La ricerca per <b>Iuv</b> , <b>Codice Contesto</b> e/o per <b>data</b> disabilita la finestra temporale.</>) }
+                                <b>*</b> I campi <b>Iuv</b> e <b>Codice Contesto</b> consentono di effettuare una ricerca puntuale entro gli ultimi {-propsDominio.intervalloDate} mesi a meno che venga specificata la <b>data</b>. <br />
+                                <b>**</b> I campi <b>data</b> consentono di effettuare filtro di ricerca per un intervallo massimo di {-propsDominio.intervalloFiltroDate} giorni.<br />
+                                {isFinestraAbilitata && (<><b>***</b> La ricerca per <b>Iuv</b> , <b>Codice Contesto</b> e/o per <b>data</b> disabilita la finestra temporale.</>)}
                             </p>
                         </div>
                     </div>

@@ -45,6 +45,8 @@ const propsDominio = {
     denominazione: process.env['REACT_APP_DENOMINAZIONE_PA_' + suffissoDom],
     provenienzaUrl: process.env['REACT_APP_PROVENIENZA_URL_' + suffissoDom],
     finestraTemporale: process.env['REACT_APP_FINESTRA_TEMPORALE_' + suffissoDom],
+    intervalloDate: process.env['REACT_APP_INTERVALLO_DATE_' + suffissoDom],
+    intervalloFiltroDate: process.env['REACT_APP_INTERVALLO_FILTRO_DATE_' + suffissoDom],
 }
 
 export { configProps, suffissiDomini, propsDominio };
