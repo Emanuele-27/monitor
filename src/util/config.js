@@ -38,13 +38,13 @@ switch (window.location.hostname) {
         break
 
 }
-
 // Props per dominio
 const propsDominio = {
     suffissoDom: suffissoDom,
     idDominio: process.env['REACT_APP_ID_DOMINIO_' + suffissoDom],
     denominazione: process.env['REACT_APP_DENOMINAZIONE_PA_' + suffissoDom],
     provenienzaUrl: process.env['REACT_APP_PROVENIENZA_URL_' + suffissoDom],
+    finestraTemporale: process.env['REACT_APP_FINESTRA_TEMPORALE_' + suffissoDom],
 }
 
 export { configProps, suffissiDomini, propsDominio };

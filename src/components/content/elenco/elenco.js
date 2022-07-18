@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import "./elenco.css";
 
 import { esitiPagamento, statiPagamento, formatEsito, replaceUnderscore } from 'model/tuttiIStati';
@@ -34,6 +34,8 @@ const initialFlussoForm = {
     idPagatore: '',
     idVersante: '',
 }
+
+const isFinestraAbilitata = propsDominio.finestraTemporale === 'true';
 
 export default function Elenco(props) {
 
@@ -89,13 +91,13 @@ export default function Elenco(props) {
         // Aggiunge esito o stato al flusso in base al valore selezionato
         addStatoOrEsito(flusso, statoOrEsito);
 
-        // Se finestraTemporale è disabilitata, valorizzo il filtro con le altre date
-        if(checkInputValues()){
-            addDate(flusso, dataRichiestaList, 'dataRichiesta');
-            addDate(flusso, dataRicevutaList, 'dataRicevuta');
-        } else if(finestraTemporale){ // Altrimenti con la finestraTemporale (gestione mensile per ora)
+        // Se finestraTemporale è abilitata e valorizzata, valorizza il filtro con la finestra
+        if (isFinestraAbilitata && !isFinestraDisabled() && finestraTemporale) {
             const dateList = [getFirstDayOfMonth(finestraTemporale), getLastDayOfMonth(finestraTemporale)];
             addDate(flusso, dateList, 'dataRichiesta')
+        } else { // Altrimenti con le altre date
+            addDate(flusso, dataRichiestaList, 'dataRichiesta');
+            addDate(flusso, dataRicevutaList, 'dataRicevuta');
         }
 
         return {
@@ -200,7 +202,7 @@ export default function Elenco(props) {
     };
 
     // Gestion onChange di componenti di Flusso
-    const changeStateForm = (value, attribute) => {
+    const handleChangeFlusso = (value, attribute) => {
         let flussoFormNew = Object.assign({}, flussoForm);
         flussoFormNew[attribute] = value;
         setFlussoForm(flussoFormNew);
@@ -208,7 +210,7 @@ export default function Elenco(props) {
 
     // Gestisce onChange di componenti di Flusso e input type=text
     const handleChangeText = (e) => {
-        changeStateForm(removeSpecialChars(e.target.value).toUpperCase(), e.target.name);
+        handleChangeFlusso(removeSpecialChars(e.target.value).toUpperCase(), e.target.name);
     };
 
     // Nel dropdown di stato ci sono sia stati che esiti, in fase  
@@ -220,7 +222,7 @@ export default function Elenco(props) {
     };
 
     // Vengono recuperati i servizi, filtrati per l'idDominio corrente 
-    // e vengono create le option per le select partendo dai servizi
+    // e vengono create le option per le select di servizi e aree
     const buildOptionsServiziEAree = async () => {
         const serviziData = await monitorClient.getServizi();
         const serviziDominioCorrente = serviziData.serviziList.filter(servizio => servizio.idDominio === propsDominio.idDominio);
@@ -240,7 +242,7 @@ export default function Elenco(props) {
     };
 
     // Disabled se almeno uno di questi campi è valorizzato
-    const checkInputValues = () => {
+    const isFinestraDisabled = () => {
         if (flussoForm.iuv || flussoForm.codiceContesto
             || dataRichiestaList || dataRicevutaList)
             return true;
@@ -283,7 +285,7 @@ export default function Elenco(props) {
                                     <div className="col-12 col-xs-12 col-md-4">
                                         <label htmlFor="area" className="form-label">Area:</label>
                                         <select id="area" name="area" className="form-select" value={flussoForm.area}
-                                            onChange={(e) => changeStateForm(e.target.value, e.target.name)}>
+                                            onChange={(e) => handleChangeFlusso(e.target.value, e.target.name)}>
                                             <option value={null}></option>
                                             {optionsAree}
                                         </select>
@@ -291,7 +293,7 @@ export default function Elenco(props) {
                                     <div className="col-12 col-xs-12 col-md-4">
                                         <label htmlFor="servizio" className="form-label">Categoria:</label>
                                         <select id="servizio" name="servizio" className="form-select" value={flussoForm.servizio}
-                                            onChange={(e) => changeStateForm(e.target.value, e.target.name)}>
+                                            onChange={(e) => handleChangeFlusso(e.target.value, e.target.name)}>
                                             <option value={null}></option>
                                             {optionsServizi}
                                         </select>
@@ -318,11 +320,12 @@ export default function Elenco(props) {
                                             value={flussoForm.idVersante} onChange={(e) => handleChangeText(e)}
                                             maxLength={24} />
                                     </div>
-                                    <div className="col-12 col-xs-12 col-md-4">
-                                        <label htmlFor="finestraTemporale" className="form-label">Finestra Temporale:***</label>
-                                        <Calendar visible="false" id="finestraTemporale" value={finestraTemporale} locale="it"
-                                            onChange={(e) => setFinestraTemporale(e.value)} disabled={checkInputValues()} view="month" dateFormat="MM yy" showIcon />
-                                    </div>
+                                    {isFinestraAbilitata &&
+                                        (<div className="col-12 col-xs-12 col-md-4">
+                                            <label htmlFor="finestraTemporale" className="form-label">Finestra Temporale:***</label>
+                                            <Calendar visible="false" id="finestraTemporale" value={finestraTemporale} locale="it"
+                                                onChange={(e) => setFinestraTemporale(e.value)} disabled={isFinestraDisabled()} view="month" dateFormat="MM yy" showIcon />
+                                        </div>)}
                                 </div>
                             </form>
                             <div style={{ display: "flex", justifyContent: "center", marginTop: "1.5rem" }}>
@@ -330,10 +333,10 @@ export default function Elenco(props) {
                                 <button type="button" className="btn btn-primary" form="elenco-form" style={{ fontWeight: "600", marginLeft: "0.05rem" }} onClick={resetFiltri}>Reset Filtri</button>
                             </div>
 
-                            <p style={{ marginBottom: "0", marginTop: "1.5rem" }}>
+                            <p style={{ marginBottom: "0", marginTop: "1rem" }}>
                                 <b>*</b> I campi <b>Iuv</b> e <b>Codice Contesto</b> consentono di effettuare una ricerca puntuale entro gli ultimi 12 mesi a meno che venga specificata la <b>data</b>. <br />
                                 <b>**</b> I campi <b>data</b> consentono di effettuare filtro di ricerca per un intervallo massimo di 7 giorni.<br />
-                                <b>***</b> La ricerca per <b>Iuv</b> , <b>Codice Contesto</b> e/o per <b>data</b> disabilita la finestra temporale.
+                               {isFinestraAbilitata && (<><b>***</b> La ricerca per <b>Iuv</b> , <b>Codice Contesto</b> e/o per <b>data</b> disabilita la finestra temporale.</>) }
                             </p>
                         </div>
                     </div>
