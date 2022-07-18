@@ -5,7 +5,6 @@ const configProps = {
     monitorAccHost: process.env.REACT_APP_MONITOR_ACC_HOST,
 }
 
-// Riconoscimento dominio da host
 const suffissiDomini = {
     suffissoAdm: 'ADM',
     suffissoAe: 'AE',
@@ -20,6 +19,7 @@ const hostSogei = process.env['REACT_APP_HOST_' + suffissiDomini.suffissoSogei];
 
 let suffissoDom;
 
+// Riconoscimento dominio da host
 switch (window.location.hostname) {
     case hostAdm:
         suffissoDom = suffissiDomini.suffissoAdm;
