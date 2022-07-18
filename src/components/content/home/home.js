@@ -62,18 +62,21 @@ const dataKO = {
 export default function Home(props) {
 
     const [builtChart, setBuiltChart] = useState(false);
+    const [collapsed, setCollapsed] = useState(true);
 
     const buildCharts = (event) => {
+        const isAccordionCollapsed = event.target.classList.contains('collapsed');
+        setCollapsed(isAccordionCollapsed);
         // Crea i chart solo se il click espande l'accordion e se non sono già stati creati per quest'istanza
-        if (!event.target.classList.contains('collapsed') && !builtChart) {
+        if (!isAccordionCollapsed && !builtChart) {
 
             props.blockContent();
 
             Promise.all([monitorClient.welcomeTest(), monitorStatClient.welcomeTest(), monitorAccountabilityClient.welcomeTest()])
                 .then(responses => {
-                    buildChart('monitor-pie', responses[0] && responses[0].isOnline === true ? dataOK: dataKO);
-                    buildChart('monitor-stat-pie', responses[1] && responses[1].isOnline === true ? dataOK: dataKO);
-                    buildChart('monitor-acc-pie', responses[2] && responses[2].isOnline === true ? dataOK: dataKO);
+                    buildChart('monitor-pie', responses[0] && responses[0].isOnline === true ? dataOK : dataKO);
+                    buildChart('monitor-stat-pie', responses[1] && responses[1].isOnline === true ? dataOK : dataKO);
+                    buildChart('monitor-acc-pie', responses[2] && responses[2].isOnline === true ? dataOK : dataKO);
                     setBuiltChart(true);
                 })
                 .finally(() => {
@@ -94,7 +97,7 @@ export default function Home(props) {
             <div className="accordion" id="home-accordion">
                 <div className="accordion-item">
                     <h3 className="accordion-header" id="home-accordion-heading">
-                        <button className="accordion-button collapsed" onClick={buildCharts} type="button" data-bs-toggle="collapse" data-bs-target="#div-collapsible-1" aria-controls="div-collapsible-1">Monitor</button>
+                        <button id="home-accordion-button" className="accordion-button collapsed" onClick={buildCharts} type="button" data-bs-toggle="collapse" data-bs-target="#div-collapsible-1" aria-controls="div-collapsible-1">Monitor</button>
                     </h3>
                     <div id="div-collapsible-1" className="accordion-collapse collapse" aria-labelledby="home-accordion-heading" data-bs-parent="#home-accordion">
                         <div id="pies" className="accordion-body">
@@ -116,18 +119,17 @@ export default function Home(props) {
                     </div>
                 </div>
             </div>
-
-            <div className="card card-horizontal" style={{ marginTop: "1rem" }}>
-                <div className="card-body">
-                    <p className="card-text">
-                        L'applicazione consente di monitorare lo stato delle transazioni e
-                        permette di disporre delle funzionalità ausiliarie disponibili all'interno del Sistema pagoPA,
-                        funzionalità accessorie per la gestione dei processi correlati alle operazioni di pagamento
-                        che possono essere utilizzate dagli Enti Creditori (EC) per il rientro da situazioni anomale.
-                    </p>
-                </div>
-            </div>
-
+            {collapsed && (
+                <div className="card card-horizontal" style={{ marginTop: "1rem" }} >
+                    <div className="card-body">
+                        <p className="card-text">
+                            L'applicazione consente di monitorare lo stato delle transazioni e
+                            permette di disporre delle funzionalità ausiliarie disponibili all'interno del Sistema pagoPA,
+                            funzionalità accessorie per la gestione dei processi correlati alle operazioni di pagamento
+                            che possono essere utilizzate dagli Enti Creditori (EC) per il rientro da situazioni anomale.
+                        </p>
+                    </div>
+                </div>)}
         </>
     );
 }

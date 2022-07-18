@@ -347,7 +347,7 @@ export default function Elenco(props) {
                                     {isFinestraAbilitata &&
                                         (<div className="col-12 col-xs-12 col-md-4">
                                             <label htmlFor="finestraTemporale" className="form-label">Finestra Temporale:***</label>
-                                            <Calendar visible="false" id="finestraTemporale" value={finestraTemporale} locale="it"
+                                            <Calendar id="finestraTemporale" value={finestraTemporale} locale="it"
                                                 onChange={(e) => setFinestraTemporale(e.value)} disabled={isFinestraDisabled()} view="month" dateFormat="MM yy" showIcon />
                                         </div>)}
                                 </div>
