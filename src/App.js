@@ -5,8 +5,6 @@ import Header from "./layout/header";
 import Body from "./layout/body";
 import { propsDominio, suffissiDomini } from "util/config";
 
-
-
 // Mapping dominio corrente - tema
 const mapperDominioLogo = new Map([
     [suffissiDomini.suffissoAdm, 'dark'],

@@ -7,8 +7,8 @@ export default function Legenda() {
   return (
     <div className="container" style={{ paddingTop: "2rem", paddingBottom: "2rem" }}>
       <Panel id="legenda" header="Legenda">
-        <div class="table-responsive">
-          <table class="table">
+        <div className="table-responsive">
+          <table className="table">
             <tbody>
               <tr>
                 <td>DOMINIO</td>
