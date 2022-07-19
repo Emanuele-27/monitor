@@ -87,13 +87,13 @@ export default function Home(props) {
 
     const buildChart = (id, data) => {
         let chartStatus = Chart.getChart(id);
-        if (chartStatus !== undefined)
+        if (chartStatus)
             chartStatus.destroy();
         new Chart(id, data);
     }
 
     return (
-        <>
+        <div className="container">
             <div className="accordion" id="home-accordion">
                 <div className="accordion-item">
                     <h3 className="accordion-header" id="home-accordion-heading">
@@ -130,6 +130,7 @@ export default function Home(props) {
                         </p>
                     </div>
                 </div>)}
-        </>
+        </div>
+
     );
 }

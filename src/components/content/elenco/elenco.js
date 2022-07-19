@@ -73,7 +73,7 @@ export default function Elenco(props) {
 
     useEffect(() => {
         buildOptionsStatiEsiti();
-        buildOptionsServiziEAree();;
+        buildOptionsServiziEAree();
     }, []);
 
     useMemo(() => {
@@ -86,7 +86,7 @@ export default function Elenco(props) {
         const flussoData = prepareInput();
 
         monitorClient.getFlussi(flussoData).then(fdResult => {
-            setTotalRecords(fdResult.filtroFlusso.count);
+            setTotalRecords(fdResult.filtroFlusso.count < 0 ? 0 : fdResult.filtroFlusso.count);
             setFlussiList(fdResult.flussoList);
         })
             .finally(() => props.unblockContent());
@@ -130,10 +130,10 @@ export default function Elenco(props) {
 
     // Cerco il valore di statoOrEsito tra gli esiti e valorizzo opportunamente
     const addStatoOrEsito = (flusso, statoOrEsito) => {
-        if(statoOrEsito){
-            if(esitiPagamento.filter(esito => esito.name === statoOrEsito).length === 1)
+        if (statoOrEsito) {
+            if (esitiPagamento.filter(esito => esito.name === statoOrEsito).length === 1)
                 flusso.esitoPagamento = statoOrEsito;
-            else 
+            else
                 flusso.statoPagamento = statoOrEsito;
         }
     };
@@ -203,6 +203,37 @@ export default function Elenco(props) {
         return '';
     };
 
+    const columnOpzioni = (rowData) => {
+        return (<div id="opzioni-column">
+            <span title="Visualizza dettaglio"><i className="pi pi-search"></i></span>
+            {renderOtherOpzioni(rowData.statoPagamento, rowData.iuv)}
+        </div>);
+    };
+
+    // Se stato non è valido non renderizza le altre due opzioni
+    // altrimenti le renderizza, se iuv non inizia con RF saranno disabled
+    const renderOtherOpzioni = (stato, iuv) => {
+        if (isStatoValido(stato)) {
+            if (isIuvRF(iuv))
+                return <><span title="Aggiorna stato"><i className="pi pi-file-o"></i></span>
+                    <span title="Chiedi ricevuta"><i className="pi pi-download"></i></span></>
+            else
+                return <><span title="Aggiorna stato" disabled><i className="pi pi-file-o"></i></span>
+                    <span title="Chiedi ricevuta" disabled><i className="pi pi-download"></i></span></>
+        }
+        return <></>
+    }
+
+    const isIuvRF = (iuv) => {
+        return iuv && iuv.startsWith('RF');
+    }
+
+    // Stato valido se non è uno tra questi
+    const isStatoValido = (stato) => {
+        return !['RT_ACCETTATA_PA', 'RPT_RIFIUTATA_NODO', 'RPT_RIFIUTATA_PSP', 'RPT_ERRORE_INVIO_A_PSP', 'RPT_ANNULLATA',
+            'RPT_NON_ATTIVA'].includes(stato);
+    }
+
     // Gestion onChange di componenti di Flusso
     const handleChangeFlusso = (value, attribute) => {
         let flussoFormNew = Object.assign({}, flussoForm);
@@ -271,8 +302,8 @@ export default function Elenco(props) {
         return false;
     }
 
-    return (
-        <>
+    return (<>
+        <div className="container">
             <div className="accordion" id="elenco-accordion">
                 <div className="accordion-item">
                     <h3 className="accordion-header" id="elenco-accordion-heading">
@@ -335,7 +366,7 @@ export default function Elenco(props) {
                                     <div className="col-12 col-xs-12 col-md-4">
                                         <label htmlFor="dataRicevuta" className="form-label">Data Ricevuta:**  (o intervallo)</label>
                                         <Calendar id="dataRicevuta" name="dataRicevutaList" value={dataRicevutaList} readOnlyInput locale="it"
-                                            onChange={(e) => handleChangeDataRicevuta(e)} selectionMode="range" dateFormat="dd/mm/y" showIcon 
+                                            onChange={(e) => handleChangeDataRicevuta(e)} selectionMode="range" dateFormat="dd/mm/y" showIcon
                                             minDate={minDataRicevuta.current} maxDate={maxDataRicevuta.current} />
                                     </div>
                                     <div className="col-12 col-xs-12 col-md-4">
@@ -366,10 +397,11 @@ export default function Elenco(props) {
                     </div>
                 </div>
             </div>
-
+        </div>
+        <div className="container-fluid" style={{ width: "85%" }}>
             <DataTable id="elenco-table" lazy showGridlines stripedRows value={flussiList} rows={10} rowsPerPageOptions={[10, 25, 50]} responsiveLayout="scroll"
                 header={"Numero Transazioni: " + totalRecords} footer={"Numero Transazioni: " + totalRecords} totalRecords={totalRecords}
-                first={lazyParams.first} onPage={onPage} paginator paginatorPosition="bottom" style={{ paddingTop: "2rem" }}
+                first={lazyParams.first} onPage={onPage} paginator paginatorPosition="bottom" style={{ paddingTop: "2rem" }} emptyMessage="Nessun elemento presente"
                 removableSort onSort={onSort} sortField={lazyParams.sortField} sortOrder={lazyParams.sortOrder}>
                 <Column header="IUV - Codice Contesto" body={columnIUVCodContesto} />
                 <Column field="area" header="Area" />
@@ -379,10 +411,12 @@ export default function Elenco(props) {
                 <Column header="Pagatore - Versante" body={columnPagatoreVersante} />
                 <Column header="Importo" body={columnImporto} />
                 <Column header="Stato" body={columnStato} />
+                <Column header="Opzioni" body={columnOpzioni} style={{ width: "6%" }} />
                 {/* TO DO Opzioni, Opzioni comuni */}
                 {/* <Column header="Opzioni" body={columnPagatoreVersante}  />
                 <Column header="Opzioni Comuni" body={columnPagatoreVersante}  /> */}
             </DataTable>
-        </>
+        </div>
+    </>
     );
 }
