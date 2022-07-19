@@ -12,6 +12,7 @@ import Rpt from "./rpt/rpt";
 import { BlockUI } from 'primereact/blockui';
 
 import './content.css';
+import ElencoForm from "./elenco/elenco-form/elencoForm";
 
 export default function Content() {
 
@@ -67,7 +68,7 @@ export default function Content() {
                         <Route exact path="/" element={<Home blockContent={blockContent} unblockContent={unblockContent} />} />
                         <Route path="/home" element={<Home blockContent={blockContent} unblockContent={unblockContent} />} />
                         <Route path="/rpt" element={<Rpt blockContent={blockContent} unblockContent={unblockContent} />} />
-                        <Route path="/elenco" element={<Elenco blockContent={blockContent} unblockContent={unblockContent} />} />
+                        <Route path="/elenco" element={<ElencoForm blockContent={blockContent} unblockContent={unblockContent} />} />
                         <Route path="/giornale" element={<Giornale blockContent={blockContent} unblockContent={unblockContent} />} />
                     </Routes>
                 </div>
