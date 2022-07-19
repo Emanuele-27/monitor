@@ -1,7 +1,7 @@
 import React from "react";
-import "./elenco.css";
+import "./elenco-table.css";
 
-import { formatEsito, replaceUnderscore } from 'model/tuttiIStati';
+import { formatEsito, replaceUnderscore } from 'model/tutti-i-stati';
 
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';

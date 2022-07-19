@@ -1,0 +1,12 @@
+div#elenco-table{
+    font-size: 0.8rem;
+}
+div#opzioni-column span {
+    cursor: pointer;
+    padding: 0 2px 0 2px;
+}
+
+span[disabled] { 
+    pointer-events: none; 
+    opacity: 0.5;
+}

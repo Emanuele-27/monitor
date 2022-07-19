@@ -1,4 +1,4 @@
-import { FetchClient } from "./fetchClient";
+import { FetchClient } from "./fetch-client";
 
 export class MonitorClient extends FetchClient{
     baseUrl = '/api/SogeiPaySystemRMonitorService/';

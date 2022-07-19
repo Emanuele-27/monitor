@@ -1,6 +1,6 @@
-import { MonitorClient } from "clients/monitorClient";
-import { MonitorStatClient } from "clients/monitorStatClient";
-import { MonitorAccountabilityClient } from "clients/monitorAccountabilityClient";
+import { MonitorClient } from "clients/monitor-client";
+import { MonitorStatClient } from "clients/monitor-stat-client";
+import { MonitorAccountabilityClient } from "clients/monitor-accountability-client";
 import { configProps } from "util/config";
 
 const acceptJson = 'application/json';

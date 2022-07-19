@@ -1,7 +1,7 @@
-import { FetchClient } from "./fetchClient";
+import { FetchClient } from "./fetch-client";
 
-export class MonitorAccountabilityClient extends FetchClient {
-    baseUrl = '/api/SogeiPaySystemRAccountabilityService/';
+export class MonitorStatClient extends FetchClient{
+    baseUrl = '/api/SogeiPaySystemRMonitorStatService/';
 
     constructor(host, accept, acceptLanguage) {
         super(accept, acceptLanguage);
