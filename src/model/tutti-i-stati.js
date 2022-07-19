@@ -1,3 +1,5 @@
+import { replaceUnderscore } from "util/string-util";
+
 const esitiPagamento = [
     { name: 'PAGAMENTO_ESEGUITO', value: 0 },
     { name: 'PAGAMENTO_NON_ESEGUITO', value: 1 },
@@ -30,8 +32,4 @@ function formatEsito(string){
     return replaceUnderscore(string);
 }
 
-function replaceUnderscore(string){
-    return string.replaceAll('_', ' ').trim();
-}
-
-export { esitiPagamento, statiPagamento, formatEsito, replaceUnderscore}
+export { esitiPagamento, statiPagamento, formatEsito}

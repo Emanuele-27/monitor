@@ -5,3 +5,7 @@
 export function removeSpecialChars(string){
     return string.replace(/(\W|_)/g, '');
 }
+
+export function replaceUnderscore(string){
+    return string.replaceAll('_', ' ').trim();
+}

@@ -1,16 +1,19 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import "./elenco-table.css";
 
-import { formatEsito, replaceUnderscore } from 'model/tutti-i-stati';
+import { formatEsito } from 'model/tutti-i-stati';
 
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 
 import { localeIT } from 'util/util';
+import { monitorClient } from "clients/clients";
+import { replaceUnderscore } from "util/string-util";
 
 export default function ElencoTable(props) {
 
-    const [flussoDettaglio, setFlussoDettaglio] = useState(0);
+    const [flussoModal, setFlussoModal] = useState(0);
+    const [listGiornaleModal, setListGiornaleModal] = useState(0);
 
     const onPage = (event) => {
         props.setLazyParams(event);
@@ -35,15 +38,20 @@ export default function ElencoTable(props) {
         });
     };
 
-    const columnDataRichiesta = (rowData) => {
-        if (rowData.dataRichiesta)
-            return new Date(rowData.dataRichiesta).toLocaleString(localeIT);
+    // Gestione date formattandole in dd/MM/yyy HH:mm:ss
+    const columnData = (rowData, nomeData) => {
+        if (rowData[nomeData])
+            return new Date(rowData[nomeData]).toLocaleString(localeIT).replace(',', '');
         return '';
+    }
+
+    const columnTipoEvento = (rowData) => {
+        return `${rowData.tipoEvento} - ${rowData.sottotipoEvento}`;
     };
 
-    const columnDataRicevuta = (rowData) => {
-        if (rowData.dataRicevuta)
-            return new Date(rowData.dataRicevuta).toLocaleString(localeIT).replace(',', '');
+    const columnEsito = (rowData) => {
+        if (rowData.esito)
+            return replaceUnderscore(rowData.esito);
         return '';
     };
 
@@ -57,7 +65,7 @@ export default function ElencoTable(props) {
 
     const columnOpzioni = (rowData) => {
         return (<div id="opzioni-column">
-            <span title="Visualizza dettaglio" onClick={() => getDialogInfo(rowData)} data-bs-toggle="modal" data-bs-target="#dettaglio-modal"><i className="pi pi-search"></i></span>
+            <span title="Visualizza dettaglio" onClick={() => getModalInfo(rowData)} data-bs-toggle="modal" data-bs-target="#dettaglio-modal" ><i className="pi pi-search"></i></span>
             {renderAltreOpzioni(rowData.statoPagamento, rowData.iuv)}
         </div>);
     };
@@ -86,8 +94,21 @@ export default function ElencoTable(props) {
             'RPT_NON_ATTIVA'].includes(stato);
     };
 
-    const getDialogInfo = (rowInfo) => {
-        setFlussoDettaglio(rowInfo);
+    // Recupera i dati da mostrare nel modal
+    const getModalInfo = async (rowInfo) => {
+        props.blockContent();
+
+        setFlussoModal(rowInfo);
+
+        const giornaleEventi = {
+            idDominio: rowInfo.idDominio,
+            iuv: rowInfo.iuv,
+            codContesto: rowInfo.codiceContesto
+        };
+
+        monitorClient.getGiornalePerPagamento(giornaleEventi).then(
+            res => setListGiornaleModal(res.giornaleList)
+        ).finally(() => props.unblockContent());
     };
 
     return (
@@ -99,8 +120,8 @@ export default function ElencoTable(props) {
                 <Column header="IUV - Codice Contesto" body={columnIUVCodContesto} />
                 <Column field="area" header="Area" />
                 <Column field="servizio" header="Categoria" />
-                <Column sortable field="dataRichiesta" header="Data Richiesta" body={columnDataRichiesta} />
-                <Column sortable field="dataRicevuta" header="Data Ricevuta" body={columnDataRicevuta} />
+                <Column sortable field="dataRichiesta" header="Data Richiesta" body={(rowData) => columnData(rowData, 'dataRichiesta')} />
+                <Column sortable field="dataRicevuta" header="Data Ricevuta" body={(rowData) => columnData(rowData, 'dataRicevuta')} />
                 <Column header="Pagatore - Versante" body={columnPagatoreVersante} />
                 <Column header="Importo" body={columnImporto} />
                 <Column header="Stato" body={columnStato} />
@@ -110,7 +131,7 @@ export default function ElencoTable(props) {
             </DataTable>
 
             <div className="modal fade" id="dettaglio-modal" tabIndex="-1" aria-labelledby="dettaglio-modal-content" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
-                <div className="modal-dialog modal-dialog-centered modal-lg">
+                <div className="modal-dialog modal-dialog-centered modal-xl">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h3 className="modal-title" id="dettaglio-modal-content">Riepilogo transazione</h3>
@@ -129,29 +150,29 @@ export default function ElencoTable(props) {
                                                 <b>Dominio:</b>
                                             </div>
                                             <div className="col-3 col-xs-3">
-                                                {flussoDettaglio.idDominio}
+                                                {flussoModal.idDominio}
                                             </div>
                                             <div className="col-6 col-xs-6" />
                                             <div className="col-3 col-xs-3">
                                                 <b>Codice contesto:</b>
                                             </div>
                                             <div className="col-3 col-xs-3">
-                                                {flussoDettaglio.codiceContesto}
+                                                {flussoModal.codiceContesto}
                                             </div>
                                             <div className="col-6 col-xs-6" />
                                             <div className="col-3 col-xs-3">
                                                 <b>IUV:</b>
                                             </div>
                                             <div className="col-3 col-xs-3">
-                                                {flussoDettaglio.iuv}
+                                                {flussoModal.iuv}
                                             </div>
                                             <div className="col-6 col-xs-6" />
-                                            {flussoDettaglio.esitoPagamento === 'PAGAMENTO_NON_ESEGUITO' && (<>
+                                            {flussoModal.esitoPagamento === 'PAGAMENTO_NON_ESEGUITO' && (<>
                                                 <div className="col-3 col-xs-3">
                                                     <b>Esito:</b>
                                                 </div>
                                                 <div className="col-3 col-xs-3">
-                                                    {flussoDettaglio.descrizionePendenza}
+                                                    {flussoModal.descrizionePendenza}
                                                 </div>
                                                 <div className="col-6 col-xs-6" /></>)
                                             }
@@ -165,7 +186,16 @@ export default function ElencoTable(props) {
                                         </button>
                                     </h3>
                                     <div id="heading-collapse-2" className="accordion-collapse collapse" aria-labelledby="heading-collapse-2" data-bs-parent="#dettaglio-modal-accordion">
-                                        <div className="accordion-body">Contenuto accordion</div>
+                                        <div className="accordion-body">
+                                            <DataTable id="elenco-table" showGridlines stripedRows value={listGiornaleModal} emptyMessage="Nessun elemento presente">
+                                                <Column header="Data Evento" body={(rowData) => columnData(rowData, 'dataOraEvento')} />
+                                                <Column header="Tipo Evento" body={columnTipoEvento} />
+                                                <Column field="idFruitore" header="Fruitore" />
+                                                <Column field="idErogatore" header="Erogatore" />
+                                                <Column field="canalePagamento" header="Canale Pagamento" />
+                                                <Column header="Esito" body={columnEsito} />
+                                            </DataTable>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="accordion-item">

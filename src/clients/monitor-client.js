@@ -19,4 +19,8 @@ export class MonitorClient extends FetchClient{
     getFlussi(flussoData) {
         return this.callPOST(this.host + this.baseUrl + 'getFlussi', flussoData);
     }
+
+    getGiornalePerPagamento(giornaleEventi){
+        return this.callPOST(this.host + this.baseUrl + 'getGiornalePerPagamento', giornaleEventi);
+    }
 }

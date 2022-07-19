@@ -72,11 +72,11 @@ export default function Home(props) {
 
             props.blockContent();
 
-            Promise.all([monitorClient.welcomeTest(), monitorStatClient.welcomeTest(), monitorAccountabilityClient.welcomeTest()])
+            Promise.allSettled([monitorClient.welcomeTest(), monitorStatClient.welcomeTest(), monitorAccountabilityClient.welcomeTest()])
                 .then(responses => {
-                    buildChart('monitor-pie', responses[0] && responses[0].isOnline === true ? dataOK : dataKO);
-                    buildChart('monitor-stat-pie', responses[1] && responses[1].isOnline === true ? dataOK : dataKO);
-                    buildChart('monitor-acc-pie', responses[2] && responses[2].isOnline === true ? dataOK : dataKO);
+                    buildChart('monitor-pie', responses[0].value && responses[0].value.isOnline === true ? dataOK : dataKO);
+                    buildChart('monitor-stat-pie', responses[1].value && responses[1].value.isOnline === true ? dataOK : dataKO);
+                    buildChart('monitor-acc-pie', responses[2].value && responses[2].value.isOnline === true ? dataOK : dataKO);
                     setBuiltChart(true);
                 })
                 .finally(() => {

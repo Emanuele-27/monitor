@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./elenco.css";
 
-import { esitiPagamento, statiPagamento, formatEsito, replaceUnderscore } from 'model/tutti-i-stati';
+import { esitiPagamento, statiPagamento, formatEsito } from 'model/tutti-i-stati';
 
 import { monitorClient } from "clients/clients";
 
@@ -10,7 +10,7 @@ import { Calendar } from 'primereact/calendar';
 import { propsDominio } from 'util/config';
 
 import { columnMapper, sortMapper } from 'util/util';
-import { removeSpecialChars } from 'util/string-util';
+import { removeSpecialChars, replaceUnderscore } from 'util/string-util';
 import { aggiungiGiorni, aggiungiMesi, getFirstDayOfMonth, getLastDayOfMonth } from "util/date-util";
 import { addLocale } from 'primereact/api';
 import { localeDate } from 'util/util';
@@ -323,7 +323,8 @@ export default function Elenco(props) {
                 </div>
             </div>
         </div>
-        <ElencoTable flussiList={flussiList} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams} />
-        </>
+        <ElencoTable flussiList={flussiList} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
+            blockContent={props.blockContent} unblockContent={props.unblockContent} />
+    </>
     );
 }
