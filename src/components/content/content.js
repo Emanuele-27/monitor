@@ -40,22 +40,22 @@ export default function Content() {
         <BlockUI blocked={blockedContent} >
             <div className="container-fluid" style={{ width: "85%", paddingTop: "2rem" }}>
                 <div id="stepRow" className="row">
-                    <div className="col-12 col-md-4 col-xl-3">
+                    <div className="col-12 col-md-6 col-xl-3">
                         <Link to="/home" id="linkHome" onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
                             HOME
                         </Link>
                     </div>
-                    <div className="col-12 col-md-4 col-xl-3">
+                    <div className="col-12 col-md-6 col-xl-3">
                         <Link to="/rpt" id="linkRpt" onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
                             RPT SENZA RT
                         </Link>
                     </div>
-                    <div className="col-12 col-md-4 col-xl-3">
+                    <div className="col-12 col-md-6 col-xl-3">
                         <Link to="/elenco" id="linkElenco" onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
                             ELENCO FLUSSI
                         </Link>
                     </div>
-                    <div className="col-12 col-md-4 col-xl-3">
+                    <div className="col-12 col-md-6 col-xl-3">
                         <Link to="/giornale" id="linkGiornale" onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
                             GIORNALE EVENTI
                         </Link>

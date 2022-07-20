@@ -5,7 +5,7 @@ span#dataRichiesta input.p-inputtext.p-component,
 span#dataRicevuta input.p-inputtext.p-component, 
 span#finestraTemporale input.p-inputtext.p-component{
     height: 38px;
-    width: 87%;
+    width: 85%;
     border: 1px solid #939496;
     border-radius: 0.5rem 0 0 0.5rem;
 }

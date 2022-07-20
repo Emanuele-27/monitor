@@ -9,6 +9,7 @@ import { Column } from 'primereact/column';
 import { localeIT } from 'util/util';
 import { monitorClient } from "clients/clients";
 import { replaceUnderscore } from "util/string-util";
+import { formatDateTime } from "util/date-util";
 
 export default function ElencoTable(props) {
 
@@ -41,7 +42,7 @@ export default function ElencoTable(props) {
     // Gestione date formattandole in dd/MM/yyy HH:mm:ss
     const columnData = (rowData, nomeData) => {
         if (rowData[nomeData])
-            return new Date(rowData[nomeData]).toLocaleString(localeIT).replace(',', '');
+            return formatDateTime(localeIT, rowData[nomeData]);
         return '';
     }
 

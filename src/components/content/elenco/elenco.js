@@ -11,7 +11,7 @@ import { propsDominio } from 'util/config';
 
 import { columnMapper, sortMapper } from 'util/util';
 import { removeSpecialChars, replaceUnderscore } from 'util/string-util';
-import { aggiungiGiorni, aggiungiMesi, getFirstDayOfMonth, getLastDayOfMonth } from "util/date-util";
+import { aggiungiGiorni, aggiungiMesi, getFirstDayOfMonth, getFirstDayOfWeek, getLastDayOfMonth, getLastDayOfWeek } from "util/date-util";
 import { addLocale } from 'primereact/api';
 import { localeDate } from 'util/util';
 import ElencoTable from "./elenco-table/elenco-table";
@@ -48,7 +48,7 @@ export default function Elenco(props) {
     const [statoOrEsito, setStatoOrEsito] = useState('');
     const [dataRichiestaList, setDataRichiestaList] = useState(null);
     const [dataRicevutaList, setDataRicevutaList] = useState(null);
-    const [finestraTemporale, setFinestraTemporale] = useState(null);
+    const [finestraTemporaleList, setFinestraTemporaleList] = useState(null);
 
     // Options per select
     const [optionsServizi, setOptionsServizi] = useState([]);
@@ -99,9 +99,8 @@ export default function Elenco(props) {
         addStatoOrEsito(flusso, statoOrEsito);
 
         // Se finestraTemporale è abilitata e valorizzata, valorizza il filtro con la finestra
-        if (isFinestraAbilitata && !isFinestraDisabled() && finestraTemporale) {
-            const dateList = [getFirstDayOfMonth(finestraTemporale), getLastDayOfMonth(finestraTemporale)];
-            addDate(flusso, dateList, 'dataRichiesta')
+        if (isFinestraAbilitata && !isFinestraDisabled() && finestraTemporaleList) {
+            addDate(flusso, finestraTemporaleList, 'dataRichiesta')
         } else { // Altrimenti con le altre date
             addDate(flusso, dataRichiestaList, 'dataRichiesta');
             addDate(flusso, dataRicevutaList, 'dataRicevuta');
@@ -155,7 +154,7 @@ export default function Elenco(props) {
         minDataRicevuta.current = initialMinDate;
         maxDataRicevuta.current = today;
         setDataRicevutaList(null);
-        setFinestraTemporale(null);
+        setFinestraTemporaleList(null);
         setLazyParams(structuredClone(initialLazyParams));
     };
 
@@ -172,6 +171,7 @@ export default function Elenco(props) {
     };
 
     const handleChangeDataRichiesta = (e) => {
+        console.log(e);
         // La prima data selezionata viene settata come minDate
         minDataRichiesta.current = e.value[0];
         // Aggiunge n giorni alla prima data selezionata
@@ -227,6 +227,15 @@ export default function Elenco(props) {
         return false;
     }
 
+    const handleChangeFinestra = (e) => {
+        // if (e.target.finestra === "mensile")
+            // setFinestraTemporaleList([getFirstDayOfMonth(e.value), getLastDayOfMonth(e.value)]);
+        // else if (e.target.finestra === "settimanale")//TO DO
+            setFinestraTemporaleList([getFirstDayOfWeek(e.value), getLastDayOfWeek(e.value)]);
+
+            
+    }
+
     return (<>
         <div className="container">
             <div className="accordion" id="elenco-accordion">
@@ -240,19 +249,19 @@ export default function Elenco(props) {
                         <div className="accordion-body">
                             <form id="elenco-form" name="elenco-form">
                                 <div className="row gx-5 gy-3">
-                                    <div className="col-12 col-xs-12 col-md-4">
+                                    <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="iuv" className="form-label">Iuv:*</label>
                                         <input type="text" id="iuv" name="iuv" className="form-control"
                                             value={flussoForm.iuv} onChange={(e) => handleChangeText(e)}
                                             maxLength={24} />
                                     </div>
-                                    <div className="col-12 col-xs-12 col-md-4">
+                                    <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="contesto" className="form-label">Codice Contesto:*</label>
                                         <input type="text" id="contesto" name="codiceContesto" className="form-control"
                                             value={flussoForm.codiceContesto} onChange={(e) => handleChangeText(e)}
                                             maxLength={35} />
                                     </div>
-                                    <div className="col-12 col-xs-12 col-md-4">
+                                    <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="stato" className="form-label">Stato:</label>
                                         <select id="stato" name="tempStatoOrEsito" className="form-select" value={statoOrEsito}
                                             onChange={(e) => setStatoOrEsito(e.target.value)}>
@@ -260,7 +269,7 @@ export default function Elenco(props) {
                                             {optionsStatiAndEsito}
                                         </select>
                                     </div>
-                                    <div className="col-12 col-xs-12 col-md-4">
+                                    <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="area" className="form-label">Area:</label>
                                         <select id="area" name="area" className="form-select" value={flussoForm.area}
                                             onChange={(e) => handleChangeFlusso(e.target.value, e.target.name)}>
@@ -268,7 +277,7 @@ export default function Elenco(props) {
                                             {optionsAree}
                                         </select>
                                     </div>
-                                    <div className="col-12 col-xs-12 col-md-4">
+                                    <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="servizio" className="form-label">Categoria:</label>
                                         <select id="servizio" name="servizio" className="form-select" value={flussoForm.servizio}
                                             onChange={(e) => handleChangeFlusso(e.target.value, e.target.name)}>
@@ -276,35 +285,35 @@ export default function Elenco(props) {
                                             {optionsServizi}
                                         </select>
                                     </div>
-                                    <div className="col-12 col-xs-12 col-md-4">
+                                    <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="pagatore" className="form-label">Pagatore:</label>
                                         <input type="text" id="pagatore" name="idPagatore" className="form-control"
                                             value={flussoForm.idPagatore} onChange={(e) => handleChangeText(e)}
                                             maxLength={17} />
                                     </div>
-                                    <div className="col-12 col-xs-12 col-md-4">
+                                    <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="dataRichiesta" className="form-label">Data Richiesta:**  (o intervallo)</label>
                                         <Calendar id="dataRichiesta" name="dataRichiestaList" value={dataRichiestaList} readOnlyInput locale="it"
                                             onChange={(e) => handleChangeDataRichiesta(e)} selectionMode="range" dateFormat="dd/mm/y" showIcon
                                             minDate={minDataRichiesta.current} maxDate={maxDataRichiesta.current} />
                                     </div>
-                                    <div className="col-12 col-xs-12 col-md-4">
+                                    <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="dataRicevuta" className="form-label">Data Ricevuta:**  (o intervallo)</label>
                                         <Calendar id="dataRicevuta" name="dataRicevutaList" value={dataRicevutaList} readOnlyInput locale="it"
                                             onChange={(e) => handleChangeDataRicevuta(e)} selectionMode="range" dateFormat="dd/mm/y" showIcon
                                             minDate={minDataRicevuta.current} maxDate={maxDataRicevuta.current} />
                                     </div>
-                                    <div className="col-12 col-xs-12 col-md-4">
+                                    <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="versante" className="form-label">Versante:</label>
                                         <input type="text" id="versante" name="idVersante" className="form-control"
                                             value={flussoForm.idVersante} onChange={(e) => handleChangeText(e)}
                                             maxLength={24} />
                                     </div>
                                     {isFinestraAbilitata &&
-                                        (<div className="col-12 col-xs-12 col-md-4">
+                                        (<div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                             <label htmlFor="finestraTemporale" className="form-label">Finestra Temporale:***</label>
-                                            <Calendar id="finestraTemporale" value={finestraTemporale} locale="it"
-                                                onChange={(e) => setFinestraTemporale(e.value)} disabled={isFinestraDisabled()} view="month" dateFormat="MM yy" showIcon />
+                                            <Calendar id="finestraTemporale" value={finestraTemporaleList} locale="it" selectionMode="range" finestra="settimanale"
+                                                onChange={(e) => handleChangeFinestra(e)} disabled={isFinestraDisabled()} dateFormat="dd/mm/y" showIcon />{/*view="month"*/}
                                         </div>)}
                                 </div>
                             </form>
