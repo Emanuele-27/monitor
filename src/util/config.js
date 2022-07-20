@@ -47,6 +47,7 @@ const propsDominio = {
     finestraTemporale: process.env['REACT_APP_FINESTRA_TEMPORALE_' + suffissoDom],
     intervalloDate: process.env['REACT_APP_INTERVALLO_DATE_' + suffissoDom],
     intervalloFiltroDate: process.env['REACT_APP_INTERVALLO_FILTRO_DATE_' + suffissoDom],
+    modalitaFinestra: process.env['REACT_APP_INTERVALLO_FINESTRA_TEMPORALE_' + suffissoDom],
 }
 
 export { configProps, suffissiDomini, propsDominio };

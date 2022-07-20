@@ -126,7 +126,7 @@ export default function ElencoTable(props) {
                 <Column header="Pagatore - Versante" body={columnPagatoreVersante} />
                 <Column header="Importo" body={columnImporto} />
                 <Column header="Stato" body={columnStato} />
-                <Column header="Opzioni" body={columnOpzioni} style={{ width: "6%" }} />
+                <Column header="Opzioni" body={columnOpzioni} style={{ width: "7%" }} />
                 {/* TO DO  Opzioni comuni */}
                 {/* <Column header="Opzioni Comuni" body={columnOpzioniComuni}  /> */}
             </DataTable>

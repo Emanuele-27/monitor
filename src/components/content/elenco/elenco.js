@@ -228,12 +228,10 @@ export default function Elenco(props) {
     }
 
     const handleChangeFinestra = (e) => {
-        // if (e.target.finestra === "mensile")
-            // setFinestraTemporaleList([getFirstDayOfMonth(e.value), getLastDayOfMonth(e.value)]);
-        // else if (e.target.finestra === "settimanale")//TO DO
+        if(propsDominio.modalitaFinestra === 'mese')
+            setFinestraTemporaleList([getFirstDayOfMonth(e.value), getLastDayOfMonth(e.value)]);
+        else if (propsDominio.modalitaFinestra === 'settimana')
             setFinestraTemporaleList([getFirstDayOfWeek(e.value), getLastDayOfWeek(e.value)]);
-
-            
     }
 
     return (<>
@@ -312,7 +310,7 @@ export default function Elenco(props) {
                                     {isFinestraAbilitata &&
                                         (<div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                             <label htmlFor="finestraTemporale" className="form-label">Finestra Temporale:***</label>
-                                            <Calendar id="finestraTemporale" value={finestraTemporaleList} locale="it" selectionMode="range" finestra="settimanale"
+                                            <Calendar id="finestraTemporale" value={finestraTemporaleList} locale="it" selectionMode="range" finestra={propsDominio.modalitaFinestra}
                                                 onChange={(e) => handleChangeFinestra(e)} disabled={isFinestraDisabled()} dateFormat="dd/mm/y" showIcon />{/*view="month"*/}
                                         </div>)}
                                 </div>
