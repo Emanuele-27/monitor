@@ -127,7 +127,7 @@ export default function ElencoTable(props) {
                 <Column header="Importo" body={columnImporto} />
                 <Column header="Stato" body={columnStato} />
                 <Column header="Opzioni" body={columnOpzioni} style={{ width: "7%" }} />
-                {/* TO DO  Opzioni comuni */}
+                {/* TO DO Finire Opzioni, iniziare Opzioni comuni */}
                 {/* <Column header="Opzioni Comuni" body={columnOpzioniComuni}  /> */}
             </DataTable>
 
@@ -206,7 +206,9 @@ export default function ElencoTable(props) {
                                         </button>
                                     </h3>
                                     <div id="heading-collapse-3" className="accordion-collapse collapse" aria-labelledby="heading-collapse-3" data-bs-parent="#dettaglio-modal-accordion">
-                                        <div className="accordion-body">Contenuto accordion</div>
+                                        <div className="accordion-body">{/*TO DO Implementare logica terzo tab */}
+                                            <div style={{textAlign:"center"}}> Informazioni aggiuntive presenti solo dopo l'esecuzione dell'aggiornamento dello stato </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
