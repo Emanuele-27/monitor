@@ -11,3 +11,18 @@ svg {
 html, .p-component{
     font-family: var(--font-uikit);
 }
+
+span[disabled] { 
+    pointer-events: none; 
+    opacity: 0.5;
+}
+
+/* Buttons Exporter */
+.p-datatable-header, .p-datatable-footer {
+    display: flex;
+    align-items: center;
+}
+.p-button.p-component.p-button-success.mr-2.p-button-icon-only {
+    width: 2.5rem;
+    height: 2.5rem;
+}

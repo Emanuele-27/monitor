@@ -5,10 +5,11 @@ import { formatEsito } from 'model/tutti-i-stati';
 
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import { Button } from 'primereact/button';
 
-import { localeIT } from 'util/util';
+import { exportExcel, localeIT } from 'util/util';
 import { monitorClient } from "clients/clients";
-import { replaceUnderscore } from "util/string-util";
+import { capitalizeFirstLetter, replaceUnderscore, splitCamelCase } from "util/string-util";
 import { formatDateTime } from "util/date-util";
 
 export default function ElencoTable(props) {
@@ -23,6 +24,42 @@ export default function ElencoTable(props) {
     const onSort = (event) => {
         props.setLazyParams(event);
     };
+
+    const header = () => {
+        return <>
+                Numero Transazioni: {props.totalRecords}
+            <div style={{ marginRight: "0", marginLeft: "auto"}}>
+                <Button type="button" icon="pi pi-file-excel" onClick={() => exportExcel(prepareList(props.flussiList), 'rpt-senza-rpt')} className="p-button-success mr-2" data-pr-tooltip="XLS" />
+            </div>
+        </>
+    }
+
+    const prepareList = (list) => {
+        let listNormalized = structuredClone(list);
+        listNormalized.forEach(item => {
+            item.dataRichiesta = item.dataRichiesta ? formatDateTime(localeIT, item.dataRichiesta) : '';
+            item.dataRicevuta = item.dataRicevuta ? formatDateTime(localeIT, item.dataRicevuta) : '';
+            delete item.idDominio;
+            delete item.idServizio;
+            delete item.idBeneficiario;
+            delete item.idFlusso;
+            delete item.dataRegistrazione;
+            delete item.dataScadenza;
+            delete item.dataModifica;
+            delete item.idRichiesta;
+            delete item.redirectUrl;
+            delete item.idPsp;
+            delete item.tipoVersamento;
+            delete item.idCarrello;
+            delete item.numPagamenti;
+            Object.keys(item).forEach(key => {
+                let newKey = capitalizeFirstLetter(splitCamelCase(key));
+                item[newKey] = item[key];
+                delete item[key];
+            })
+        });
+        return listNormalized;
+    }
 
     const columnIUVCodContesto = (rowData) => {
         return rowData.iuv + ' - ' + rowData.codiceContesto;
@@ -115,7 +152,7 @@ export default function ElencoTable(props) {
     return (
         <div className="container-fluid" style={{ width: "85%" }}>
             <DataTable id="elenco-table" lazy showGridlines stripedRows value={props.flussiList} rows={props.lazyParams.rows} rowsPerPageOptions={[10, 25, 50]} responsiveLayout="scroll"
-                header={"Numero Transazioni: " + props.totalRecords} footer={"Numero Transazioni: " + props.totalRecords} totalRecords={props.totalRecords}
+                header={header} footer={header} totalRecords={props.totalRecords}
                 first={props.lazyParams.first} onPage={onPage} paginator paginatorPosition="bottom" style={{ paddingTop: "2rem" }} emptyMessage="Nessun elemento presente"
                 removableSort onSort={onSort} sortField={props.lazyParams.sortField} sortOrder={props.lazyParams.sortOrder}>
                 <Column header="IUV - Codice Contesto" body={columnIUVCodContesto} />
@@ -207,7 +244,7 @@ export default function ElencoTable(props) {
                                     </h3>
                                     <div id="heading-collapse-3" className="accordion-collapse collapse" aria-labelledby="heading-collapse-3" data-bs-parent="#dettaglio-modal-accordion">
                                         <div className="accordion-body">{/*TO DO Implementare logica terzo tab */}
-                                            <div style={{textAlign:"center"}}> Informazioni aggiuntive presenti solo dopo l'esecuzione dell'aggiornamento dello stato </div>
+                                            <div style={{ textAlign: "center" }}> Informazioni aggiuntive presenti solo dopo l'esecuzione dell'aggiornamento dello stato </div>
                                         </div>
                                     </div>
                                 </div>
