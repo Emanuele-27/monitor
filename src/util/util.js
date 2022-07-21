@@ -19,4 +19,12 @@ export const localeDate = {
     clear: 'Clear'
 };
 
+export const deleteUndefinedValues = (obj) => {
+    Object.keys(obj).forEach(key => {
+        if (!obj[key])
+            delete obj[key];
+    });
+    return obj;
+};
+
 export const localeIT = 'it-IT';

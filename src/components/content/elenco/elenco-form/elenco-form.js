@@ -12,7 +12,7 @@ import { propsDominio } from 'util/config';
 import { removeSpecialChars, replaceUnderscore } from 'util/string-util';
 import { aggiungiGiorni, aggiungiMesi, getFirstDayOfMonth, getFirstDayOfWeek, getLastDayOfMonth, getLastDayOfWeek } from "util/date-util";
 import { addLocale } from 'primereact/api';
-import { localeDate } from 'util/util';
+import { deleteUndefinedValues, localeDate } from 'util/util';
 
 const initialFlussoForm = {
     // idDominio: propsDominio.idDominio, Commentato sennò non trovo dati D:
@@ -80,14 +80,6 @@ export default function ElencoForm(props) {
 
         return flusso;
     }
-
-    const deleteUndefinedValues = (obj) => {
-        Object.keys(obj).forEach(key => {
-            if (!obj[key])
-                delete obj[key];
-        });
-        return obj;
-    };
 
     // Cerco il valore di statoOrEsito tra gli esiti e valorizzo opportunamente
     const addStatoOrEsito = (flusso, statoOrEsito) => {

@@ -23,4 +23,8 @@ export class MonitorClient extends FetchClient{
     getGiornalePerPagamento(giornaleEventi){
         return this.callPOST(this.host + this.baseUrl + 'getGiornalePerPagamento', giornaleEventi);
     }
+
+    getRptSenzaRt(flussoData){
+        return this.callPOST(this.host + this.baseUrl + 'getRptSenzaRt', flussoData);
+    }
 }

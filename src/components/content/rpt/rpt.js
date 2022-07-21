@@ -1,17 +1,56 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+
+import { monitorClient } from "clients/clients";
+
+import RptForm from "./rpt-form/rpt-form";
+import RptTable from "./rpt-table/rpt-table";
+
+const initialLazyParams = {
+    first: 0,
+    rows: 10,
+    page: 1,
+    sortField: null,
+    sortOrder: null,
+}
 
 export default function Rpt(props) {
-  return (
-    <div className="container">
-      <h2>Rpt</h2>
-      <p>Cras facilisis urna ornare ex volutpat, et
-        convallis erat elementum. Ut aliquam, ipsum vitae
-        gravida suscipit, metus dui bibendum est, eget rhoncus nibh
-        metus nec massa. Maecenas hendrerit laoreet augue
-        nec molestie. Cum sociis natoque penatibus et magnis
-        dis parturient montes, nascetur ridiculus mus.</p>
 
-      <p>Duis a turpis sed lacus dapibus elementum sed eu lectus.</p>
-    </div>
-  );
+    // Gestione lazy
+    const [totalRecords, setTotalRecords] = useState(0);
+    const [listaRpt, setListaRpt] = useState([]);
+    const [lazyParams, setLazyParams] = useState(structuredClone(initialLazyParams));
+
+    useEffect(() => {
+        call();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [lazyParams]);
+
+    const call = (flussoForm) => {
+        props.blockContent();
+
+        const flussoData = {
+            filtroFlusso: {
+                da: (lazyParams.first + 1),
+                a: (lazyParams.first + lazyParams.rows),
+                flusso: flussoForm ? flussoForm : {}
+            }
+        }
+
+        monitorClient.getRptSenzaRt(flussoData).then(fdResult => {
+            setTotalRecords(fdResult.filtroFlusso.count < 0 ? 0 : fdResult.filtroFlusso.count);
+            setListaRpt(fdResult.flussoList);
+        })
+            .finally(() => props.unblockContent());
+    };
+
+    const resetLazy = () => {
+        setLazyParams(structuredClone(initialLazyParams));
+    };
+
+    return (<>
+        <RptForm call={call} resetLazy={resetLazy} />
+        <RptTable listaRpt={listaRpt} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
+            blockContent={props.blockContent} unblockContent={props.unblockContent} />
+    </>
+    );
 }
