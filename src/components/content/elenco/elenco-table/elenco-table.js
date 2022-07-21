@@ -114,7 +114,7 @@ export default function ElencoTable(props) {
 
     return (
         <div className="container-fluid" style={{ width: "85%" }}>
-            <DataTable id="elenco-table" lazy showGridlines stripedRows value={props.flussiList} rows={10} rowsPerPageOptions={[10, 25, 50]} responsiveLayout="scroll"
+            <DataTable id="elenco-table" lazy showGridlines stripedRows value={props.flussiList} rows={props.lazyParams.rows} rowsPerPageOptions={[10, 25, 50]} responsiveLayout="scroll"
                 header={"Numero Transazioni: " + props.totalRecords} footer={"Numero Transazioni: " + props.totalRecords} totalRecords={props.totalRecords}
                 first={props.lazyParams.first} onPage={onPage} paginator paginatorPosition="bottom" style={{ paddingTop: "2rem" }} emptyMessage="Nessun elemento presente"
                 removableSort onSort={onSort} sortField={props.lazyParams.sortField} sortOrder={props.lazyParams.sortOrder}>
