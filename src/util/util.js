@@ -1,6 +1,7 @@
 export const columnMapper = new Map([
     ['dataRichiesta', 'DATA_RICHIESTA'],
     ['dataRicevuta', 'DATA_RICEVUTA'],
+    ['dataOraEvento', 'DATA_ORA_EVENTO'],
 ]);
 
 export const sortMapper = new Map([
@@ -30,12 +31,10 @@ export const deleteUndefinedValues = (obj) => {
 export const saveAsExcelFile = (buffer, fileName) => {
     import('file-saver').then(module => {
         if (module && module.default) {
-            let EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
-            let EXCEL_EXTENSION = '.xlsx';
             const data = new Blob([buffer], {
-                type: EXCEL_TYPE
+                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
             });
-            module.default.saveAs(data, fileName + EXCEL_EXTENSION);
+            module.default.saveAs(data, fileName + '.xlsx');
         }
     });
 }

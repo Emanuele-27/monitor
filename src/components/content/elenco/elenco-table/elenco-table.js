@@ -29,7 +29,7 @@ export default function ElencoTable(props) {
         return <>
                 Numero Transazioni: {props.totalRecords}
             <div style={{ marginRight: "0", marginLeft: "auto"}}>
-                <Button type="button" icon="pi pi-file-excel" onClick={() => exportExcel(prepareList(props.flussiList), 'rpt-senza-rpt')} className="p-button-success mr-2" data-pr-tooltip="XLS" />
+                <Button type="button" icon="pi pi-file-excel" onClick={() => exportExcel(prepareList(props.flussiList), 'elenco')} className="p-button-success mr-2" data-pr-tooltip="XLS" />
             </div>
         </>
     }

@@ -20,6 +20,10 @@ export class MonitorClient extends FetchClient{
         return this.callPOST(this.host + this.baseUrl + 'getFlussi', flussoData);
     }
 
+    getGiornale(flussoGiornaleEventi){
+        return this.callPOST(this.host + this.baseUrl + 'getGiornale', flussoGiornaleEventi);
+    }
+
     getGiornalePerPagamento(giornaleEventi){
         return this.callPOST(this.host + this.baseUrl + 'getGiornalePerPagamento', giornaleEventi);
     }
