@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./giornale-form.css";
 
-import { removeSpecialChars } from 'util/string-util';
+import { removeNumbers, removeSpecialChars } from 'util/string-util';
 import { deleteUndefinedValues } from 'util/util';
 import { Calendar } from "primereact/calendar";
 import { propsDominio } from "util/config";
@@ -69,7 +69,7 @@ export default function GiornaleForm(props) {
     };
 
     const handleChangeTipoEvento = (e) => {
-        handleChangeGiornale(removeSpecialChars(e.target.value), e.target.name);
+        handleChangeGiornale(removeNumbers(removeSpecialChars(e.target.value)), e.target.name);
     };
 
     // Disabled se almeno uno di questi campi è valorizzato

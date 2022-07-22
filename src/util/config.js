@@ -48,6 +48,7 @@ const propsDominio = {
     intervalloDate: process.env['REACT_APP_INTERVALLO_DATE_' + suffissoDom],
     intervalloFiltroDate: process.env['REACT_APP_INTERVALLO_FILTRO_DATE_' + suffissoDom],
     modalitaFinestra: process.env['REACT_APP_INTERVALLO_FINESTRA_TEMPORALE_' + suffissoDom],
+    avvisiEnabled: process.env['REACT_APP_AVVISI_ENABLE_' + suffissoDom],
 }
 
 export { configProps, suffissiDomini, propsDominio };

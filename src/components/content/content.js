@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
     Route,
     Routes,
@@ -65,6 +65,9 @@ export const initialLazyParams = {
 export const isFinestraAbilitata = propsDominio.finestraTemporale === 'true';
 export const modalitaFinestra = propsDominio.modalitaFinestra; // Valori consentiti 'mese', 'settimana'
 
+const avvisiEnabled = propsDominio.avvisiEnabled === 'true';
+const widthTabs = avvisiEnabled ? '20%' : '25%';
+
 export default function Content() {
 
     const [blockedContent, setBlockedContent] = useState(false);
@@ -83,45 +86,48 @@ export default function Content() {
 
     // Toggle classi css per il focus tra steps in base al click
     const toggleFocusClass = (ev) => {
-        document.getElementById('stepRow').getElementsByClassName('entrypoint-focus')[0].classList.remove('entrypoint-focus');
+        document.getElementById('tabsRow').getElementsByClassName('entrypoint-focus')[0].classList.remove('entrypoint-focus');
         ev.target.classList.add('entrypoint-focus');
     }
+
+    // const buildTab = (route, content, width) =>
+    //     <Link to={route} style={{ width: width }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
+    //         {content}
+    //     </Link>
 
     return (
         <BlockUI blocked={blockedContent} >
             <div className="container-fluid" style={{ width: "85%", paddingTop: "2rem" }}>
-                <div id="stepRow" className="row">
-                    <div className="col-12 col-md-6 col-xl-3">
-                        <Link to="/home" id="linkHome" onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint entrypoint-focus">
-                            HOME
+                <div id="tabsRow" style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
+                    <Link to="/home" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint entrypoint-focus">
+                        HOME
+                    </Link>
+                    {avvisiEnabled &&
+                        <Link to="/avvisi" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
+                            AVVISI
                         </Link>
-                    </div>
-                    <div className="col-12 col-md-6 col-xl-3">
-                        <Link to="/rpt" id="linkRpt" onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
-                            RPT SENZA RT
-                        </Link>
-                    </div>
-                    <div className="col-12 col-md-6 col-xl-3">
-                        <Link to="/elenco" id="linkElenco" onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
-                            ELENCO FLUSSI
-                        </Link>
-                    </div>
-                    <div className="col-12 col-md-6 col-xl-3">
-                        <Link to="/giornale" id="linkGiornale" onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
-                            GIORNALE EVENTI
-                        </Link>
-                    </div>
+                    }
+                    <Link to="/rpt" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
+                        RPT SENZA RT
+                    </Link>
+                    <Link to="/elenco" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
+                        ELENCO FLUSSI
+                    </Link>
+                    <Link to="/giornale" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
+                        GIORNALE EVENTI
+                    </Link>
                 </div>
             </div>
             <div style={{ paddingTop: "2rem", paddingBottom: "2rem" }}>
                 <Routes>
                     <Route exact path="/" element={<Home blockContent={blockContent} unblockContent={unblockContent} />} />
                     <Route path="/home" element={<Home blockContent={blockContent} unblockContent={unblockContent} />} />
+                    <Route path="/avvisi" element={<Elenco tab="avvisi" blockContent={blockContent} unblockContent={unblockContent} />} />
                     <Route path="/rpt" element={<Rpt blockContent={blockContent} unblockContent={unblockContent} />} />
-                    <Route path="/elenco" element={<Elenco blockContent={blockContent} unblockContent={unblockContent} />} />
+                    <Route path="/elenco" element={<Elenco tab="elenco" blockContent={blockContent} unblockContent={unblockContent} />} />
                     <Route path="/giornale" element={<Giornale blockContent={blockContent} unblockContent={unblockContent} />} />
                 </Routes>
             </div>
-        </BlockUI>
+        </BlockUI >
     );
 }

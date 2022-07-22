@@ -9,6 +9,7 @@ import ElencoTable from "./elenco-table/elenco-table";
 import ElencoForm from "./elenco-form/elenco-form";
 import { initialLazyParams } from "../content";
 
+// Componente condiviso per il tab Elenco e Avvisi
 export default function Elenco(props) {
 
     // Gestione lazy
@@ -47,8 +48,8 @@ export default function Elenco(props) {
     };
 
     return (<>
-        <ElencoForm call={call} resetLazy={resetLazy} />
-        <ElencoTable flussiList={flussiList} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
+        <ElencoForm tab={props.tab} call={call} resetLazy={resetLazy} />
+        <ElencoTable tab={props.tab} flussiList={flussiList} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
             blockContent={props.blockContent} unblockContent={props.unblockContent} />
     </>
     );

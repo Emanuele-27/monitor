@@ -12,6 +12,7 @@ import { monitorClient } from "clients/clients";
 import { capitalizeFirstLetter, replaceUnderscore, splitCamelCase } from "util/string-util";
 import { formatDateTime } from "util/date-util";
 
+// Componente condiviso per il tab Elenco e Avvisi, differenziati da props.tab
 export default function ElencoTable(props) {
 
     const [flussoModal, setFlussoModal] = useState(0);
@@ -159,10 +160,12 @@ export default function ElencoTable(props) {
                 <Column field="area" header="Area" />
                 <Column field="servizio" header="Categoria" />
                 <Column sortable field="dataRichiesta" header="Data Richiesta" body={(rowData) => columnData(rowData, 'dataRichiesta')} />
-                <Column sortable field="dataRicevuta" header="Data Ricevuta" body={(rowData) => columnData(rowData, 'dataRicevuta')} />
+                { props.tab === 'elenco' && 
+                    <Column sortable field="dataRicevuta" header="Data Ricevuta" body={(rowData) => columnData(rowData, 'dataRicevuta')} />}
                 <Column header="Pagatore - Versante" body={columnPagatoreVersante} />
                 <Column header="Importo" body={columnImporto} />
-                <Column header="Stato" body={columnStato} />
+                { props.tab === 'elenco' && 
+                    <Column header="Stato" body={columnStato} />}
                 <Column header="Opzioni" body={columnOpzioni} style={{ width: "7%" }} />
                 {/* TO DO Finire Opzioni, iniziare Opzioni comuni */}
                 {/* <Column header="Opzioni Comuni" body={columnOpzioniComuni}  /> */}

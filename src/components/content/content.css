@@ -1,3 +1,7 @@
 body div a.btn.btn-outline-primary.btn-lg.entrypoint {
     justify-content: center;
 }
+
+div#tabsRow a {
+    margin: 0 0.2rem 0 0.2rem;
+}

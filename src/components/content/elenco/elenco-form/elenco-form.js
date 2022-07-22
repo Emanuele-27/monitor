@@ -25,6 +25,7 @@ const initialFlussoForm = {
 const initialMinDate = aggiungiMesi(new Date(Date.now()), parseInt(propsDominio.intervalloDate));
 const today = new Date(Date.now());
 
+// Componente condiviso per il tab Elenco e Avvisi, differenziati da props.tab
 export default function ElencoForm(props) {
 
     // Contiene i dati del form, e verrà direttamente usato come filtro
@@ -57,6 +58,9 @@ export default function ElencoForm(props) {
             addDate(flusso, dataRichiestaList, 'dataRichiesta');
             addDate(flusso, dataRicevutaList, 'dataRicevuta');
         }
+        if(props.tab === "avvisi")
+            flusso.flagAnnullamento = 1;
+
         return flusso;
     }
 
@@ -165,14 +169,14 @@ export default function ElencoForm(props) {
                                             value={flussoForm.codiceContesto} onChange={(e) => handleChangeText(e)}
                                             maxLength={35} />
                                     </div>
-                                    <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
+                                    { props.tab === 'elenco' && <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="stato" className="form-label">Stato:</label>
                                         <select id="stato" name="tempStatoOrEsito" className="form-select" value={statoOrEsito}
                                             onChange={(e) => setStatoOrEsito(e.target.value)}>
                                             <option value={null}></option>
                                             {statiEsitiOptions}
                                         </select>
-                                    </div>
+                                    </div>}
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="area" className="form-label">Area:</label>
                                         <select id="area" name="area" className="form-select" value={flussoForm.area}
@@ -201,12 +205,12 @@ export default function ElencoForm(props) {
                                             onChange={(e) => handleChangeDataRichiesta(e)} selectionMode="range" dateFormat="dd/mm/y" showIcon
                                             minDate={minDataRichiesta.current} maxDate={maxDataRichiesta.current} />
                                     </div>
-                                    <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
+                                    { props.tab === 'elenco' && <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="dataRicevuta" className="form-label">Data Ricevuta:**  (o intervallo)</label>
                                         <Calendar id="dataRicevuta" name="dataRicevutaList" value={dataRicevutaList} readOnlyInput locale="it"
                                             onChange={(e) => handleChangeDataRicevuta(e)} selectionMode="range" dateFormat="dd/mm/y" showIcon
                                             minDate={minDataRicevuta.current} maxDate={maxDataRicevuta.current} />
-                                    </div>
+                                    </div>}
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="versante" className="form-label">Versante:</label>
                                         <input type="text" id="versante" name="idVersante" className="form-control"

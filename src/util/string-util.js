@@ -6,6 +6,10 @@ export function removeSpecialChars(string){
     return string.replace(/(\W|_)/g, '');
 }
 
+export function removeNumbers(string){
+    return string.replace(/[0-9]/g, '');
+}
+
 export function replaceUnderscore(string){
     return string.replaceAll('_', ' ').trim();
 }
