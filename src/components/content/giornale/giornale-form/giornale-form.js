@@ -1,13 +1,12 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useState } from "react";
 import "./giornale-form.css";
 
-import { removeSpecialChars, replaceUnderscore } from 'util/string-util';
-import { addLocale } from 'primereact/api';
-import { deleteUndefinedValues, localeDate } from 'util/util';
-import { esitiPagamento, formatEsito, statiPagamento } from "model/tutti-i-stati";
+import { removeSpecialChars } from 'util/string-util';
+import { deleteUndefinedValues } from 'util/util';
 import { Calendar } from "primereact/calendar";
 import { propsDominio } from "util/config";
 import { getFirstDayOfMonth, getFirstDayOfWeek, getLastDayOfMonth, getLastDayOfWeek } from "util/date-util";
+import { isFinestraAbilitata, statiEsitiOptions } from "components/content/content";
 
 const initialGiornaleForm = {
     // idDominio: propsDominio.idDominio, Commentato sennò non trovo dati D:
@@ -18,8 +17,6 @@ const initialGiornaleForm = {
     esito: '',
 }
 
-const isFinestraAbilitata = propsDominio.finestraTemporale === 'true';
-
 export default function GiornaleForm(props) {
 
     // Contiene i dati del form
@@ -27,17 +24,6 @@ export default function GiornaleForm(props) {
 
     // Contiene temporaneamente alcuni dati del form
     const [finestraTemporaleList, setFinestraTemporaleList] = useState(null);
-
-    // Options per select
-    const [optionsStatiAndEsito, setOptionsStatiAndEsito] = useState([]);
-
-    useEffect(() => {
-        buildOptionsStatiEsiti();
-    }, []);
-
-    useMemo(() => {
-        addLocale('it', localeDate);
-    }, [])
 
     const call = () => {
         props.call(prepareInput());
@@ -55,7 +41,7 @@ export default function GiornaleForm(props) {
         return giornale;
     }
 
-    // Valorizza le date del filtro
+    // Valorizza le date di un intervallo nel filtro
     const addDate = (giornale, dataList, attribute) => {
         if (dataList) {
             giornale[attribute + 'Da'] = dataList[0];
@@ -82,12 +68,8 @@ export default function GiornaleForm(props) {
         handleChangeGiornale(removeSpecialChars(e.target.value).toUpperCase(), e.target.name);
     };
 
-    // Nel dropdown di stato ci sono sia stati che esiti, in fase  
-    // di ricerca vengono distinti e valorizzati opportunamente
-    const buildOptionsStatiEsiti = () => {
-        const esitiOptions = esitiPagamento.map(esito => <option key={esito.name} value={esito.name}>{formatEsito(esito.name)}</option>);
-        const statiOptions = statiPagamento.filter(stato => stato !== 'RT_ACCETTATA_PA').map(stato => <option key={stato} value={stato}>{replaceUnderscore(stato)}</option>);
-        setOptionsStatiAndEsito(esitiOptions.concat(statiOptions));
+    const handleChangeTipoEvento = (e) => {
+        handleChangeGiornale(removeSpecialChars(e.target.value), e.target.name);
     };
 
     // Disabled se almeno uno di questi campi è valorizzato
@@ -135,13 +117,13 @@ export default function GiornaleForm(props) {
                                         <select id="esito" name="esito" className="form-select" value={giornaleForm.esito}
                                             onChange={(e) => handleChangeGiornale(e.target.value, 'esito')}>
                                             <option value={null}></option>
-                                            {optionsStatiAndEsito}
+                                            {statiEsitiOptions}
                                         </select>
                                     </div>
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="iuv" className="form-label">Tipo Evento:</label>
                                         <input type="text" id="tipoEv" name="tipoEvento" className="form-control"
-                                            value={giornaleForm.tipoEvento} onChange={(e) => handleChangeText(e)}
+                                            value={giornaleForm.tipoEvento} onChange={(e) => handleChangeTipoEvento(e)}
                                             maxLength={24} />
                                     </div>
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">

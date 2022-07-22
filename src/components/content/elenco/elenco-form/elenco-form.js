@@ -1,18 +1,16 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import "./elenco-form.css";
 
-import { esitiPagamento, statiPagamento, formatEsito } from 'model/tutti-i-stati';
-
-import { monitorClient } from "clients/clients";
+import {  statiPagamento } from 'model/tutti-i-stati';
 
 import { Calendar } from 'primereact/calendar';
 
 import { propsDominio } from 'util/config';
 
-import { removeSpecialChars, replaceUnderscore } from 'util/string-util';
+import { removeSpecialChars } from 'util/string-util';
 import { aggiungiGiorni, aggiungiMesi, getFirstDayOfMonth, getFirstDayOfWeek, getLastDayOfMonth, getLastDayOfWeek } from "util/date-util";
-import { addLocale } from 'primereact/api';
-import { deleteUndefinedValues, localeDate } from 'util/util';
+import { deleteUndefinedValues } from 'util/util';
+import { areeOptions, isFinestraAbilitata, modalitaFinestra, serviziOptions, statiEsitiOptions } from "components/content/content";
 
 const initialFlussoForm = {
     // idDominio: propsDominio.idDominio, Commentato sennò non trovo dati D:
@@ -24,14 +22,12 @@ const initialFlussoForm = {
     idVersante: '',
 }
 
-const isFinestraAbilitata = propsDominio.finestraTemporale === 'true';
-
 const initialMinDate = aggiungiMesi(new Date(Date.now()), parseInt(propsDominio.intervalloDate));
 const today = new Date(Date.now());
 
 export default function ElencoForm(props) {
 
-    // Contiene i dati del form
+    // Contiene i dati del form, e verrà direttamente usato come filtro
     const [flussoForm, setFlussoForm] = useState(structuredClone(initialFlussoForm));
 
     // Contiene temporaneamente alcuni dati del form
@@ -40,36 +36,20 @@ export default function ElencoForm(props) {
     const [dataRicevutaList, setDataRicevutaList] = useState(null);
     const [finestraTemporaleList, setFinestraTemporaleList] = useState(null);
 
-    // Options per select
-    const [optionsServizi, setOptionsServizi] = useState([]);
-    const [optionsAree, setOptionsAree] = useState([]);
-    const [optionsStatiAndEsito, setOptionsStatiAndEsito] = useState([]);
-
     const minDataRichiesta = useRef(initialMinDate);
     const maxDataRichiesta = useRef(today)
     const minDataRicevuta = useRef(initialMinDate);
     const maxDataRicevuta = useRef(today);
-
-    useEffect(() => {
-        buildOptionsStatiEsiti();
-        buildOptionsServiziEAree();
-    }, []);
-
-    useMemo(() => {
-        addLocale('it', localeDate);
-    }, [])
 
     const call = () => {
         props.call(prepareInput());
     }
 
     const prepareInput = () => {
-        // Copia il flusso di state e elimina i valori non validi
+        // Copia il flusso del form elimina i valori non validi
         let flusso = deleteUndefinedValues(structuredClone(flussoForm));
-
         // Aggiunge esito o stato al flusso in base al valore selezionato
         addStatoOrEsito(flusso, statoOrEsito);
-
         // Se finestraTemporale è abilitata e valorizzata, valorizza il filtro con la finestra
         if (isFinestraAbilitata && !isFinestraDisabled() && finestraTemporaleList) {
             addDate(flusso, finestraTemporaleList, 'dataRichiesta')
@@ -77,23 +57,22 @@ export default function ElencoForm(props) {
             addDate(flusso, dataRichiestaList, 'dataRichiesta');
             addDate(flusso, dataRicevutaList, 'dataRicevuta');
         }
-
         return flusso;
     }
 
-    // Cerco il valore di statoOrEsito tra gli esiti e valorizzo opportunamente
+    // Cerco il valore di statoOrEsito tra gli stati e valorizzo opportunamente
     const addStatoOrEsito = (flusso, statoOrEsito) => {
         if (statoOrEsito) {
-            if (esitiPagamento.filter(esito => esito.name === statoOrEsito).length === 1)
-                flusso.esitoPagamento = statoOrEsito;
-            else
+            if(statiPagamento.includes(statoOrEsito))
                 flusso.statoPagamento = statoOrEsito;
+            else
+                flusso.esitoPagamento = statoOrEsito;
         }
     };
 
-    // Valorizza le date del filtro
+    // Valorizza le date con range del filtro
     const addDate = (flusso, dataList, attribute) => {
-        if (dataList) {
+        if (dataList && dataList[0]) {
             flusso[attribute + 'Da'] = dataList[0];
             if (dataList.length > 1 && dataList[1])
                 flusso[attribute + 'A'] = dataList[1];
@@ -104,11 +83,11 @@ export default function ElencoForm(props) {
         setFlussoForm(structuredClone(initialFlussoForm));
         setStatoOrEsito('');
         setDataRichiestaList(null);
+        setDataRicevutaList(null);
         minDataRichiesta.current = initialMinDate;
         maxDataRichiesta.current = today;
         minDataRicevuta.current = initialMinDate;
         maxDataRicevuta.current = today;
-        setDataRicevutaList(null);
         setFinestraTemporaleList(null);
         props.resetLazy();
     };
@@ -121,15 +100,15 @@ export default function ElencoForm(props) {
     };
 
     // Gestisce onChange di componenti di Flusso e input type=text
+    // rimuove i caratteri speciali e trasforma in maiuscolo
     const handleChangeText = (e) => {
         handleChangeFlusso(removeSpecialChars(e.target.value).toUpperCase(), e.target.name);
     };
 
     const handleChangeDataRichiesta = (e) => {
-        console.log(e);
         // La prima data selezionata viene settata come minDate
         minDataRichiesta.current = e.value[0];
-        // Aggiunge n giorni alla prima data selezionata
+        // Aggiunge n giorni alla prima data selezionata (n è dato da prop) per impostare max date
         const maxDate = aggiungiGiorni(new Date(e.value[0]), -parseInt(propsDominio.intervalloFiltroDate));
         // Se maxDate supera il giorno corrente  maxDate = oggi
         maxDataRichiesta.current = maxDate > today ? today : maxDate;
@@ -139,40 +118,12 @@ export default function ElencoForm(props) {
     const handleChangeDataRicevuta = (e) => {
         // La prima data selezionata viene settata come minDate
         minDataRicevuta.current = e.value[0];
-        // Aggiunge n giorni alla prima data selezionata
+        // Aggiunge n giorni alla prima data selezionata (n è dato da prop) per impostare max date
         const maxDate = aggiungiGiorni(new Date(e.value[0]), -parseInt(propsDominio.intervalloFiltroDate));
         // Se maxDate supera il giorno corrente  maxDate = oggi
         maxDataRicevuta.current = maxDate > today ? today : maxDate;
         setDataRicevutaList(e.value);
     }
-
-    // Nel dropdown di stato ci sono sia stati che esiti, in fase  
-    // di ricerca vengono distinti e valorizzati opportunamente
-    const buildOptionsStatiEsiti = () => {
-        const esitiOptions = esitiPagamento.map(esito => <option key={esito.name} value={esito.name}>{formatEsito(esito.name)}</option>);
-        const statiOptions = statiPagamento.filter(stato => stato !== 'RT_ACCETTATA_PA').map(stato => <option key={stato} value={stato}>{replaceUnderscore(stato)}</option>);
-        setOptionsStatiAndEsito(esitiOptions.concat(statiOptions));
-    };
-
-    // Vengono recuperati i servizi, filtrati per l'idDominio corrente 
-    // e vengono create le option per le select di servizi e aree
-    const buildOptionsServiziEAree = async () => {
-        const serviziData = await monitorClient.getServizi();
-        const serviziDominioCorrente = serviziData.serviziList.filter(servizio => servizio.idDominio === propsDominio.idDominio);
-        const serviziOpt = serviziDominioCorrente.map(servizio =>
-            <option key={servizio.servizio} value={servizio.servizio}>{servizio.servizio + ' - ' + servizio.denominazioneServizio}</option>
-        );
-
-        let areeMap = new Map();
-        serviziDominioCorrente.forEach(servizio => {
-            let area = servizio.area;
-            if (!areeMap.has(area))
-                areeMap.set(area, <option key={area} value={area}>{area}</option>);
-        });
-
-        setOptionsServizi(serviziOpt);
-        setOptionsAree(Array.from(areeMap.values()));
-    };
 
     // Disabled se almeno uno di questi campi è valorizzato
     const isFinestraDisabled = () => {
@@ -183,9 +134,9 @@ export default function ElencoForm(props) {
     }
 
     const handleChangeFinestra = (e) => {
-        if (propsDominio.modalitaFinestra === 'mese')
+        if (modalitaFinestra === 'mese')
             setFinestraTemporaleList([getFirstDayOfMonth(e.value), getLastDayOfMonth(e.value)]);
-        else if (propsDominio.modalitaFinestra === 'settimana')
+        else if (modalitaFinestra === 'settimana')
             setFinestraTemporaleList([getFirstDayOfWeek(e.value), getLastDayOfWeek(e.value)]);
     }
 
@@ -219,7 +170,7 @@ export default function ElencoForm(props) {
                                         <select id="stato" name="tempStatoOrEsito" className="form-select" value={statoOrEsito}
                                             onChange={(e) => setStatoOrEsito(e.target.value)}>
                                             <option value={null}></option>
-                                            {optionsStatiAndEsito}
+                                            {statiEsitiOptions}
                                         </select>
                                     </div>
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
@@ -227,7 +178,7 @@ export default function ElencoForm(props) {
                                         <select id="area" name="area" className="form-select" value={flussoForm.area}
                                             onChange={(e) => handleChangeFlusso(e.target.value, e.target.name)}>
                                             <option value={null}></option>
-                                            {optionsAree}
+                                            {areeOptions}
                                         </select>
                                     </div>
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
@@ -235,7 +186,7 @@ export default function ElencoForm(props) {
                                         <select id="servizio" name="servizio" className="form-select" value={flussoForm.servizio}
                                             onChange={(e) => handleChangeFlusso(e.target.value, e.target.name)}>
                                             <option value={null}></option>
-                                            {optionsServizi}
+                                            {serviziOptions}
                                         </select>
                                     </div>
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
@@ -265,7 +216,7 @@ export default function ElencoForm(props) {
                                     {isFinestraAbilitata &&
                                         (<div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                             <label htmlFor="finestraTemporale" className="form-label">Finestra Temporale:***</label>
-                                            <Calendar id="finestraTemporale" value={finestraTemporaleList} locale="it" selectionMode="range" finestra={propsDominio.modalitaFinestra}
+                                            <Calendar id="finestraTemporale" value={finestraTemporaleList} locale="it" selectionMode="range" finestra={modalitaFinestra}
                                                 onChange={(e) => handleChangeFinestra(e)} disabled={isFinestraDisabled()} dateFormat="dd/mm/y" showIcon />{/*view="month"*/}
                                         </div>)}
                                 </div>

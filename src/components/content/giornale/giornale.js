@@ -2,16 +2,9 @@ import { monitorClient } from "clients/clients";
 import React, { useEffect, useState } from "react";
 import { propsDominio } from "util/config";
 import { columnMapper, sortMapper } from "util/util";
+import { initialLazyParams } from "../content";
 import GiornaleForm from "./giornale-form/giornale-form";
 import GiornaleTable from "./giornale-table/giornale-table";
-
-const initialLazyParams = {
-  first: 0,
-  rows: 10,
-  page: 1,
-  sortField: null,
-  sortOrder: null,
-}
 
 export default function Giornale(props) {
 

@@ -4,14 +4,7 @@ import { monitorClient } from "clients/clients";
 
 import RptForm from "./rpt-form/rpt-form";
 import RptTable from "./rpt-table/rpt-table";
-
-const initialLazyParams = {
-    first: 0,
-    rows: 10,
-    page: 1,
-    sortField: null,
-    sortOrder: null,
-}
+import { initialLazyParams } from "../content";
 
 export default function Rpt(props) {
 

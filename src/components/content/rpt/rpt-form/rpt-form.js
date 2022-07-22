@@ -1,13 +1,9 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useState } from "react";
 import "./rpt-form.css";
 
-import { monitorClient } from "clients/clients";
-
-import { propsDominio } from 'util/config';
-
 import { removeSpecialChars } from 'util/string-util';
-import { addLocale } from 'primereact/api';
-import { deleteUndefinedValues, localeDate } from 'util/util';
+import { deleteUndefinedValues } from 'util/util';
+import { areeOptions, serviziOptions } from "components/content/content";
 
 const initialFlussoForm = {
     // idDominio: propsDominio.idDominio, Commentato sennò non trovo dati D:
@@ -21,18 +17,6 @@ export default function RptForm(props) {
 
     // Contiene i dati del form
     const [flussoForm, setFlussoForm] = useState(structuredClone(initialFlussoForm));
-
-    // Options per select
-    const [optionsServizi, setOptionsServizi] = useState([]);
-    const [optionsAree, setOptionsAree] = useState([]);
-
-    useEffect(() => {
-        buildOptionsServiziEAree();
-    }, []);
-
-    useMemo(() => {
-        addLocale('it', localeDate);
-    }, [])
 
     const call = () => {
         props.call(prepareInput());
@@ -60,26 +44,6 @@ export default function RptForm(props) {
     // Gestisce onChange di componenti di Flusso e input type=text
     const handleChangeText = (e) => {
         handleChangeFlusso(removeSpecialChars(e.target.value).toUpperCase(), e.target.name);
-    };
-
-    // Vengono recuperati i servizi, filtrati per l'idDominio corrente 
-    // e vengono create le option per le select di servizi e aree
-    const buildOptionsServiziEAree = async () => {
-        const serviziData = await monitorClient.getServizi();
-        const serviziDominioCorrente = serviziData.serviziList.filter(servizio => servizio.idDominio === propsDominio.idDominio);
-        const serviziOpt = serviziDominioCorrente.map(servizio =>
-            <option key={servizio.servizio} value={servizio.servizio}>{servizio.servizio + ' - ' + servizio.denominazioneServizio}</option>
-        );
-
-        let areeMap = new Map();
-        serviziDominioCorrente.forEach(servizio => {
-            let area = servizio.area;
-            if (!areeMap.has(area))
-                areeMap.set(area, <option key={area} value={area}>{area}</option>);
-        });
-
-        setOptionsServizi(serviziOpt);
-        setOptionsAree(Array.from(areeMap.values()));
     };
 
     return (<>
@@ -112,7 +76,7 @@ export default function RptForm(props) {
                                         <select id="area" name="area" className="form-select" value={flussoForm.area}
                                             onChange={(e) => handleChangeFlusso(e.target.value, e.target.name)}>
                                             <option value={null}></option>
-                                            {optionsAree}
+                                            {areeOptions}
                                         </select>
                                     </div>
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
@@ -120,7 +84,7 @@ export default function RptForm(props) {
                                         <select id="servizio" name="servizio" className="form-select" value={flussoForm.servizio}
                                             onChange={(e) => handleChangeFlusso(e.target.value, e.target.name)}>
                                             <option value={null}></option>
-                                            {optionsServizi}
+                                            {serviziOptions}
                                         </select>
                                     </div>
                                 </div>

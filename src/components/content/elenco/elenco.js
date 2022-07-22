@@ -7,14 +7,7 @@ import { propsDominio } from 'util/config';
 import { columnMapper, sortMapper } from 'util/util';
 import ElencoTable from "./elenco-table/elenco-table";
 import ElencoForm from "./elenco-form/elenco-form";
-
-const initialLazyParams = {
-    first: 0,
-    rows: 10,
-    page: 1,
-    sortField: null,
-    sortOrder: null,
-}
+import { initialLazyParams } from "../content";
 
 export default function Elenco(props) {
 
