@@ -42,11 +42,7 @@ export default function ElencoForm(props) {
     const minDataRicevuta = useRef(initialMinDate);
     const maxDataRicevuta = useRef(today);
 
-    const call = () => {
-        props.call(prepareInput());
-    }
-
-    const prepareInput = () => {
+    const prepareInputAndCall = () => {
         // Copia il flusso del form elimina i valori non validi
         let flusso = deleteUndefinedValues(structuredClone(flussoForm));
         // Aggiunge esito o stato al flusso in base al valore selezionato
@@ -58,7 +54,8 @@ export default function ElencoForm(props) {
             addDate(flusso, dataRichiestaList, 'dataRichiesta');
             addDate(flusso, dataRicevutaList, 'dataRicevuta');
         }
-        return flusso;
+        // Triggera call del componente padre
+        props.setFlusso(flusso);
     }
 
     // Cerco il valore di statoOrEsito tra gli stati e valorizzo opportunamente
@@ -90,7 +87,7 @@ export default function ElencoForm(props) {
         minDataRicevuta.current = initialMinDate;
         maxDataRicevuta.current = today;
         setFinestraTemporaleList(null);
-        props.resetLazy();
+        props.resetFiltri();
     };
 
     // Gestion onChange di componenti di Flusso
@@ -223,7 +220,7 @@ export default function ElencoForm(props) {
                                 </div>
                             </form>
                             <div style={{ display: "flex", justifyContent: "center", marginTop: "1.5rem" }}>
-                                <button type="button" className="btn btn-primary" form="elenco-form" style={{ fontWeight: "600", marginRight: "0.05rem" }} onClick={call}>Cerca</button>
+                                <button type="button" className="btn btn-primary" form="elenco-form" style={{ fontWeight: "600", marginRight: "0.05rem" }} onClick={prepareInputAndCall}>Cerca</button>
                                 <button type="button" className="btn btn-primary" form="elenco-form" style={{ fontWeight: "600", marginLeft: "0.05rem" }} onClick={resetFiltri}>Reset Filtri</button>
                             </div>
 

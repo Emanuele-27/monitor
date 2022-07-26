@@ -75,7 +75,7 @@ export default function Content() {
                 da: 1,
                 a: 2,
                 flusso: {
-                    idDominio: propsDominio.idDominio
+                    // idDominio: propsDominio.idDominio
                 }
             }
         }

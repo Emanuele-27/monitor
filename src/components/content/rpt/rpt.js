@@ -8,6 +8,7 @@ import { initialLazyParams } from "../content";
 
 export default function Rpt(props) {
 
+    const [flusso, setFlusso] = useState({});
     // Gestione lazy
     const [totalRecords, setTotalRecords] = useState(0);
     const [listaRpt, setListaRpt] = useState([]);
@@ -16,7 +17,7 @@ export default function Rpt(props) {
     useEffect(() => {
         call();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [lazyParams]);
+    }, [flusso, lazyParams]);
 
     const call = (flussoForm) => {
         props.blockContent();
@@ -25,7 +26,7 @@ export default function Rpt(props) {
             filtroFlusso: {
                 da: (lazyParams.first + 1),
                 a: (lazyParams.first + lazyParams.rows),
-                flusso: flussoForm ? flussoForm : {}
+                flusso: flusso
             }
         }
 
@@ -36,12 +37,13 @@ export default function Rpt(props) {
             .finally(() => props.unblockContent());
     };
 
-    const resetLazy = () => {
+    const resetFiltri = () => {
+        setFlusso({});
         setLazyParams(structuredClone(initialLazyParams));
     };
 
     return (<>
-        <RptForm aree={props.aree} servizi={props.servizi} call={call} resetLazy={resetLazy} />
+        <RptForm aree={props.aree} servizi={props.servizi} setFlusso={setFlusso} resetFiltri={resetFiltri} />
         <RptTable listaRpt={listaRpt} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
             blockContent={props.blockContent} unblockContent={props.unblockContent} />
     </>

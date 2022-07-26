@@ -12,6 +12,7 @@ import { initialLazyParams } from "../content";
 // Componente condiviso per il tab Elenco e Avvisi
 export default function Elenco(props) {
 
+    const [flusso, setFlusso] = useState({});
     // Gestione lazy
     const [totalRecords, setTotalRecords] = useState(0);
     const [flussiList, setFlussiList] = useState([]);
@@ -20,16 +21,14 @@ export default function Elenco(props) {
     useEffect(() => {
         call();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [lazyParams]);
+    }, [flusso, lazyParams]);
 
-    const call = (flussoForm) => {
+    const call = () => {
         props.blockContent();
 
-        if(!flussoForm)// sempre valorizzato altrimenti count non viene considerato
-            flussoForm = {};
-
+        let flussoParam = structuredClone(flusso);
         if(props.tab === "avvisi")
-            flussoForm.flagAnnullamento = 1;
+            flussoParam.flagAnnullamento = 1;
 
         const flussoData = {
             filtroFlusso: {
@@ -38,7 +37,7 @@ export default function Elenco(props) {
                 count: propsDominio.intervalloDate, //numero di mesi con cui il servizio formerà la default min date per il filtro
                 orderBy: columnMapper.get(lazyParams.sortField),
                 orderType: sortMapper.get(lazyParams.sortOrder),
-                flusso: flussoForm // sempre valorizzato altrimenti count non viene considerato
+                flusso: flussoParam
             }
         }
 
@@ -49,12 +48,13 @@ export default function Elenco(props) {
             .finally(() => props.unblockContent());
     };
 
-    const resetLazy = () => {
+    const resetFiltri = () => {
+        setFlusso({});
         setLazyParams(structuredClone(initialLazyParams));
     };
 
     return (<>
-        <ElencoForm tab={props.tab} aree={props.aree} servizi={props.servizi} stati={props.stati} call={call} resetLazy={resetLazy} />
+        <ElencoForm tab={props.tab} aree={props.aree} servizi={props.servizi} stati={props.stati} setFlusso={setFlusso} resetFiltri={resetFiltri} />
         <ElencoTable tab={props.tab} flussiList={flussiList} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
             blockContent={props.blockContent} unblockContent={props.unblockContent} />
     </>

@@ -8,6 +8,7 @@ import GiornaleTable from "./giornale-table/giornale-table";
 
 export default function Giornale(props) {
 
+  const [giornale, setGiornale] = useState({});
   // Gestione lazy
   const [totalRecords, setTotalRecords] = useState(0);
   const [listGiornale, setListGiornale] = useState([]);
@@ -16,9 +17,9 @@ export default function Giornale(props) {
   useEffect(() => {
     call();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lazyParams]);
+  }, [giornale, lazyParams]);
 
-  const call = (giornaleForm) => {
+  const call = () => {
     props.blockContent();
 
     const flussoGiornaleEventi = {
@@ -28,7 +29,7 @@ export default function Giornale(props) {
         count: propsDominio.intervalloDate, //numero di mesi con cui il servizio formerà la default min date per il filtro
         orderBy: columnMapper.get(lazyParams.sortField),
         orderType: sortMapper.get(lazyParams.sortOrder),
-        giornaleEventi: giornaleForm ? giornaleForm : {} // sempre valorizzato altrimenti count non viene considerato
+        giornaleEventi: giornale 
       }
     }
 
@@ -39,13 +40,14 @@ export default function Giornale(props) {
       .finally(() => props.unblockContent());
   };
 
-  const resetLazy = () => {
+  const resetFiltri = () => {
+    setGiornale({});
     setLazyParams(structuredClone(initialLazyParams));
   };
 
   return (
     <>
-      <GiornaleForm stati={props.stati} call={call} resetLazy={resetLazy} />
+      <GiornaleForm stati={props.stati} resetFiltri={resetFiltri} setGiornale={setGiornale} />
       <GiornaleTable listGiornale={listGiornale} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
         blockContent={props.blockContent} unblockContent={props.unblockContent} />
     </>

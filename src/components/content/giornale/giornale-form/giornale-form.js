@@ -25,11 +25,7 @@ export default function GiornaleForm(props) {
     // Contiene temporaneamente alcuni dati del form
     const [finestraTemporaleList, setFinestraTemporaleList] = useState(null);
 
-    const call = () => {
-        props.call(prepareInput());
-    }
-
-    const prepareInput = () => {
+    const prepareInputAndCall = () => {
         // Copia il flusso di state e elimina i valori non validi
         let giornale = deleteUndefinedValues(structuredClone(giornaleForm));
 
@@ -38,7 +34,8 @@ export default function GiornaleForm(props) {
         if (isFinestraAbilitata && !isFinestraDisabled() && finestraTemporaleList)
             addDate(giornale, finestraTemporaleList, 'data')
 
-        return giornale;
+        // Triggera call del componente padre
+        props.setGiornale(giornale);
     }
 
     // Valorizza le date di un intervallo nel filtro
@@ -53,7 +50,7 @@ export default function GiornaleForm(props) {
     const resetFiltri = () => {
         setGiornaleForm(structuredClone(initialGiornaleForm));
         setFinestraTemporaleList(null);
-        props.resetLazy();
+        props.resetFiltri();
     };
 
     // Gestion onChange di componenti di Giornale
@@ -141,7 +138,7 @@ export default function GiornaleForm(props) {
                                 </div>
                             </form>
                             <div style={{ display: "flex", justifyContent: "center", marginTop: "1.5rem" }}>
-                                <button type="button" className="btn btn-primary" form="giornale-form" style={{ fontWeight: "600", marginRight: "0.05rem" }} onClick={call}>Cerca</button>
+                                <button type="button" className="btn btn-primary" form="giornale-form" style={{ fontWeight: "600", marginRight: "0.05rem" }} onClick={prepareInputAndCall}>Cerca</button>
                                 <button type="button" className="btn btn-primary" form="giornale-form" style={{ fontWeight: "600", marginLeft: "0.05rem" }} onClick={resetFiltri}>Reset Filtri</button>
                             </div>
 

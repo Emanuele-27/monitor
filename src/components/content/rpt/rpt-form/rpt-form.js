@@ -17,20 +17,16 @@ export default function RptForm(props) {
     // Contiene i dati del form
     const [flussoForm, setFlussoForm] = useState(structuredClone(initialFlussoForm));
 
-    const call = () => {
-        props.call(prepareInput());
-    }
-
-    const prepareInput = () => {
+    const prepareInputAndCall = () => {
         // Copia il flusso di state e elimina i valori non validi
         let flusso = deleteUndefinedValues(structuredClone(flussoForm));
-
-        return flusso;
+        // Triggera il call del componente padre
+        props.setFlusso(flusso);
     }
 
     const resetFiltri = () => {
         setFlussoForm(structuredClone(initialFlussoForm));
-        props.resetLazy();
+        props.resetFiltri();
     };
 
     // Gestion onChange di componenti di Flusso
@@ -89,7 +85,7 @@ export default function RptForm(props) {
                                 </div>
                             </form>
                             <div style={{ display: "flex", justifyContent: "center", marginTop: "1.5rem" }}>
-                                <button type="button" className="btn btn-primary" form="rpt-form" style={{ fontWeight: "600", marginRight: "0.05rem" }} onClick={call}>Cerca</button>
+                                <button type="button" className="btn btn-primary" form="rpt-form" style={{ fontWeight: "600", marginRight: "0.05rem" }} onClick={prepareInputAndCall}>Cerca</button>
                                 <button type="button" className="btn btn-primary" form="rpt-form" style={{ fontWeight: "600", marginLeft: "0.05rem" }} onClick={resetFiltri}>Reset Filtri</button>
                             </div>
 
