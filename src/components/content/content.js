@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
     Route,
     Routes,
@@ -71,9 +71,14 @@ const widthTabs = avvisiEnabled ? '20%' : '25%';
 export default function Content() {
 
     const [blockedContent, setBlockedContent] = useState(false);
+    const [rptBadgeCount, setRptBadgeCount] = useState(0);
 
     useMemo(() => {
         addLocale('it', localeDate);
+    }, []);
+
+    useEffect(() => {
+        getRptBadgeCount();
     }, [])
 
     const blockContent = () => {
@@ -90,10 +95,23 @@ export default function Content() {
         ev.target.classList.add('entrypoint-focus');
     }
 
-    // const buildTab = (route, content, width) =>
-    //     <Link to={route} style={{ width: width }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
-    //         {content}
-    //     </Link>
+    const getRptBadgeCount = () => {
+        blockContent();
+
+        const flussoData = {
+            filtroFlusso: {
+                da: 1,
+                a: 2,
+                flusso: {
+                    // idDominio: propsDominio.idDominio .per trovare dati
+                }
+            }
+        }
+        monitorClient.getRptSenzaRt(flussoData).then(fdResult => {
+            setRptBadgeCount(fdResult.filtroFlusso.count < 0 ? 0 : fdResult.filtroFlusso.count);
+        })
+            .finally(() => unblockContent());
+    }
 
     return (
         <BlockUI blocked={blockedContent} >
@@ -108,7 +126,7 @@ export default function Content() {
                         </Link>
                     }
                     <Link to="/rpt" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
-                        RPT SENZA RT
+                        RPT SENZA RT <span style={{ marginLeft: "0.5rem" }} className={"badge badge-" + (rptBadgeCount > 0 ? "success" : "danger")}>{rptBadgeCount}</span>
                     </Link>
                     <Link to="/elenco" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
                         ELENCO FLUSSI
