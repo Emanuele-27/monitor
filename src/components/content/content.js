@@ -127,7 +127,7 @@ export default function Content() {
                         </Link>
                     }
                     <Link to="/rpt" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
-                        RPT SENZA RT <span style={{ marginLeft: "0.5rem" }} className={"badge badge-" + (rptBadgeCount > 0 ? "success" : "danger")}>{rptBadgeCount}</span>
+                        RPT SENZA RT <span style={{ marginLeft: "0.5rem" }} className={"badge badge-" + (rptBadgeCount > 0 ? "danger" : "success")}>{rptBadgeCount}</span>
                     </Link>
                     <Link to="/elenco" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
                         ELENCO FLUSSI
