@@ -79,6 +79,7 @@ export default function Content() {
 
     useEffect(() => {
         getRptBadgeCount();
+        // eslint-disable-next-line
     }, [])
 
     const blockContent = () => {
@@ -103,7 +104,7 @@ export default function Content() {
                 da: 1,
                 a: 2,
                 flusso: {
-                    // idDominio: propsDominio.idDominio .per trovare dati
+                    idDominio: propsDominio.idDominio
                 }
             }
         }
