@@ -10,7 +10,7 @@ import { propsDominio } from 'util/config';
 import { removeSpecialChars } from 'util/string-util';
 import { aggiungiGiorni, aggiungiMesi, getFirstDayOfMonth, getFirstDayOfWeek, getLastDayOfMonth, getLastDayOfWeek } from "util/date-util";
 import { deleteUndefinedValues } from 'util/util';
-import { areeOptions, isFinestraAbilitata, modalitaFinestra, serviziOptions, statiEsitiOptions } from "components/content/content";
+import { isFinestraAbilitata, modalitaFinestra } from "components/content/content";
 
 const initialFlussoForm = {
     // idDominio: propsDominio.idDominio, Commentato sennò non trovo dati D:
@@ -58,9 +58,6 @@ export default function ElencoForm(props) {
             addDate(flusso, dataRichiestaList, 'dataRichiesta');
             addDate(flusso, dataRicevutaList, 'dataRicevuta');
         }
-        if(props.tab === "avvisi")
-            flusso.flagAnnullamento = 1;
-
         return flusso;
     }
 
@@ -174,7 +171,7 @@ export default function ElencoForm(props) {
                                         <select id="stato" name="tempStatoOrEsito" className="form-select" value={statoOrEsito}
                                             onChange={(e) => setStatoOrEsito(e.target.value)}>
                                             <option value={null}></option>
-                                            {statiEsitiOptions}
+                                            {props.stati}
                                         </select>
                                     </div>}
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
@@ -182,7 +179,7 @@ export default function ElencoForm(props) {
                                         <select id="area" name="area" className="form-select" value={flussoForm.area}
                                             onChange={(e) => handleChangeFlusso(e.target.value, e.target.name)}>
                                             <option value={null}></option>
-                                            {areeOptions}
+                                            {props.aree}
                                         </select>
                                     </div>
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
@@ -190,7 +187,7 @@ export default function ElencoForm(props) {
                                         <select id="servizio" name="servizio" className="form-select" value={flussoForm.servizio}
                                             onChange={(e) => handleChangeFlusso(e.target.value, e.target.name)}>
                                             <option value={null}></option>
-                                            {serviziOptions}
+                                            {props.servizi}
                                         </select>
                                     </div>
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">

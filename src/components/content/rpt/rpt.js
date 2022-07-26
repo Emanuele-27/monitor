@@ -41,7 +41,7 @@ export default function Rpt(props) {
     };
 
     return (<>
-        <RptForm call={call} resetLazy={resetLazy} />
+        <RptForm aree={props.aree} servizi={props.servizi} call={call} resetLazy={resetLazy} />
         <RptTable listaRpt={listaRpt} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
             blockContent={props.blockContent} unblockContent={props.unblockContent} />
     </>

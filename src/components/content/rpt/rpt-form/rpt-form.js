@@ -3,7 +3,6 @@ import "./rpt-form.css";
 
 import { removeSpecialChars } from 'util/string-util';
 import { deleteUndefinedValues } from 'util/util';
-import { areeOptions, serviziOptions } from "components/content/content";
 
 const initialFlussoForm = {
     // idDominio: propsDominio.idDominio, Commentato sennò non trovo dati D:
@@ -76,7 +75,7 @@ export default function RptForm(props) {
                                         <select id="area" name="area" className="form-select" value={flussoForm.area}
                                             onChange={(e) => handleChangeFlusso(e.target.value, e.target.name)}>
                                             <option value={null}></option>
-                                            {areeOptions}
+                                            {props.aree}
                                         </select>
                                     </div>
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
@@ -84,7 +83,7 @@ export default function RptForm(props) {
                                         <select id="servizio" name="servizio" className="form-select" value={flussoForm.servizio}
                                             onChange={(e) => handleChangeFlusso(e.target.value, e.target.name)}>
                                             <option value={null}></option>
-                                            {serviziOptions}
+                                            {props.servizi}
                                         </select>
                                     </div>
                                 </div>

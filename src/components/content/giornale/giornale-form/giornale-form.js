@@ -6,7 +6,7 @@ import { deleteUndefinedValues } from 'util/util';
 import { Calendar } from "primereact/calendar";
 import { propsDominio } from "util/config";
 import { getFirstDayOfMonth, getFirstDayOfWeek, getLastDayOfMonth, getLastDayOfWeek } from "util/date-util";
-import { isFinestraAbilitata, statiEsitiOptions } from "components/content/content";
+import { isFinestraAbilitata } from "components/content/content";
 
 const initialGiornaleForm = {
     // idDominio: propsDominio.idDominio, Commentato sennò non trovo dati D:
@@ -117,7 +117,7 @@ export default function GiornaleForm(props) {
                                         <select id="esito" name="esito" className="form-select" value={giornaleForm.esito}
                                             onChange={(e) => handleChangeGiornale(e.target.value, 'esito')}>
                                             <option value={null}></option>
-                                            {statiEsitiOptions}
+                                            {props.stati}
                                         </select>
                                     </div>
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">

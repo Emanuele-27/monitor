@@ -25,6 +25,12 @@ export default function Elenco(props) {
     const call = (flussoForm) => {
         props.blockContent();
 
+        if(!flussoForm)// sempre valorizzato altrimenti count non viene considerato
+            flussoForm = {};
+
+        if(props.tab === "avvisi")
+            flussoForm.flagAnnullamento = 1;
+
         const flussoData = {
             filtroFlusso: {
                 da: (lazyParams.first + 1),
@@ -32,7 +38,7 @@ export default function Elenco(props) {
                 count: propsDominio.intervalloDate, //numero di mesi con cui il servizio formerà la default min date per il filtro
                 orderBy: columnMapper.get(lazyParams.sortField),
                 orderType: sortMapper.get(lazyParams.sortOrder),
-                flusso: flussoForm ? flussoForm : {} // sempre valorizzato altrimenti count non viene considerato
+                flusso: flussoForm // sempre valorizzato altrimenti count non viene considerato
             }
         }
 
@@ -48,7 +54,7 @@ export default function Elenco(props) {
     };
 
     return (<>
-        <ElencoForm tab={props.tab} call={call} resetLazy={resetLazy} />
+        <ElencoForm tab={props.tab} aree={props.aree} servizi={props.servizi} stati={props.stati} call={call} resetLazy={resetLazy} />
         <ElencoTable tab={props.tab} flussiList={flussiList} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
             blockContent={props.blockContent} unblockContent={props.unblockContent} />
     </>

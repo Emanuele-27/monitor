@@ -19,41 +19,6 @@ import { replaceUnderscore } from "util/string-util";
 import { addLocale } from "primereact/api";
 import { localeDate } from "util/util";
 
-// Fuori dal componente content sono dichiarate le costanti che verranno utilizzate
-// in condivisione tra tutti i step
-
-// Nel dropdown di stato ci sono sia stati che esiti, in fase  
-// di ricerca vengono distinti e valorizzati opportunamente
-function buildOptionsStatiEsiti() {
-    const esitiOptions = esitiPagamento.map(esito => <option key={esito.name} value={esito.name}>{formatEsito(esito.name)}</option>);
-    const statiOptions = statiPagamento.filter(stato => stato !== 'RT_ACCETTATA_PA').map(stato => <option key={stato} value={stato}>{replaceUnderscore(stato)}</option>);
-    return esitiOptions.concat(statiOptions);
-};
-
-// Vengono recuperati i servizi, filtrati per l'idDominio corrente 
-// e vengono create le option per le select di servizi e aree
-async function buildOptionsServiziEAree() {
-    const serviziData = await monitorClient.getServizi();
-    const serviziDominioCorrente = serviziData.serviziList.filter(servizio => servizio.idDominio === propsDominio.idDominio);
-    const serviziOpt = serviziDominioCorrente.map(servizio =>
-        <option key={servizio.servizio} value={servizio.servizio}>{servizio.servizio + ' - ' + servizio.denominazioneServizio}</option>
-    );
-    let areeMap = new Map();
-    serviziDominioCorrente.forEach(servizio => {
-        let area = servizio.area;
-        if (!areeMap.has(area))
-            areeMap.set(area, <option key={area} value={area}>{area}</option>);
-    });
-    return {
-        servizi: serviziOpt,
-        aree: Array.from(areeMap.values())
-    };
-}
-
-const serviziEAreeOptions = buildOptionsServiziEAree();
-export const serviziOptions = serviziEAreeOptions.servizi;
-export const areeOptions = serviziEAreeOptions.aree;
-export const statiEsitiOptions = buildOptionsStatiEsiti();
 export const initialLazyParams = {
     first: 0,
     rows: 10,
@@ -73,13 +38,21 @@ export default function Content() {
     const [blockedContent, setBlockedContent] = useState(false);
     const [rptBadgeCount, setRptBadgeCount] = useState(0);
 
+    const [serviziOpt, setServiziOpt] = useState(null);
+    const [areeOpt, setAreeOpt] = useState(null);
+    const [statiEsitiOpt, setStatiEsitiOpt] = useState(null);
+
     useMemo(() => {
         addLocale('it', localeDate);
     }, []);
 
     useEffect(() => {
-        getRptBadgeCount();
-        // eslint-disable-next-line
+        blockContent();
+        buildOptionsStatiEsiti();
+        Promise.allSettled([monitorClient.getServizi(), getRptBadgeCount()]).then(res => {
+            buildOptionsServiziEAree(res[0].value);
+            setRptBadgeCount(res[1].value.filtroFlusso.count < 0 ? 0 : res[1].value.filtroFlusso.count);
+        }).finally(() => unblockContent())
     }, [])
 
     const blockContent = () => {
@@ -97,8 +70,6 @@ export default function Content() {
     }
 
     const getRptBadgeCount = () => {
-        blockContent();
-
         const flussoData = {
             filtroFlusso: {
                 da: 1,
@@ -108,10 +79,31 @@ export default function Content() {
                 }
             }
         }
-        monitorClient.getRptSenzaRt(flussoData).then(fdResult => {
-            setRptBadgeCount(fdResult.filtroFlusso.count < 0 ? 0 : fdResult.filtroFlusso.count);
-        })
-            .finally(() => unblockContent());
+        return monitorClient.getRptSenzaRt(flussoData);
+    }
+
+    // Nel dropdown di stato ci sono sia stati che esiti, in fase  
+    // di ricerca vengono distinti e valorizzati opportunamente
+    function buildOptionsStatiEsiti() {
+        const esitiOptions = esitiPagamento.map(esito => <option key={esito.name} value={esito.name}>{formatEsito(esito.name)}</option>);
+        const statiOptions = statiPagamento.filter(stato => stato !== 'RT_ACCETTATA_PA').map(stato => <option key={stato} value={stato}>{replaceUnderscore(stato)}</option>);
+        setStatiEsitiOpt(esitiOptions.concat(statiOptions));
+    };
+
+    // Vengono recuperati i servizi, filtrati per l'idDominio corrente 
+    // e vengono create le option per le select di servizi e aree
+    function buildOptionsServiziEAree(serviziData) {
+        const serviziDominioCorrente = serviziData.serviziList.filter(servizio => servizio.idDominio === propsDominio.idDominio);
+        setServiziOpt(serviziDominioCorrente.map(servizio =>
+            <option key={servizio.servizio} value={servizio.servizio}>{servizio.servizio + ' - ' + servizio.denominazioneServizio}</option>
+        ));
+        let areeMap = new Map();
+        serviziDominioCorrente.forEach(servizio => {
+            let area = servizio.area;
+            if (!areeMap.has(area))
+                areeMap.set(area, <option key={area} value={area}>{area}</option>);
+        });
+        setAreeOpt(Array.from(areeMap.values()));
     }
 
     return (
@@ -141,10 +133,11 @@ export default function Content() {
                 <Routes>
                     <Route exact path="/" element={<Home blockContent={blockContent} unblockContent={unblockContent} />} />
                     <Route path="/home" element={<Home blockContent={blockContent} unblockContent={unblockContent} />} />
-                    <Route path="/avvisi" element={<Elenco tab="avvisi" blockContent={blockContent} unblockContent={unblockContent} />} />
-                    <Route path="/rpt" element={<Rpt blockContent={blockContent} unblockContent={unblockContent} />} />
-                    <Route path="/elenco" element={<Elenco tab="elenco" blockContent={blockContent} unblockContent={unblockContent} />} />
-                    <Route path="/giornale" element={<Giornale blockContent={blockContent} unblockContent={unblockContent} />} />
+                    {/* L'attributo key diverso serve a far ricreare il componente invece di riutilizzarlo, causa query diversa */}
+                    <Route path="/avvisi" element={<Elenco key="2" tab="avvisi" aree={areeOpt} servizi={serviziOpt} blockContent={blockContent} unblockContent={unblockContent} />} />
+                    <Route path="/rpt" element={<Rpt aree={areeOpt} servizi={serviziOpt} blockContent={blockContent} unblockContent={unblockContent} />} />
+                    <Route path="/elenco" element={<Elenco key="1" tab="elenco" aree={areeOpt} servizi={serviziOpt} stati={statiEsitiOpt} blockContent={blockContent} unblockContent={unblockContent} />} />
+                    <Route path="/giornale" element={<Giornale stati={statiEsitiOpt} blockContent={blockContent} unblockContent={unblockContent} />} />
                 </Routes>
             </div>
         </BlockUI >
