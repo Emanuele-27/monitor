@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
     Route,
     Routes,
-    Link
+    Link,
 } from "react-router-dom";
 import Elenco from "./elenco/elenco";
 import Giornale from "./giornale/giornale";
@@ -98,7 +98,7 @@ export default function Content() {
     return (
         <BlockUI blocked={blockedContent} >
             <div className="container-fluid" style={{ width: "85%", paddingTop: "2rem" }}>
-                <div id="tabsRow" style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
+                <div id="tabsRow" >
                     <Link to="/home" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint entrypoint-focus">
                         HOME
                     </Link>

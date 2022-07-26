@@ -1,7 +1,23 @@
 body div a.btn.btn-outline-primary.btn-lg.entrypoint {
     justify-content: center;
+    min-width: 200px;
 }
 
-div#tabsRow a {
-    margin: 0 0.2rem 0 0.2rem;
+div#tabsRow  {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    column-gap: 0.4rem;
+    row-gap: 0.4rem;
+} 
+
+/* Lasciare classe, bug uikit css */
+.entrypoint+.entrypoint {
+    margin-top: 0 !important;
+}
+
+@media screen and (max-width: 1220px) {
+    div#tabsRow {
+        flex-wrap: wrap;
+    }
 }
