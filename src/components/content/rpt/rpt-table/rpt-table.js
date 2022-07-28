@@ -8,6 +8,7 @@ import { Button } from 'primereact/button';
 import { exportExcel, localeIT } from 'util/util';
 import { formatDateTime } from "util/date-util";
 import { capitalizeFirstLetter, splitCamelCase } from "util/string-util";
+import { Link } from "react-router-dom";
 
 export default function RptTable(props) {
 
@@ -24,20 +25,26 @@ export default function RptTable(props) {
 
     // TO DO Implementare logica opzioni
     const columnOpzioni = (rowData) => {
-        return (
-            <span title="Visualizza dettaglio"><i className="pi pi-search"></i></span>
+        return (<Link to={`/elenco?iuv=${rowData.iuv}&codContesto=${rowData.codiceContesto}`}>
+            <span title="Visualizza dettaglio" onClick={() => clickElencoTab()}><i className="pi pi-search"></i></span>
+        </Link>
         );
     };
 
+    const clickElencoTab = () => {
+        document.getElementById('rpt-tab').classList.remove('entrypoint-focus');
+        document.getElementById('elenco-tab').classList.add('entrypoint-focus');
+    }
+
     const header = (
-        <div style={{ marginRight: "0", marginLeft: "auto"}}>
+        <div style={{ marginRight: "0", marginLeft: "auto" }}>
             <Button type="button" icon="pi pi-file-excel" onClick={() => exportExcel(prepareList(props.listaRpt), 'rpt-senza-rpt')} className="p-button-success mr-2" data-pr-tooltip="XLS" />
         </div>
     );
 
     const prepareList = (list) => {
         let listNormalized = structuredClone(list);
-    
+
         listNormalized.forEach(item => {
             item.dataRichiesta = item.dataRichiesta ? formatDateTime(localeIT, item.dataRichiesta) : '';
             delete item.statoPagamento;

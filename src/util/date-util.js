@@ -1,3 +1,5 @@
+export const today = new Date(Date.now());
+
 export function getLastDayOfMonth(date) {
     date = new Date(date);
     return new Date(date.getFullYear(), date.getMonth() + 1, 0);
@@ -14,7 +16,7 @@ export function getFirstDayOfWeek(date, locale) {
 }
 export function getLastDayOfWeek(date, locale) {
     let dayName = new Date(date).toLocaleString(locale, { weekday: "short" });
-    return aggiungiGiorni(new Date(date), (6 -daysLeftToMonday(dayName)));
+    return aggiungiGiorni(new Date(date), (6 - daysLeftToMonday(dayName)));
 }
 
 function daysLeftToMonday(dayName) {
@@ -46,4 +48,11 @@ export function aggiungiGiorni(date, giorni) {
 
 export function formatDateTime(locale, date) {
     return new Date(date).toLocaleString(locale).replace(',', '');
+}
+
+export function calcolaDatePerFinestra(modalita, date) {
+    if (modalita === 'mese')
+        return [getFirstDayOfMonth(date), getLastDayOfMonth(date)];
+    else if (modalita === 'settimana')
+        return [getFirstDayOfWeek(date), getLastDayOfWeek(date)];
 }

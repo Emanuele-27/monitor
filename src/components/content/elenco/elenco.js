@@ -1,18 +1,74 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { monitorClient } from "clients/clients";
 
 import { propsDominio } from 'util/config';
 
-import { columnMapper, sortMapper } from 'util/util';
+import { columnMapper, deleteUndefinedValues, sortMapper } from 'util/util';
 import ElencoTable from "./elenco-table/elenco-table";
 import ElencoForm from "./elenco-form/elenco-form";
-import { initialLazyParams } from "../content";
+import { initialLazyParams, isFinestraAbilitata, modalitaFinestra } from "../content";
+import { useLocation } from "react-router-dom";
+import { calcolaDatePerFinestra, today } from "util/date-util";
+import { statiPagamento } from "model/tutti-i-stati";
+
+function useQuery() {
+    const { search } = useLocation();
+    return useMemo(() => new URLSearchParams(search), [search]);
+}
+
+// Disabled se almeno uno di questi campi è valorizzato
+export const isFinestraDisabled = (flusso) => {
+    if (flusso.iuv || flusso.codiceContesto || flusso.dataRichiestaList || flusso.dataRicevutaList)
+        return true;
+    return false;
+}
 
 // Componente condiviso per il tab Elenco e Avvisi
 export default function Elenco(props) {
 
-    const [flusso, setFlusso] = useState({});
+    const query = useQuery();
+
+    // Ritorna un oggetto valorizzato con i query params se presenti
+    const manageUrlParams = () => {
+        if (query.toString()) {
+            let iuvParam = query.get("iuv");
+            let codiceContestoParam = query.get("codContesto");
+            query.delete("iuv");
+            query.delete("codContesto");
+            // Rimuove queryParams dall'url
+            window.history.replaceState(null, '', window.location.origin + window.location.pathname);
+            return {
+                iuv: iuvParam,
+                codiceContesto: codiceContestoParam
+            }
+        }
+        return null;
+    }
+
+    // useMemo(() => {
+    //     urlParams = manageUrlParams();
+    // }, [])
+
+    const initialFlussoForm = () => {
+        const urlParams = manageUrlParams();
+        return {
+            // idDominio: propsDominio.idDominio,
+            ...(props.tab === 'avvisi' && { flagAnnullamento: 1 }),
+            iuv: urlParams ? urlParams.iuv : '',
+            codiceContesto: urlParams ? urlParams.codiceContesto : '',
+            area: '',
+            servizio: '',
+            idPagatore: '',
+            idVersante: '',
+            statoOrEsito: '',
+            dataRichiestaList: null,
+            dataRicevutaList: null,
+            finestraTemporaleList: calcolaDatePerFinestra(modalitaFinestra, today),
+        }
+    }
+    const [flussoForm, setFlussoForm] = useState(initialFlussoForm());
+
     // Gestione lazy
     const [totalRecords, setTotalRecords] = useState(0);
     const [flussiList, setFlussiList] = useState([]);
@@ -21,14 +77,12 @@ export default function Elenco(props) {
     useEffect(() => {
         call();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [flusso, lazyParams]);
+    }, [flussoForm, lazyParams]);
 
     const call = () => {
         props.blockContent();
 
-        let flussoParam = structuredClone(flusso);
-        if(props.tab === "avvisi")
-            flussoParam.flagAnnullamento = 1;
+        let flussoRequest = prepareFlussoForCall();
 
         const flussoData = {
             filtroFlusso: {
@@ -37,10 +91,9 @@ export default function Elenco(props) {
                 count: propsDominio.intervalloDate, //numero di mesi con cui il servizio formerà la default min date per il filtro
                 orderBy: columnMapper.get(lazyParams.sortField),
                 orderType: sortMapper.get(lazyParams.sortOrder),
-                flusso: flussoParam
+                flusso: flussoRequest
             }
         }
-
         monitorClient.getFlussi(flussoData).then(fdResult => {
             setTotalRecords(fdResult.filtroFlusso.count < 0 ? 0 : fdResult.filtroFlusso.count);
             setFlussiList(fdResult.flussoList);
@@ -48,13 +101,55 @@ export default function Elenco(props) {
             .finally(() => props.unblockContent());
     };
 
+    const prepareFlussoForCall = () => {
+        let flusso = deleteUndefinedValues(structuredClone(flussoForm));
+        valorizzaStatoOrEsito(flusso);
+        // Se finestraTemporale è renderizzata e abilitata, valorizza il filtro con la finestra
+        if (isFinestraAbilitata && !isFinestraDisabled(flusso)) {
+            valorizzaDate(flusso, flusso.finestraTemporaleList, 'dataRichiesta')
+        } else { // Altrimenti con le altre date
+            valorizzaDate(flusso, flusso.dataRichiestaList, 'dataRichiesta');
+            valorizzaDate(flusso, flusso.dataRicevutaList, 'dataRicevuta');
+        }
+        eliminaFormProperties(flusso);
+        return flusso;
+    }
+
+    // Cerco il valore di statoOrEsito tra gli stati e valorizza opportunamente
+    const valorizzaStatoOrEsito = (flusso) => {
+        if (flusso.statoOrEsito) {
+            if (statiPagamento.includes(flusso.statoOrEsito))
+                flusso.statoPagamento = flusso.statoOrEsito;
+            else
+                flusso.esitoPagamento = flusso.statoOrEsito;
+        }
+    };
+
+    // Valorizza le date con range del filtro
+    const valorizzaDate = (flusso, dataList, attribute) => {
+        if (dataList && dataList[0]) {
+            flusso[attribute + 'Da'] = dataList[0];
+            if (dataList.length > 1 && dataList[1])
+                flusso[attribute + 'A'] = dataList[1];
+        }
+    };
+
+    // Elimina le proprietà necessarie al form ma non al filtro
+    const eliminaFormProperties = (form) => {
+        delete form.statoOrEsito;
+        delete form.dataRichiestaList;
+        delete form.dataRicevutaList;
+        delete form.finestraTemporaleList;
+    }
+
     const resetFiltri = () => {
-        setFlusso({});
+        setFlussoForm(structuredClone(initialFlussoForm()));
         setLazyParams(structuredClone(initialLazyParams));
     };
 
     return (<>
-        <ElencoForm tab={props.tab} aree={props.aree} servizi={props.servizi} stati={props.stati} setFlusso={setFlusso} resetFiltri={resetFiltri} />
+        <ElencoForm tab={props.tab} aree={props.aree} servizi={props.servizi} stati={props.stati} resetFiltri={resetFiltri}
+            flussoForm={flussoForm} setFlussoForm={setFlussoForm} />
         <ElencoTable tab={props.tab} flussiList={flussiList} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
             blockContent={props.blockContent} unblockContent={props.unblockContent} />
     </>

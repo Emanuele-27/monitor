@@ -110,21 +110,21 @@ export default function Content() {
         <BlockUI blocked={blockedContent} >
             <div className="container-fluid" style={{ width: "85%", paddingTop: "2rem" }}>
                 <div id="tabsRow" >
-                    <Link to="/home" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint entrypoint-focus">
+                    <Link to="/home" id="home-tab" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint entrypoint-focus">
                         HOME
                     </Link>
                     {avvisiEnabled &&
-                        <Link to="/avvisi" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
+                        <Link to="/avvisi" id="avvisi-tab" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
                             AVVISI
                         </Link>
                     }
-                    <Link to="/rpt" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
+                    <Link to="/rpt" id="rpt-tab" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
                         RPT SENZA RT <span style={{ marginLeft: "0.5rem" }} className={"badge badge-" + (rptBadgeCount > 0 ? "danger" : "success")}>{rptBadgeCount}</span>
                     </Link>
-                    <Link to="/elenco" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
+                    <Link to="/elenco" id="elenco-tab" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
                         ELENCO FLUSSI
                     </Link>
-                    <Link to="/giornale" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
+                    <Link to="/giornale" id="giornale-tab" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
                         GIORNALE EVENTI
                     </Link>
                 </div>
@@ -137,6 +137,7 @@ export default function Content() {
                     <Route path="/avvisi" element={<Elenco key="2" tab="avvisi" aree={areeOpt} servizi={serviziOpt} blockContent={blockContent} unblockContent={unblockContent} />} />
                     <Route path="/rpt" element={<Rpt aree={areeOpt} servizi={serviziOpt} blockContent={blockContent} unblockContent={unblockContent} />} />
                     <Route path="/elenco" element={<Elenco key="1" tab="elenco" aree={areeOpt} servizi={serviziOpt} stati={statiEsitiOpt} blockContent={blockContent} unblockContent={unblockContent} />} />
+                    {/* <Route path="/elenco/:iuv/:codContesto" element={<Elenco key="1" tab="elenco" aree={areeOpt} servizi={serviziOpt} stati={statiEsitiOpt} blockContent={blockContent} unblockContent={unblockContent} />} /> */}
                     <Route path="/giornale" element={<Giornale stati={statiEsitiOpt} blockContent={blockContent} unblockContent={unblockContent} />} />
                 </Routes>
             </div>
