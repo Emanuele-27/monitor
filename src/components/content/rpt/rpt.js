@@ -5,10 +5,20 @@ import { monitorClient } from "clients/clients";
 import RptForm from "./rpt-form/rpt-form";
 import RptTable from "./rpt-table/rpt-table";
 import { initialLazyParams } from "../content";
+import { deleteUndefinedValues } from "util/util";
+
+export const emptyFlussoForm = {
+    // idDominio: propsDominio.idDominio,
+    iuv: '',
+    codiceContesto: '',
+    area: '',
+    servizio: '',
+}
 
 export default function Rpt(props) {
 
-    const [flusso, setFlusso] = useState({});
+    const [flussoForm, setFlussoForm] = useState(emptyFlussoForm);
+
     // Gestione lazy
     const [totalRecords, setTotalRecords] = useState(0);
     const [listaRpt, setListaRpt] = useState([]);
@@ -17,19 +27,20 @@ export default function Rpt(props) {
     useEffect(() => {
         call();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [flusso, lazyParams]);
+    }, [flussoForm, lazyParams]);
 
-    const call = (flussoForm) => {
+    const call = () => {
         props.blockContent();
+
+        let flussoParam = deleteUndefinedValues(structuredClone(flussoForm));
 
         const flussoData = {
             filtroFlusso: {
                 da: (lazyParams.first + 1),
                 a: (lazyParams.first + lazyParams.rows),
-                flusso: flusso
+                flusso: flussoParam
             }
         }
-
         monitorClient.getRptSenzaRt(flussoData).then(fdResult => {
             setTotalRecords(fdResult.filtroFlusso.count < 0 ? 0 : fdResult.filtroFlusso.count);
             setListaRpt(fdResult.flussoList);
@@ -38,12 +49,12 @@ export default function Rpt(props) {
     };
 
     const resetFiltri = () => {
-        setFlusso({});
+        setFlussoForm(emptyFlussoForm);
         setLazyParams(structuredClone(initialLazyParams));
     };
 
     return (<>
-        <RptForm aree={props.aree} servizi={props.servizi} setFlusso={setFlusso} resetFiltri={resetFiltri} />
+        <RptForm aree={props.aree} servizi={props.servizi} flussoForm={flussoForm} setFlussoForm={setFlussoForm} resetFiltri={resetFiltri} />
         <RptTable listaRpt={listaRpt} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
             blockContent={props.blockContent} unblockContent={props.unblockContent} />
     </>

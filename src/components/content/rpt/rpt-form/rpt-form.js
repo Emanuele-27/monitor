@@ -2,43 +2,16 @@ import React, { useState } from "react";
 import "./rpt-form.css";
 
 import { removeSpecialChars } from 'util/string-util';
-import { deleteUndefinedValues } from 'util/util';
-
-const initialFlussoForm = {
-    // idDominio: propsDominio.idDominio, Commentato sennò non trovo dati D:
-    iuv: '',
-    codiceContesto: '',
-    area: '',
-    servizio: '',
-}
+import { emptyFlussoForm } from "../rpt";
 
 export default function RptForm(props) {
 
     // Contiene i dati del form
-    const [flussoForm, setFlussoForm] = useState(structuredClone(initialFlussoForm));
-
-    const prepareInputAndCall = () => {
-        // Copia il flusso di state e elimina i valori non validi
-        let flusso = deleteUndefinedValues(structuredClone(flussoForm));
-        // Triggera il call del componente padre
-        props.setFlusso(flusso);
-    }
+    const [flussoForm, setFlussoForm] = useState(props.flussoForm);
 
     const resetFiltri = () => {
-        setFlussoForm(structuredClone(initialFlussoForm));
+        setFlussoForm(emptyFlussoForm);
         props.resetFiltri();
-    };
-
-    // Gestion onChange di componenti di Flusso
-    const handleChangeFlusso = (value, attribute) => {
-        let flussoFormNew = Object.assign({}, flussoForm);
-        flussoFormNew[attribute] = value;
-        setFlussoForm(flussoFormNew);
-    };
-
-    // Gestisce onChange di componenti di Flusso e input type=text
-    const handleChangeText = (e) => {
-        handleChangeFlusso(removeSpecialChars(e.target.value).toUpperCase(), e.target.name);
     };
 
     return (<>
@@ -57,19 +30,28 @@ export default function RptForm(props) {
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="iuv" className="form-label">Iuv:*</label>
                                         <input type="text" id="iuv" name="iuv" className="form-control"
-                                            value={flussoForm.iuv} onChange={(e) => handleChangeText(e)}
+                                            value={flussoForm.iuv} onChange={(e) => setFlussoForm({
+                                                ...flussoForm,
+                                                iuv: removeSpecialChars(e.target.value).toUpperCase(),
+                                            })}
                                             maxLength={24} />
                                     </div>
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="contesto" className="form-label">Codice Contesto:*</label>
                                         <input type="text" id="contesto" name="codiceContesto" className="form-control"
-                                            value={flussoForm.codiceContesto} onChange={(e) => handleChangeText(e)}
+                                            value={flussoForm.codiceContesto} onChange={(e) => setFlussoForm({
+                                                ...flussoForm,
+                                                codiceContesto: removeSpecialChars(e.target.value).toUpperCase(),
+                                            })}
                                             maxLength={35} />
                                     </div>
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="area" className="form-label">Area:</label>
                                         <select id="area" name="area" className="form-select" value={flussoForm.area}
-                                            onChange={(e) => handleChangeFlusso(e.target.value, e.target.name)}>
+                                            onChange={(e) => setFlussoForm({
+                                                ...flussoForm,
+                                                area: e.target.value,
+                                            })}>
                                             <option value={null}></option>
                                             {props.aree}
                                         </select>
@@ -77,7 +59,10 @@ export default function RptForm(props) {
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="servizio" className="form-label">Categoria:</label>
                                         <select id="servizio" name="servizio" className="form-select" value={flussoForm.servizio}
-                                            onChange={(e) => handleChangeFlusso(e.target.value, e.target.name)}>
+                                            onChange={(e) => setFlussoForm({
+                                                ...flussoForm,
+                                                servizio: e.target.value,
+                                            })}>
                                             <option value={null}></option>
                                             {props.servizi}
                                         </select>
@@ -85,7 +70,7 @@ export default function RptForm(props) {
                                 </div>
                             </form>
                             <div style={{ display: "flex", justifyContent: "center", marginTop: "1.5rem" }}>
-                                <button type="button" className="btn btn-primary" form="rpt-form" style={{ fontWeight: "600", marginRight: "0.05rem" }} onClick={prepareInputAndCall}>Cerca</button>
+                                <button type="button" className="btn btn-primary" form="rpt-form" style={{ fontWeight: "600", marginRight: "0.05rem" }} onClick={() => props.setFlussoForm(flussoForm)}>Cerca</button>
                                 <button type="button" className="btn btn-primary" form="rpt-form" style={{ fontWeight: "600", marginLeft: "0.05rem" }} onClick={resetFiltri}>Reset Filtri</button>
                             </div>
 
