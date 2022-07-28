@@ -20,6 +20,8 @@ export default function ElencoForm(props) {
     const maxDataRichiesta = useRef(today)
     const minDataRicevuta = useRef(initialMinDate);
     const maxDataRicevuta = useRef(today);
+    const minDataFinestra = useRef(initialMinDate);
+    const maxDataFinestra = useRef(today);
 
     const resetFiltri = () => {
         props.resetFiltri();
@@ -158,7 +160,7 @@ export default function ElencoForm(props) {
                                                     ...flussoForm,
                                                     finestraTemporaleList: calcolaDatePerFinestra(modalitaFinestra, e.value)
                                                 })} 
-                                                disabled={isFinestraDisabled(flussoForm)} dateFormat="dd/mm/y" showIcon />
+                                                disabled={isFinestraDisabled(flussoForm)} dateFormat="dd/mm/y" showIcon  minDate={minDataFinestra.current} maxDate={maxDataFinestra.current} />
                                         </div>)}
                                 </div>
                             </form>

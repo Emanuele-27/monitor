@@ -63,6 +63,8 @@ export default function Elenco(props) {
         return null;
     }
 
+    // Per definire lo stato iniziale viene controllato se si proviene
+    // dal dettaglio rpt
     const initialFlussoForm = () => {
         const urlParams = manageUrlParams();
         return {
@@ -88,7 +90,7 @@ export default function Elenco(props) {
     const call = () => {
         props.blockContent();
 
-        let flussoRequest = prepareFlussoForCall();
+        let flussoRequest = prepareFlussoRequest();
 
         const flussoData = {
             filtroFlusso: {
@@ -107,7 +109,7 @@ export default function Elenco(props) {
             .finally(() => props.unblockContent());
     };
 
-    const prepareFlussoForCall = () => {
+    const prepareFlussoRequest = () => {
         let flusso = deleteUndefinedValues(structuredClone(flussoForm));
         valorizzaStatoOrEsito(flusso);
         // Se finestraTemporale è renderizzata e abilitata, valorizza il filtro con la finestra

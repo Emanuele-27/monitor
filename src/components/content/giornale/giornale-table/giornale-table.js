@@ -9,7 +9,7 @@ import { formatEsito } from "model/tutti-i-stati";
 
 export default function GiornaleTable(props) {
 
-    const [dettaglioGiornale, setDettaglioGiornale] = useState(null);
+    const [dettaglioGiornale, setDettaglioGiornale] = useState(0);
 
     const onPage = (event) => {
         props.setLazyParams(event);
@@ -52,6 +52,61 @@ export default function GiornaleTable(props) {
                 <Column field="esito" header="Esito" body={columnEsito} />
                 <Column header="Dettaglio" body={columnDettaglio} />
             </DataTable>
+
+            {/* <div className="modal fade" id="dettaglio-modal" tabIndex="-1" aria-labelledby="dettaglio-modal-content" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
+                <div className="modal-dialog modal-dialog-centered modal-xl">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h3 className="modal-title" id="dettaglio-modal-content">Riepilogo transazione</h3>
+                        </div>
+                        <div className="modal-body">
+                            <div className="accordion" id="dettaglio-modal-accordion">
+                                <div className="accordion-item">
+                                    <h3 className="accordion-header" id="dettaglio-modal-accordion-heading-1">
+                                        <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#heading-collapse-1" aria-controls="heading-collapse-1">
+                                            Dettaglio
+                                        </button>
+                                    </h3>
+                                    <div id="heading-collapse-1" className="accordion-collapse collapse show" aria-labelledby="heading-collapse-1" data-bs-parent="#dettaglio-modal-accordion">
+                                        <div className="accordion-body row">
+                                            <div className="col-3 col-xs-3">
+                                                <b>Dominio:</b>
+                                            </div>
+                                            <div className="col-3 col-xs-3">
+                                                {flussoModal.idDominio}
+                                            </div>
+                                            <div className="col-6 col-xs-6" />
+                                            <div className="col-3 col-xs-3">
+                                                <b>Codice contesto:</b>
+                                            </div>
+                                            <div className="col-3 col-xs-3">
+                                                {flussoModal.codiceContesto}
+                                            </div>
+                                            <div className="col-6 col-xs-6" />
+                                            <div className="col-3 col-xs-3">
+                                                <b>IUV:</b>
+                                            </div>
+                                            <div className="col-3 col-xs-3">
+                                                {flussoModal.iuv}
+                                            </div>
+                                            <div className="col-6 col-xs-6" />
+                                            {flussoModal.esitoPagamento === 'PAGAMENTO_NON_ESEGUITO' && (<>
+                                                <div className="col-3 col-xs-3">
+                                                    <b>Esito:</b>
+                                                </div>
+                                                <div className="col-3 col-xs-3">
+                                                    {flussoModal.descrizionePendenza}
+                                                </div>
+                                                <div className="col-6 col-xs-6" /></>)
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> */}
 
             <div className="modal fade" id="dettaglio-modal" tabIndex="-1" aria-labelledby="dettaglio-modal-content-label" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
                 <div className="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg">
