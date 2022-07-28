@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { monitorClient } from "clients/clients";
 
@@ -9,7 +9,7 @@ import ElencoTable from "./elenco-table/elenco-table";
 import ElencoForm from "./elenco-form/elenco-form";
 import { initialLazyParams, isFinestraAbilitata, modalitaFinestra } from "../content";
 import { useLocation } from "react-router-dom";
-import { calcolaDatePerFinestra, today } from "util/date-util";
+import { calcolaDatePerFinestra, formatDate, today } from "util/date-util";
 import { statiPagamento } from "model/tutti-i-stati";
 
 function useQuery() {
@@ -22,6 +22,23 @@ export const isFinestraDisabled = (flusso) => {
     if (flusso.iuv || flusso.codiceContesto || flusso.dataRichiestaList || flusso.dataRicevutaList)
         return true;
     return false;
+}
+
+export const emptyFlussoForm = (tab) => {
+    return {
+        // idDominio: propsDominio.idDominio,
+        ...(tab === 'avvisi' && { flagAnnullamento: 1 }),
+        iuv: '',
+        codiceContesto: '',
+        area: '',
+        servizio: '',
+        idPagatore: '',
+        idVersante: '',
+        statoOrEsito: '',
+        dataRichiestaList: null,
+        dataRicevutaList: null,
+        finestraTemporaleList: calcolaDatePerFinestra(modalitaFinestra, today),
+    }
 }
 
 // Componente condiviso per il tab Elenco e Avvisi
@@ -46,25 +63,12 @@ export default function Elenco(props) {
         return null;
     }
 
-    // useMemo(() => {
-    //     urlParams = manageUrlParams();
-    // }, [])
-
     const initialFlussoForm = () => {
         const urlParams = manageUrlParams();
         return {
-            // idDominio: propsDominio.idDominio,
-            ...(props.tab === 'avvisi' && { flagAnnullamento: 1 }),
+            ...emptyFlussoForm(props.tab),
             iuv: urlParams ? urlParams.iuv : '',
             codiceContesto: urlParams ? urlParams.codiceContesto : '',
-            area: '',
-            servizio: '',
-            idPagatore: '',
-            idVersante: '',
-            statoOrEsito: '',
-            dataRichiestaList: null,
-            dataRicevutaList: null,
-            finestraTemporaleList: calcolaDatePerFinestra(modalitaFinestra, today),
         }
     }
     const [flussoForm, setFlussoForm] = useState(initialFlussoForm());
@@ -73,6 +77,8 @@ export default function Elenco(props) {
     const [totalRecords, setTotalRecords] = useState(0);
     const [flussiList, setFlussiList] = useState([]);
     const [lazyParams, setLazyParams] = useState(structuredClone(initialLazyParams));
+
+    const fraseFinestra = useRef('');
 
     useEffect(() => {
         call();
@@ -107,6 +113,7 @@ export default function Elenco(props) {
         // Se finestraTemporale è renderizzata e abilitata, valorizza il filtro con la finestra
         if (isFinestraAbilitata && !isFinestraDisabled(flusso)) {
             valorizzaDate(flusso, flusso.finestraTemporaleList, 'dataRichiesta')
+            fraseFinestra.current = ` - Finestra Temporale: ${formatDate(flusso.finestraTemporaleList[0])} - ${formatDate(flusso.finestraTemporaleList[1])}` 
         } else { // Altrimenti con le altre date
             valorizzaDate(flusso, flusso.dataRichiestaList, 'dataRichiesta');
             valorizzaDate(flusso, flusso.dataRicevutaList, 'dataRicevuta');
@@ -143,13 +150,13 @@ export default function Elenco(props) {
     }
 
     const resetFiltri = () => {
-        setFlussoForm(structuredClone(initialFlussoForm()));
+        setFlussoForm(structuredClone(emptyFlussoForm(props.tab)));
         setLazyParams(structuredClone(initialLazyParams));
     };
 
     return (<>
         <ElencoForm tab={props.tab} aree={props.aree} servizi={props.servizi} stati={props.stati} resetFiltri={resetFiltri}
-            flussoForm={flussoForm} setFlussoForm={setFlussoForm} />
+            flussoForm={flussoForm} setFlussoForm={setFlussoForm} fraseFinestra={fraseFinestra.current}/>
         <ElencoTable tab={props.tab} flussiList={flussiList} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
             blockContent={props.blockContent} unblockContent={props.unblockContent} />
     </>

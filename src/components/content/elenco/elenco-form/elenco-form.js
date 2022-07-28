@@ -7,7 +7,7 @@ import { removeSpecialChars } from 'util/string-util';
 import { aggiungiGiorni, aggiungiMesi, calcolaDatePerFinestra, today } from "util/date-util";
 import { isFinestraAbilitata, modalitaFinestra } from "components/content/content";
 import { Calendar } from "primereact/calendar";
-import { isFinestraDisabled } from "../elenco";
+import { emptyFlussoForm, isFinestraDisabled } from "../elenco";
 
 const initialMinDate = aggiungiMesi(new Date(Date.now()), parseInt(propsDominio.intervalloDate));
 
@@ -23,7 +23,7 @@ export default function ElencoForm(props) {
 
     const resetFiltri = () => {
         props.resetFiltri();
-        setFlussoForm(props.flussoForm)
+        setFlussoForm(emptyFlussoForm(props.tab))
         minDataRichiesta.current = initialMinDate;
         maxDataRichiesta.current = today;
         minDataRicevuta.current = initialMinDate;
@@ -62,7 +62,7 @@ export default function ElencoForm(props) {
                 <div className="accordion-item">
                     <h3 className="accordion-header" id="elenco-accordion-heading">
                         <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#div-collapsible-1" aria-controls="div-collapsible-1">
-                            Ricerca
+                            Ricerca {props.fraseFinestra}
                         </button>
                     </h3>
                     <div id="div-collapsible-1" className="accordion-collapse collapse" aria-labelledby="elenco-accordion-heading" data-bs-parent="#elenco-accordion">

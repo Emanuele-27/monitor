@@ -5,7 +5,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 
-import { exportExcel, localeIT } from 'util/util';
+import { exportExcel } from 'util/util';
 import { formatDateTime } from "util/date-util";
 import { capitalizeFirstLetter, splitCamelCase } from "util/string-util";
 import { Link } from "react-router-dom";
@@ -19,7 +19,7 @@ export default function RptTable(props) {
     // Gestione date formattandole in dd/MM/yyy HH:mm:ss
     const columnData = (rowData, nomeData) => {
         if (rowData[nomeData])
-            return formatDateTime(localeIT, rowData[nomeData]);
+            return formatDateTime(rowData[nomeData]);
         return '';
     }
 
@@ -46,7 +46,7 @@ export default function RptTable(props) {
         let listNormalized = structuredClone(list);
 
         listNormalized.forEach(item => {
-            item.dataRichiesta = item.dataRichiesta ? formatDateTime(localeIT, item.dataRichiesta) : '';
+            item.dataRichiesta = item.dataRichiesta ? formatDateTime(item.dataRichiesta) : '';
             delete item.statoPagamento;
             delete item.idDominio;
             delete item.numPagamenti;

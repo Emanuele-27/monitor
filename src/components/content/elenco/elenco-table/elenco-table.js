@@ -38,8 +38,8 @@ export default function ElencoTable(props) {
     const prepareList = (list) => {
         let listNormalized = structuredClone(list);
         listNormalized.forEach(item => {
-            item.dataRichiesta = item.dataRichiesta ? formatDateTime(localeIT, item.dataRichiesta) : '';
-            item.dataRicevuta = item.dataRicevuta ? formatDateTime(localeIT, item.dataRicevuta) : '';
+            item.dataRichiesta = item.dataRichiesta ? formatDateTime(item.dataRichiesta) : '';
+            item.dataRicevuta = item.dataRicevuta ? formatDateTime(item.dataRicevuta) : '';
             delete item.idDominio;
             delete item.idServizio;
             delete item.idBeneficiario;
@@ -80,7 +80,7 @@ export default function ElencoTable(props) {
     // Gestione date formattandole in dd/MM/yyy HH:mm:ss
     const columnData = (rowData, nomeData) => {
         if (rowData[nomeData])
-            return formatDateTime(localeIT, rowData[nomeData]);
+            return formatDateTime(rowData[nomeData]);
         return '';
     }
 

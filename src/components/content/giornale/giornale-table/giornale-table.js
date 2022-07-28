@@ -4,7 +4,6 @@ import "./giornale-table.css";
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 
-import { localeIT } from 'util/util';
 import { formatDateTime } from "util/date-util";
 import { formatEsito } from "model/tutti-i-stati";
 
@@ -23,7 +22,7 @@ export default function GiornaleTable(props) {
     // Gestione date formattandole in dd/MM/yyy HH:mm:ss
     const columnData = (rowData, nomeData) => {
         if (rowData[nomeData])
-            return formatDateTime(localeIT, rowData[nomeData]);
+            return formatDateTime(rowData[nomeData]);
         return '';
     }
 
