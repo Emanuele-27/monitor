@@ -180,7 +180,7 @@ export default function Elenco(props) {
     }
 
     return (<>
-        <div className="container">
+        <div className="container">        {/* Severities possibili: success, danger, warning, info */}
             <div id="elenco-msg" className={"alert alert-" + elencoMsg.severity + " alert-dismissible fade show " + (elencoMsg.show ? '' : 'hidden')} role="alert">
                 <b>{elencoMsg.summary + " "}</b>
                 {elencoMsg.detail}

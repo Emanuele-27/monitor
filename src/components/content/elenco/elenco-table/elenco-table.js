@@ -12,8 +12,8 @@ import { capitalizeFirstLetter, replaceUnderscore, splitCamelCase } from "util/s
 import { formatDateTime } from "util/date-util";
 import { monitorClient } from "clients/monitor-client";
 import { propsDominio } from "config/config";
-import { auxClient } from "clients/aux-client";
 import { getRptBadgeCount } from "components/content/content";
+import { auxClient } from "clients/aux-client";
 
 const esitoStatoRPTMap = new Map();
 
@@ -148,23 +148,24 @@ export default function ElencoTable(props) {
     };
 
     // Recupera i dati da mostrare nel modal
-    const getModalInfo = async (rowInfo) => {
+    const getModalInfo = async (rowData) => {
 
         // Dati per primo tab
-        setFlussoModal(rowInfo);
+        setFlussoModal(rowData);
 
         // Recupero dati per secondo tab
         const giornaleEventi = {
-            idDominio: rowInfo.idDominio,
-            iuv: rowInfo.iuv,
-            codContesto: rowInfo.codiceContesto
+            idDominio: rowData.idDominio,
+            iuv: rowData.iuv,
+            codContesto: rowData.codiceContesto
         };
 
         monitorClient.getGiornalePerPagamento(giornaleEventi).then(
             res => setListGiornaleModal(res.giornaleList)
         );
-
-        setInfoStatoRPT({});
+        
+        // Dati per terzo tab
+        setInfoStatoRPT(esitoStatoRPTMap.get(rowData.idFlusso));
     };
 
     const aggiornaStato = async (rowData) => {
@@ -182,7 +183,7 @@ export default function ElencoTable(props) {
 
         try {
             const stato = await auxClient.nodoChiediStatoRPT(nodoChiediStatoRPT);
-
+            
             if (!stato)
                 throw new Error("Riprovare in un altro momento");
 
@@ -197,8 +198,9 @@ export default function ElencoTable(props) {
                 throw new Error(ricevuta.fault.description);
 
             props.call();
-            getRptBadgeCount().then(res => props.setRptBadgeCount(res.filtroFlusso.count < 0 ? 0 : res.filtroFlusso.count));
-            // messagge giusto
+            const count = (await getRptBadgeCount()).filtroFlusso.count;
+            props.setRptBadgeCount(count > 0 ? count : 0);
+            props.showMsg("info", "Info:", "Operazione effettuata con successo. E' possibile consultare l'esito nel pannello dettagli");
         } catch (e) {
             props.showMsg("danger", "Errore di sistema:", e.message);
         } finally {
