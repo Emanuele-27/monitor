@@ -3,7 +3,7 @@ import "./giornale-form.css";
 
 import { removeNumbers, removeSpecialChars } from 'util/string-util';
 import { Calendar } from "primereact/calendar";
-import { propsDominio } from "util/config";
+import { propsDominio } from "config/config";
 import { calcolaDatePerFinestra } from "util/date-util";
 import { isFinestraAbilitata, modalitaFinestra } from "components/content/content";
 import { emptyGiornaleForm, isFinestraDisabled } from "../giornale";

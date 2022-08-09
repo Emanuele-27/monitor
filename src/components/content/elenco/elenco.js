@@ -1,8 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
-import { monitorClient } from "clients/clients";
-
-import { propsDominio } from 'util/config';
+import { propsDominio } from 'config/config';
+import './elenco.css';
 
 import { columnMapper, deleteUndefinedValues, sortMapper } from 'util/util';
 import ElencoTable from "./elenco-table/elenco-table";
@@ -11,6 +10,7 @@ import { initialLazyParams, isFinestraAbilitata, modalitaFinestra } from "../con
 import { useLocation } from "react-router-dom";
 import { calcolaDatePerFinestra, formatDate, today } from "util/date-util";
 import { statiPagamento } from "model/tutti-i-stati";
+import { monitorClient } from "clients/monitor-client";
 
 function useQuery() {
     const { search } = useLocation();
@@ -80,6 +80,10 @@ export default function Elenco(props) {
     const [flussiList, setFlussiList] = useState([]);
     const [lazyParams, setLazyParams] = useState(structuredClone(initialLazyParams));
 
+    const [elencoMsg, setElencoMsg] = useState({
+        show: false,
+    });
+
     const fraseFinestra = useRef('');
 
     useEffect(() => {
@@ -115,7 +119,7 @@ export default function Elenco(props) {
         // Se finestraTemporale è renderizzata e abilitata, valorizza il filtro con la finestra
         if (isFinestraAbilitata && !isFinestraDisabled(flusso)) {
             valorizzaDate(flusso, flusso.finestraTemporaleList, 'dataRichiesta')
-            fraseFinestra.current = ` - Finestra Temporale: ${formatDate(flusso.finestraTemporaleList[0])} - ${formatDate(flusso.finestraTemporaleList[1])}` 
+            fraseFinestra.current = ` - Finestra Temporale: ${formatDate(flusso.finestraTemporaleList[0])} - ${formatDate(flusso.finestraTemporaleList[1])}`
         } else { // Altrimenti con le altre date
             valorizzaDate(flusso, flusso.dataRichiestaList, 'dataRichiesta');
             valorizzaDate(flusso, flusso.dataRicevutaList, 'dataRicevuta');
@@ -156,11 +160,38 @@ export default function Elenco(props) {
         setLazyParams(structuredClone(initialLazyParams));
     };
 
+    useEffect(() => {
+        document.getElementById("elenco-msg").scrollIntoView({ behavior: "smooth", block: "center" });
+    }, [elencoMsg]);
+
+    const showMsg = (severityParam, summaryParam, detailParam) => {
+        setElencoMsg({
+            severity: severityParam,
+            summary: summaryParam,
+            detail: detailParam,
+            show: true,
+        });
+    }
+
+    const hideMsg = () => {
+        setElencoMsg({
+            show: false
+        });;
+    }
+
     return (<>
+        <div className="container">
+            <div id="elenco-msg" className={"alert alert-" + elencoMsg.severity + " alert-dismissible fade show " + (elencoMsg.show ? '' : 'hidden')} role="alert">
+                <b>{elencoMsg.summary + " "}</b>
+                {elencoMsg.detail}
+                <button type="button" onClick={hideMsg} className="btn-close" aria-label="Chiudi"></button>
+            </div>
+        </div>
         <ElencoForm tab={props.tab} aree={props.aree} servizi={props.servizi} stati={props.stati} resetFiltri={resetFiltri}
-            flussoForm={flussoForm} setFlussoForm={setFlussoForm} fraseFinestra={fraseFinestra.current}/>
+            flussoForm={flussoForm} setFlussoForm={setFlussoForm} fraseFinestra={fraseFinestra.current} />
         <ElencoTable tab={props.tab} flussiList={flussiList} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
-            blockContent={props.blockContent} unblockContent={props.unblockContent} />
+            blockContent={props.blockContent} unblockContent={props.unblockContent} call={call} setRptBadgeCount={props.setRptBadgeCount}
+            showMsg={showMsg} />
     </>
     );
 }

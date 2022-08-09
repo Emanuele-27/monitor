@@ -1,7 +1,17 @@
-div#elenco-table{
+div#elenco-table {
     font-size: 0.8rem;
 }
+
 div#opzioni-column span {
     cursor: pointer;
     padding: 0 2px 0 2px;
+}
+
+button.header-button {
+    height: 2.5rem;
+    margin-left: 1rem;
+}
+
+button.header-button span {
+    font-weight: normal;
 }

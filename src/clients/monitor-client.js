@@ -1,3 +1,5 @@
+import { configProps } from "config/config";
+import { acceptJson, acceptLanguage } from "util/util";
 import { FetchClient } from "./fetch-client";
 
 export class MonitorClient extends FetchClient{
@@ -32,3 +34,5 @@ export class MonitorClient extends FetchClient{
         return this.callPOST(this.host + this.baseUrl + 'getRptSenzaRt', flussoData);
     }
 }
+
+export const monitorClient = new MonitorClient(configProps.monitorHost, acceptJson, acceptLanguage);

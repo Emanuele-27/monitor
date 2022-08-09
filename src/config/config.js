@@ -3,8 +3,10 @@ const configProps = {
     monitorHost: process.env.REACT_APP_MONITOR_HOST,
     monitorStatHost: process.env.REACT_APP_MONITOR_STAT_HOST,
     monitorAccHost: process.env.REACT_APP_MONITOR_ACC_HOST,
+    auxHost: process.env.REACT_APP_AUX_HOST,
 }
 
+// Inizio gestione props dominio
 const suffissiDomini = {
     suffissoAdm: 'ADM',
     suffissoAe: 'AE',
@@ -49,6 +51,9 @@ const propsDominio = {
     intervalloFiltroDate: process.env['REACT_APP_INTERVALLO_FILTRO_DATE_' + suffissoDom],
     modalitaFinestra: process.env['REACT_APP_INTERVALLO_FINESTRA_TEMPORALE_' + suffissoDom],
     avvisiEnabled: process.env['REACT_APP_AVVISI_ENABLE_' + suffissoDom],
+    idIntermediarioPA: process.env['REACT_APP_ID_INTERMEDIARIO_PA_' + suffissoDom],
+    idStazionePA: process.env['REACT_APP_ID_STAZIONE_PA_' + suffissoDom],
+    pwdPA: process.env['REACT_APP_PWD_PA_' + suffissoDom],
 }
 
 export { configProps, suffissiDomini, propsDominio };

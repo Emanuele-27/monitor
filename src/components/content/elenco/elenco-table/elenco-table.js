@@ -7,16 +7,25 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 
-import { exportExcel, localeIT } from 'util/util';
-import { monitorClient } from "clients/clients";
+import { exportExcel, isIuvRF, localeIT } from 'util/util';
 import { capitalizeFirstLetter, replaceUnderscore, splitCamelCase } from "util/string-util";
 import { formatDateTime } from "util/date-util";
+import { monitorClient } from "clients/monitor-client";
+import { propsDominio } from "config/config";
+import { auxClient } from "clients/aux-client";
+import { getRptBadgeCount } from "components/content/content";
+
+const esitoStatoRPTMap = new Map();
 
 // Componente condiviso per il tab Elenco e Avvisi, differenziati da props.tab
 export default function ElencoTable(props) {
 
-    const [flussoModal, setFlussoModal] = useState(0);
-    const [listGiornaleModal, setListGiornaleModal] = useState(0);
+    // Primo tab opzione dettaglio
+    const [flussoModal, setFlussoModal] = useState({});
+    // Secondo tab opzione dettaglio
+    const [listGiornaleModal, setListGiornaleModal] = useState({});
+    // Terzo tab opzione dettaglio
+    const [infoStatoRPT, setInfoStatoRPT] = useState({});
 
     const onPage = (event) => {
         props.setLazyParams(event);
@@ -28,9 +37,16 @@ export default function ElencoTable(props) {
 
     const header = () => {
         return <>
+            <div style={{ fontSize: "1.2rem" }}>
                 Numero Transazioni: {props.totalRecords}
-            <div style={{ marginRight: "0", marginLeft: "auto"}}>
-                <Button type="button" icon="pi pi-file-excel" onClick={() => exportExcel(prepareList(props.flussiList), 'elenco')} className="p-button-success mr-2" data-pr-tooltip="XLS" />
+            </div>
+            <div style={{ marginRight: "0", marginLeft: "auto" }}>
+                <Button type="button" icon="pi pi-file-excel" onClick={() => exportExcel(prepareList(props.flussiList), 'elenco')}
+                    title="Esporta in Excel" className="p-button-success mr-2" data-pr-tooltip="XLS" />
+                <Button label="Aggiorna Elenco" onClick={props.call} className="p-button-info header-button" />
+                {/*TO DO aggiorna stati*/}
+                {props.tab === 'elenco' &&
+                    <Button label="Aggiorna Stati" className="p-button-info header-button" />}
             </div>
         </>
     }
@@ -105,26 +121,24 @@ export default function ElencoTable(props) {
     const columnOpzioni = (rowData) => {
         return (<div id="opzioni-column">
             <span title="Visualizza dettaglio" onClick={() => getModalInfo(rowData)} data-bs-toggle="modal" data-bs-target="#dettaglio-modal" ><i className="pi pi-search"></i></span>
-            {renderAltreOpzioni(rowData.statoPagamento, rowData.iuv)}
+            {renderAltreOpzioni(rowData)}
         </div>);
     };
 
-    // Se stato non è valido non renderizza le altre due opzioni
-    // altrimenti le renderizza, se iuv non inizia con RF saranno disabled
-    const renderAltreOpzioni = (stato, iuv) => {
-        if (isStatoValido(stato)) {
-            if (isIuvRF(iuv))
-                return <><span title="Aggiorna stato"><i className="pi pi-file-o"></i></span>
-                    <span title="Chiedi ricevuta"><i className="pi pi-download"></i></span></>
-            else
-                return <><span title="Aggiorna stato" disabled><i className="pi pi-file-o"></i></span>
-                    <span title="Chiedi ricevuta" disabled><i className="pi pi-download"></i></span></>
+    const renderAltreOpzioni = (rowData) => {
+        if (props.tab === 'elenco') {
+            if (isStatoValido(rowData.statoPagamento)) {
+                if (isIuvRF(rowData.iuv))
+                    return <><span title="Aggiorna stato" onClick={() => aggiornaStato(rowData)}><i className="pi pi-file-o"></i></span>
+                        <span title="Chiedi ricevuta"><i className="pi pi-download"></i></span></>
+                else
+                    return <><span disabled><i className="pi pi-file-o"></i></span>
+                        <span disabled><i className="pi pi-download"></i></span></>
+            }
+        } else {
+            // Download avviso 
         }
         return <></>
-    };
-
-    const isIuvRF = (iuv) => {
-        return iuv && iuv.startsWith('RF');
     };
 
     // Stato valido se non è uno tra questi
@@ -135,10 +149,11 @@ export default function ElencoTable(props) {
 
     // Recupera i dati da mostrare nel modal
     const getModalInfo = async (rowInfo) => {
-        props.blockContent();
 
+        // Dati per primo tab
         setFlussoModal(rowInfo);
 
+        // Recupero dati per secondo tab
         const giornaleEventi = {
             idDominio: rowInfo.idDominio,
             iuv: rowInfo.iuv,
@@ -147,8 +162,49 @@ export default function ElencoTable(props) {
 
         monitorClient.getGiornalePerPagamento(giornaleEventi).then(
             res => setListGiornaleModal(res.giornaleList)
-        ).finally(() => props.unblockContent());
+        );
+
+        setInfoStatoRPT({});
     };
+
+    const aggiornaStato = async (rowData) => {
+
+        props.blockContent();
+
+        const nodoChiediStatoRPT = {
+            codiceContestoPagamento: rowData.codiceContesto,
+            identificativoDominio: rowData.idDominio,
+            identificativoUnivocoVersamento: rowData.iuv,
+            identificativoIntermediarioPA: propsDominio.idIntermediarioPA,
+            identificativoStazioneIntermediarioPA: propsDominio.idStazionePA,
+            password: propsDominio.pwdPA
+        };
+
+        try {
+            const stato = await auxClient.nodoChiediStatoRPT(nodoChiediStatoRPT);
+
+            if (!stato)
+                throw new Error("Riprovare in un altro momento");
+
+            esitoStatoRPTMap.set(rowData.idFlusso, stato.esitoChiediStatoRPT)
+
+            if (stato.faultBean)
+                throw new Error(stato.faultBean.description);
+
+            const ricevuta = stato.nodoChiediCopiaRTRisposta;
+
+            if (ricevuta && ricevuta.fault)
+                throw new Error(ricevuta.fault.description);
+
+            props.call();
+            getRptBadgeCount().then(res => props.setRptBadgeCount(res.filtroFlusso.count < 0 ? 0 : res.filtroFlusso.count));
+            // messagge giusto
+        } catch (e) {
+            props.showMsg("danger", "Errore di sistema:", e.message);
+        } finally {
+            props.unblockContent();
+        }
+    }
 
     return (
         <div className="container-fluid" style={{ width: "85%" }}>
@@ -160,11 +216,11 @@ export default function ElencoTable(props) {
                 <Column field="area" header="Area" />
                 <Column field="servizio" header="Categoria" />
                 <Column sortable field="dataRichiesta" header="Data Richiesta" body={(rowData) => columnData(rowData, 'dataRichiesta')} />
-                { props.tab === 'elenco' && 
+                {props.tab === 'elenco' &&
                     <Column sortable field="dataRicevuta" header="Data Ricevuta" body={(rowData) => columnData(rowData, 'dataRicevuta')} />}
                 <Column header="Pagatore - Versante" body={columnPagatoreVersante} />
                 <Column header="Importo" body={columnImporto} />
-                { props.tab === 'elenco' && 
+                {props.tab === 'elenco' &&
                     <Column header="Stato" body={columnStato} />}
                 <Column header="Opzioni" body={columnOpzioni} style={{ width: "7%" }} />
                 {/* TO DO Finire Opzioni, iniziare Opzioni comuni */}
@@ -228,7 +284,7 @@ export default function ElencoTable(props) {
                                     </h3>
                                     <div id="heading-collapse-2" className="accordion-collapse collapse" aria-labelledby="heading-collapse-2" data-bs-parent="#dettaglio-modal-accordion">
                                         <div className="accordion-body">
-                                            <DataTable id="elenco-table" showGridlines stripedRows value={listGiornaleModal} emptyMessage="Nessun elemento presente">
+                                            <DataTable showGridlines stripedRows value={listGiornaleModal} emptyMessage="Nessun elemento presente">
                                                 <Column header="Data Evento" body={(rowData) => columnData(rowData, 'dataOraEvento')} />
                                                 <Column header="Tipo Evento" body={columnTipoEvento} />
                                                 <Column field="idFruitore" header="Fruitore" />
@@ -246,8 +302,43 @@ export default function ElencoTable(props) {
                                         </button>
                                     </h3>
                                     <div id="heading-collapse-3" className="accordion-collapse collapse" aria-labelledby="heading-collapse-3" data-bs-parent="#dettaglio-modal-accordion">
-                                        <div className="accordion-body">{/*TO DO Implementare logica terzo tab */}
-                                            <div style={{ textAlign: "center" }}> Informazioni aggiuntive presenti solo dopo l'esecuzione dell'aggiornamento dello stato </div>
+                                        <div className="accordion-body">
+                                            {infoStatoRPT
+                                                ? (<>
+                                                    <div className="row" style={{ marginBottom: "1.5rem" }}>
+                                                        <div className="col-3 col-xs-3">
+                                                            <b>Stato finale:</b>
+                                                        </div>
+                                                        <div className="col-3 col-xs-3">
+                                                            {infoStatoRPT.stato}
+                                                        </div>
+                                                        <div className="col-6 col-xs-6" />
+                                                        <div className="col-3 col-xs-3">
+                                                            <b>Url redirect:</b>
+                                                        </div>
+                                                        <div className="col-3 col-xs-3">
+                                                            {infoStatoRPT.url}
+                                                        </div>
+                                                        <div className="col-6 col-xs-6" />
+                                                    </div>
+
+                                                    <DataTable showGridlines stripedRows value={infoStatoRPT.elementoStoricoRPT} rows={5} emptyMessage="Nessun elemento presente"
+                                                        header={"Storico stati RPT"} style={{ marginBottom: "1.5rem" }}>
+                                                        <Column header="Data" body={(rowData) => columnData(rowData, 'data')} />
+                                                        <Column header="Stato" body={(rowData) => replaceUnderscore(rowData.stato)} />
+                                                        <Column header="Descrizione" field="descrizione" />
+                                                    </DataTable>
+
+                                                    <DataTable showGridlines stripedRows value={infoStatoRPT.elementoStoricoVersamento} emptyMessage="Nessun elemento presente"
+                                                        header={"Storico versamenti"}>
+                                                        <Column header="Progressivo" field="progressivo" />
+                                                        <Column header="Data" body={(rowData) => columnData(rowData, 'data')} />
+                                                        <Column header="Stato" body={(rowData) => replaceUnderscore(rowData.stato)} />
+                                                        <Column header="Descrizione" field="descrizione" />
+                                                    </DataTable>
+                                                </>
+                                                )
+                                                : (<div style={{ textAlign: "center" }}> Informazioni aggiuntive presenti solo dopo l'esecuzione dell'aggiornamento dello stato </div>)}
                                         </div>
                                     </div>
                                 </div>

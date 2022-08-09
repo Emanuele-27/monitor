@@ -12,12 +12,12 @@ import Rpt from "./rpt/rpt";
 import { BlockUI } from 'primereact/blockui';
 
 import './content.css';
-import { monitorClient } from "clients/clients";
-import { propsDominio } from "util/config";
+import { propsDominio } from "config/config";
 import { esitiPagamento, formatEsito, statiPagamento } from "model/tutti-i-stati";
 import { replaceUnderscore } from "util/string-util";
 import { addLocale } from "primereact/api";
 import { localeDate } from "util/util";
+import { monitorClient } from "clients/monitor-client";
 
 export const initialLazyParams = {
     first: 0,
@@ -32,6 +32,19 @@ export const modalitaFinestra = propsDominio.modalitaFinestra; // Valori consent
 
 const avvisiEnabled = propsDominio.avvisiEnabled === 'true';
 const widthTabs = avvisiEnabled ? '20%' : '25%';
+
+export const getRptBadgeCount = () => {
+    const flussoData = {
+        filtroFlusso: {
+            da: 1,
+            a: 2,
+            flusso: {
+                // idDominio: propsDominio.idDominio
+            }
+        }
+    }
+    return monitorClient.getRptSenzaRt(flussoData);
+}
 
 export default function Content() {
 
@@ -67,19 +80,6 @@ export default function Content() {
     const toggleFocusClass = (ev) => {
         document.getElementById('tabsRow').getElementsByClassName('entrypoint-focus')[0].classList.remove('entrypoint-focus');
         ev.target.classList.add('entrypoint-focus');
-    }
-
-    const getRptBadgeCount = () => {
-        const flussoData = {
-            filtroFlusso: {
-                da: 1,
-                a: 2,
-                flusso: {
-                    // idDominio: propsDominio.idDominio
-                }
-            }
-        }
-        return monitorClient.getRptSenzaRt(flussoData);
     }
 
     // Nel dropdown di stato ci sono sia stati che esiti, in fase  
@@ -136,8 +136,8 @@ export default function Content() {
                     {/* L'attributo key diverso serve a far ricreare il componente invece di riutilizzarlo, causa query diversa */}
                     <Route path="/avvisi" element={<Elenco key="2" tab="avvisi" aree={areeOpt} servizi={serviziOpt} blockContent={blockContent} unblockContent={unblockContent} />} />
                     <Route path="/rpt" element={<Rpt aree={areeOpt} servizi={serviziOpt} blockContent={blockContent} unblockContent={unblockContent} />} />
-                    <Route path="/elenco" element={<Elenco key="1" tab="elenco" aree={areeOpt} servizi={serviziOpt} stati={statiEsitiOpt} blockContent={blockContent} unblockContent={unblockContent} />} />
-                    {/* <Route path="/elenco/:iuv/:codContesto" element={<Elenco key="1" tab="elenco" aree={areeOpt} servizi={serviziOpt} stati={statiEsitiOpt} blockContent={blockContent} unblockContent={unblockContent} />} /> */}
+                    <Route path="/elenco" element={<Elenco key="1" tab="elenco" aree={areeOpt} servizi={serviziOpt} stati={statiEsitiOpt} blockContent={blockContent} 
+                                                            unblockContent={unblockContent} setRptBadgeCount={setRptBadgeCount} />} />
                     <Route path="/giornale" element={<Giornale stati={statiEsitiOpt} blockContent={blockContent} unblockContent={unblockContent} />} />
                 </Routes>
             </div>

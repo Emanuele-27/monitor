@@ -27,6 +27,7 @@ span[disabled] {
     height: 2.5rem;
 }
 
+/* Campi data e finestre temporali */
 span[id^=data], span[id^=finestra] {
     display: block
 }

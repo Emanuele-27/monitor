@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Footer from "./layout/footer";
 import Header from "./layout/header";
 import Body from "./layout/body";
-import { propsDominio, suffissiDomini } from "util/config";
+import { propsDominio, suffissiDomini } from "config/config";
 
 // Mapping dominio corrente - tema
 const mapperDominioLogo = new Map([

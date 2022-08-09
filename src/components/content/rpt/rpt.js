@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 
-import { monitorClient } from "clients/clients";
 
 import RptForm from "./rpt-form/rpt-form";
 import RptTable from "./rpt-table/rpt-table";
 import { initialLazyParams } from "../content";
 import { deleteUndefinedValues } from "util/util";
+import { monitorClient } from "clients/monitor-client";
 
 export const emptyFlussoForm = {
     // idDominio: propsDominio.idDominio,

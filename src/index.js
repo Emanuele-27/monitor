@@ -8,7 +8,7 @@ import App from './App';
 
 import { BrowserRouter } from "react-router-dom";
 
-import { suffissiDomini, propsDominio } from 'util/config'
+import { suffissiDomini, propsDominio } from 'config/config'
 
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";

@@ -12,7 +12,7 @@ import { ReactComponent as AERLogo } from 'assets/ader/ADER_logo.svg';
 import { ReactComponent as SogeiLogoBianco } from 'assets/sogei/Sogei_arancio_bianco.svg';
 import { ReactComponent as SogeiLogo } from 'assets/sogei/Sogei_arancio.svg';
 
-import { propsDominio, suffissiDomini } from "util/config";
+import { propsDominio, suffissiDomini } from "config/config";
 
 import { InputSwitch } from 'primereact/inputswitch';
 

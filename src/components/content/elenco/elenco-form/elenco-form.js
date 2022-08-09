@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import "./elenco-form.css";
 
-import { propsDominio } from 'util/config';
+import { propsDominio } from 'config/config';
 
 import { removeSpecialChars } from 'util/string-util';
 import { aggiungiGiorni, aggiungiMesi, calcolaDatePerFinestra, today } from "util/date-util";

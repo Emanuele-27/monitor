@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import Chart from 'chart.js/auto';
 import './home.css';
-import { monitorClient, monitorStatClient, monitorAccountabilityClient } from 'clients/clients';
+import { monitorClient } from "clients/monitor-client";
+import { monitorStatClient } from "clients/monitor-stat-client";
+import { monitorAccountabilityClient } from "clients/monitor-accountability-client";
 
 const chartOptions = {
     aspectRatio: 1,

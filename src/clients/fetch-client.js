@@ -21,7 +21,7 @@ export class FetchClient {
             headers: this.headers
         };
         if (body){// TO DO stringify converte le date in utc,
-            // controllare che il servizio le riconverti
+            // controllare che il servizio le riconverti, eliminare i console log
             request.body = JSON.stringify(body);
             console.log(request.body)
         }

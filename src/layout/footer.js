@@ -1,5 +1,5 @@
 import React from "react";
-import { propsDominio } from "util/config";
+import { propsDominio } from "config/config";
 import { mapperDominioLogoDark, mapperDominioLogoLight } from "./header";
 
 export default function Footer(props) {

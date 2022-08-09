@@ -1,11 +1,11 @@
-import { monitorClient } from "clients/clients";
 import React, { useEffect, useRef, useState } from "react";
-import { propsDominio } from "util/config";
+import { propsDominio } from "config/config";
 import { calcolaDatePerFinestra, formatDate, today } from "util/date-util";
 import { columnMapper, deleteUndefinedValues, sortMapper } from "util/util";
 import { initialLazyParams, isFinestraAbilitata, modalitaFinestra } from "../content";
 import GiornaleForm from "./giornale-form/giornale-form";
 import GiornaleTable from "./giornale-table/giornale-table";
+import { monitorClient } from "clients/monitor-client";
 
 // Disabled se almeno uno di questi campi è valorizzato
 export const isFinestraDisabled = (giornale) => {

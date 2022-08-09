@@ -1,3 +1,7 @@
+export const acceptJson = 'application/json';
+export const acceptLanguage = 'it';
+export const localeIT = 'it-IT';
+
 export const columnMapper = new Map([
     ['dataRichiesta', 'DATA_RICHIESTA'],
     ['dataRicevuta', 'DATA_RICEVUTA'],
@@ -48,4 +52,6 @@ export const exportExcel = (list, fileName) => {
     });
 }
 
-export const localeIT = 'it-IT';
+export const isIuvRF = (iuv) => {
+    return iuv && iuv.startsWith('RF');
+};
