@@ -128,18 +128,31 @@ export default function ElencoTable(props) {
     };
 
     const renderAltreOpzioni = (rowData) => {
-        if (props.tab === 'elenco') {
-            if (isStatoValido(rowData.statoPagamento)) {
+        if (props.tab === 'elenco')
+            if (isStatoValido(rowData.statoPagamento))
                 if (isIuvRF(rowData.iuv))
                     return <><span title="Aggiorna stato" onClick={() => aggiornaStato(rowData)}><i className="pi pi-file-o"></i></span>
                         <span title="Chiedi ricevuta" onClick={() => chiediRicevuta(rowData)}><i className="pi pi-download"></i></span></>
                 else
                     return <><span disabled><i className="pi pi-file-o"></i></span>
                         <span disabled><i className="pi pi-download"></i></span></>
-            }
-        } else { // Opzioni tab avvisi
-            return <span title="Download avviso" onClick={() => downloadAvviso(rowData)}><i className="pi pi-download"></i></span>
-        }
+        // Opzioni tab avvisi
+        return <span title="Download avviso" onClick={() => downloadAvviso(rowData)}><i className="pi pi-download"></i></span>
+    };
+
+    const columnOpzioniComuni = (rowData) => {
+        if (isStatoValido(rowData.statoPagamento) && rowData.idCarrello)
+            if (rowData.idRicevuta && isIuvRF(rowData.iuv))
+                return <div id="opzioni-comuni-column">
+                    <span title="Aggiorna stato" onClick={() => aggiornaStatoCarrello(rowData)}><i className="pi pi-wallet"></i></span>
+                    <span title="Download ricevute" onClick={() => chiediRicevutaCarrello(rowData)}><i className="pi pi-download"></i></span>
+                </div>
+            else
+                return <div id="opzioni-comuni-column">
+                    <span disabled><i className="pi pi-wallet"></i></span>
+                    <span disabled><i className="pi pi-download"></i></span>
+                </div>
+        return <></>;
     };
 
     // Stato valido se non è uno tra questi
@@ -249,7 +262,31 @@ export default function ElencoTable(props) {
         } finally {
             props.unblockContent();
         }
-    }
+    };
+
+    const aggiornaStatoCarrello = async (rowData) => {
+
+        props.blockContent();
+
+        const statoRPTCopiaRTCarrello = {
+            password: propsDominio.pwdPA,
+            intestazioneCarrelloPPT: {
+                identificativoCarrello: rowData.idCarrello,
+                identificativoIntermediarioPA: propsDominio.idIntermediarioPA,
+                identificativoStazioneIntermediarioPA: propsDominio.idStazionePA,
+            }
+        }
+
+        const stato = await auxClient.nodoChiediStatoRPTCarrello(statoRPTCopiaRTCarrello);
+
+        // Se nessun elemento della lista contiene errore
+        if (stato && stato.statoRPTCopiaRT && !stato.statoRPTCopiaRT.find((element) => element.nodoChiediCopiaRTRisposta.fault))
+            props.showMsg("info", "Info:", "Operazione effettuata con successo. E' possibile consultare l'esito nel pannello dettagli");
+        else
+            props.showMsg("danger", "Errore di sistema:", "Riprovare in un altro momento");
+
+        props.unblockContent();
+    };
 
     const chiediRicevuta = async (rowData) => {
 
@@ -268,7 +305,31 @@ export default function ElencoTable(props) {
         }
 
         props.unblockContent();
-    }
+    };
+
+    const chiediRicevutaCarrello = async (rowData) => {
+
+        props.blockContent();
+
+        const statoRPTCopiaRTCarrello = {
+            password: propsDominio.pwdPA,
+            intestazioneCarrelloPPT: {
+                identificativoCarrello: rowData.idCarrello,
+                identificativoIntermediarioPA: propsDominio.idIntermediarioPA,
+                identificativoStazioneIntermediarioPA: propsDominio.idStazionePA,
+            },
+        }
+
+        const ricevuta = await auxClient.nodoChiediCopiaRTCarrello(statoRPTCopiaRTCarrello);
+
+        if (ricevuta && ricevuta.nodoChiediCopiaRTRisposta && !ricevuta.nodoChiediCopiaRTRisposta.find((element) => !element || element.nodoChiediCopiaRTRisposta.fault))
+            props.showMsg("info", "Info:", "Operazione effettuata con successo. E' possibile consultare l'esito nel pannello dettagli");
+        else
+            props.showMsg("danger", "Errore di sistema:", "Riprovare in un altro momento");
+
+
+        props.unblockContent();
+    };
 
     const downloadAvviso = async (rowData) => {
 
@@ -312,8 +373,8 @@ export default function ElencoTable(props) {
                 {props.tab === 'elenco' &&
                     <Column header="Stato" body={columnStato} />}
                 <Column header="Opzioni" body={columnOpzioni} style={{ width: "7%" }} />
-                {/* TO DO Finire Opzioni, iniziare Opzioni comuni */}
-                {/* <Column header="Opzioni Comuni" body={columnOpzioniComuni}  /> */}
+                {props.tab === 'elenco' &&
+                    <Column header="Opzioni comuni" body={columnOpzioniComuni} />}
             </DataTable>
 
             <div className="modal fade" id="dettaglio-modal" tabIndex="-1" aria-labelledby="dettaglio-modal-content" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">

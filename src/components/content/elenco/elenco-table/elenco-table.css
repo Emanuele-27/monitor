@@ -2,8 +2,11 @@ div#elenco-table {
     font-size: 0.8rem;
 }
 
-div#opzioni-column span {
+div[id^=opzioni] span:not([disabled]) {
     cursor: pointer;
+}
+
+div[id^=opzioni] span {
     padding: 0 2px 0 2px;
 }
 
