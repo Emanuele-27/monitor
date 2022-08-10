@@ -13,6 +13,10 @@ export class AuxClient extends FetchClient{
     nodoChiediStatoRPT(nodoChiediStatoRPT) {
         return this.callPOST(this.host + this.baseUrl + 'nodoChiediStatoRPT', nodoChiediStatoRPT);
     }
+
+    nodoChiediCopiaRT(nodoChiediCopiaRT) {
+        return this.callPOST(this.host + this.baseUrl + 'nodoChiediCopiaRT', nodoChiediCopiaRT);
+    }
 }
 
 export const auxClient = new AuxClient(configProps.auxHost, acceptJson, acceptLanguage)

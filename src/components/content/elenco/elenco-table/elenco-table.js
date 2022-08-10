@@ -130,7 +130,7 @@ export default function ElencoTable(props) {
             if (isStatoValido(rowData.statoPagamento)) {
                 if (isIuvRF(rowData.iuv))
                     return <><span title="Aggiorna stato" onClick={() => aggiornaStato(rowData)}><i className="pi pi-file-o"></i></span>
-                        <span title="Chiedi ricevuta"><i className="pi pi-download"></i></span></>
+                        <span title="Chiedi ricevuta" onClick={() => chiediRicevuta(rowData)}><i className="pi pi-download"></i></span></>
                 else
                     return <><span disabled><i className="pi pi-file-o"></i></span>
                         <span disabled><i className="pi pi-download"></i></span></>
@@ -188,11 +188,13 @@ export default function ElencoTable(props) {
 
         let rptPromises = [];
 
+        // Raccolta pending promises 
         dataResult.flussoList.forEach((flusso) => {
             const nodoChiediStatoRPT = getNodoChiediStatoRPTParam(flusso.codiceContesto, flusso.idDominio, flusso.iuv);
             rptPromises.push(auxClient.nodoChiediStatoRPT(nodoChiediStatoRPT));
         });
 
+        // Sync promises on fullfilled
         Promise.allSettled(rptPromises).then(responses => {
             let countOK = 0;
             responses.forEach((res) => {
@@ -201,10 +203,11 @@ export default function ElencoTable(props) {
                     countOK++;
             });
             props.call();
-            props.showMsg("info", "Info:", "Operazione effettuata con successo. Sono stati aggiornati " + countOK + " flussi su " + responses.length);
+            props.showMsg("info", "Info:", "Operazione effettuata. Sono stati aggiornati " + countOK + " flussi su " + responses.length);
         })
     }
 
+    // Condiviso con chiediCopiaRT
     const getNodoChiediStatoRPTParam = (contesto, dominio, iuv) => {
         return {
             codiceContestoPagamento: contesto,
@@ -245,6 +248,25 @@ export default function ElencoTable(props) {
         } finally {
             props.unblockContent();
         }
+    }
+
+    const chiediRicevuta = async (rowData) => {
+
+        props.blockContent();
+
+        const nodoChiediCopiaRT = getNodoChiediStatoRPTParam(rowData.codiceContesto, rowData.idDominio, rowData.iuv);
+        const ricevuta = await auxClient.nodoChiediCopiaRT(nodoChiediCopiaRT);
+
+        if (ricevuta) {
+            if (ricevuta.fault)
+                props.showMsg("warning", "Attenzione:", ricevuta.fault.description);
+            else
+                props.showMsg("info", "Info:", "Operazione effettuata con successo. E' possibile consultare l'esito nel pannello dettagli");
+        } else {
+            props.showMsg("danger", "Errore:", "Errore nel recupero della ricevuta");
+        }
+
+        props.unblockContent();
     }
 
     return (
