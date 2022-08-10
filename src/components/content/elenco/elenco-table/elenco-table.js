@@ -46,7 +46,7 @@ export default function ElencoTable(props) {
                 <Button label="Aggiorna Elenco" onClick={props.call} className="p-button-info header-button" />
                 {/*TO DO aggiorna stati*/}
                 {props.tab === 'elenco' &&
-                    <Button label="Aggiorna Stati" className="p-button-info header-button" />}
+                    <Button label="Aggiorna Stati" onClick={aggiornaStati} className="p-button-info header-button" />}
             </div>
         </>
     }
@@ -163,27 +163,66 @@ export default function ElencoTable(props) {
         monitorClient.getGiornalePerPagamento(giornaleEventi).then(
             res => setListGiornaleModal(res.giornaleList)
         );
-        
+
         // Dati per terzo tab
         setInfoStatoRPT(esitoStatoRPTMap.get(rowData.idFlusso));
     };
 
-    const aggiornaStato = async (rowData) => {
+    const aggiornaStati = async () => {
 
         props.blockContent();
 
-        const nodoChiediStatoRPT = {
-            codiceContestoPagamento: rowData.codiceContesto,
-            identificativoDominio: rowData.idDominio,
-            identificativoUnivocoVersamento: rowData.iuv,
+        const flussoData = {
+            filtroFlusso: {
+                da: 1,
+                a: props.totalRecords,
+                count: propsDominio.intervalloDate,
+                flusso: {
+                    // idDominio: propsDominio.idDominio,
+                    statoPagamento: 'RPT_ACCETTATA_NODO'
+                }
+            }
+        }
+
+        const dataResult = await monitorClient.getFlussi(flussoData);
+
+        let rptPromises = [];
+
+        dataResult.flussoList.forEach((flusso) => {
+            const nodoChiediStatoRPT = getNodoChiediStatoRPTParam(flusso.codiceContesto, flusso.idDominio, flusso.iuv);
+            rptPromises.push(auxClient.nodoChiediStatoRPT(nodoChiediStatoRPT));
+        });
+
+        Promise.allSettled(rptPromises).then(responses => {
+            let countOK = 0;
+            responses.forEach((res) => {
+                const stato = res.value;
+                if (stato && !stato.faultBean && ((stato.nodoChiediCopiaRTRisposta && !stato.nodoChiediCopiaRTRisposta.fault) || (!stato.nodoChiediCopiaRTRisposta)))
+                    countOK++;
+            });
+            props.call();
+            props.showMsg("info", "Info:", "Operazione effettuata con successo. Sono stati aggiornati " + countOK + " flussi su " + responses.length);
+        })
+    }
+
+    const getNodoChiediStatoRPTParam = (contesto, dominio, iuv) => {
+        return {
+            codiceContestoPagamento: contesto,
+            identificativoDominio: dominio,
+            identificativoUnivocoVersamento: iuv,
             identificativoIntermediarioPA: propsDominio.idIntermediarioPA,
             identificativoStazioneIntermediarioPA: propsDominio.idStazionePA,
             password: propsDominio.pwdPA
-        };
+        }
+    }
 
+    const aggiornaStato = async (rowData) => {
+        props.blockContent();
+
+        const nodoChiediStatoRPT = getNodoChiediStatoRPTParam(rowData.codiceContesto, rowData.idDominio, rowData.iuv);
         try {
             const stato = await auxClient.nodoChiediStatoRPT(nodoChiediStatoRPT);
-            
+
             if (!stato)
                 throw new Error("Riprovare in un altro momento");
 

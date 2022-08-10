@@ -12,6 +12,9 @@ const statiPagamento = [
     'RPT_ATTIVATA',
     'RPT_ERRORE_INVIO_A_NODO',
     'RPT_INVIO_A_NODO_FALLITO',
+    'RPT_RICEVUTA_NODO',
+    'RPT_RIFIUTATA_NODO',
+    'RPT_ACCETTATA_NODO',
     'RPT_RIFIUTATA_PSP',
     'RPT_ACCETTATA_PSP',
     'RPT_ERRORE_INVIO_A_PSP',
@@ -26,10 +29,10 @@ const statiPagamento = [
     'RT_ESITO_SCONOSCIUTO_PA'
 ]
 
-function formatEsito(string){
-    if(string.includes('PAGAMENTO'))
+function formatEsito(string) {
+    if (string.includes('PAGAMENTO'))
         string = string.slice(string.indexOf('PAGAMENTO') + 9);
     return replaceUnderscore(string);
 }
 
-export { esitiPagamento, statiPagamento, formatEsito}
+export { esitiPagamento, statiPagamento, formatEsito }
