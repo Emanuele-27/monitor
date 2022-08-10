@@ -4,6 +4,7 @@ const configProps = {
     monitorStatHost: process.env.REACT_APP_MONITOR_STAT_HOST,
     monitorAccHost: process.env.REACT_APP_MONITOR_ACC_HOST,
     auxHost: process.env.REACT_APP_AUX_HOST,
+    advHost: process.env.REACT_APP_ADV_HOST,
 }
 
 // Inizio gestione props dominio

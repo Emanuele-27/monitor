@@ -7,13 +7,15 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 
-import { exportExcel, isIuvRF, localeIT } from 'util/util';
+import { exportExcel, isIuvRF, localeIT, pdfType } from 'util/util';
 import { capitalizeFirstLetter, replaceUnderscore, splitCamelCase } from "util/string-util";
 import { formatDateTime } from "util/date-util";
 import { monitorClient } from "clients/monitor-client";
 import { propsDominio } from "config/config";
 import { getRptBadgeCount } from "components/content/content";
 import { auxClient } from "clients/aux-client";
+import { advClient } from "clients/adv-client";
+import FileSaver from "file-saver";
 
 const esitoStatoRPTMap = new Map();
 
@@ -135,10 +137,9 @@ export default function ElencoTable(props) {
                     return <><span disabled><i className="pi pi-file-o"></i></span>
                         <span disabled><i className="pi pi-download"></i></span></>
             }
-        } else {
-            // Download avviso 
+        } else { // Opzioni tab avvisi
+            return <span title="Download avviso" onClick={() => downloadAvviso(rowData)}><i className="pi pi-download"></i></span>
         }
-        return <></>
     };
 
     // Stato valido se non è uno tra questi
@@ -264,6 +265,31 @@ export default function ElencoTable(props) {
                 props.showMsg("info", "Info:", "Operazione effettuata con successo. E' possibile consultare l'esito nel pannello dettagli");
         } else {
             props.showMsg("danger", "Errore:", "Errore nel recupero della ricevuta");
+        }
+
+        props.unblockContent();
+    }
+
+    const downloadAvviso = async (rowData) => {
+
+        props.blockContent();
+
+        let avvisoPagamentoDoc = {
+            richiesta: {
+                codCcontesto: rowData.codiceContesto,
+                iuv: rowData.iuv,
+                idDominio: rowData.idDominio,
+            }
+        };
+
+        avvisoPagamentoDoc = await advClient.recuperaAvvisoPagamento(avvisoPagamentoDoc);
+
+        if (avvisoPagamentoDoc && avvisoPagamentoDoc.avvisoPagamento && avvisoPagamentoDoc.avvisoPagamento.pdfDoc) {
+            fetch("data:" + pdfType + ";base64," + avvisoPagamentoDoc.avvisoPagamento.pdfDoc)
+                .then((resp) => resp.blob())
+                .then((blob) => FileSaver.saveAs(blob, avvisoPagamentoDoc.avvisoPagamento.nomeFile + '.pdf'));
+        } else {
+            props.showMsg("info", "Info:", "Download avviso di pagamento non disponibile");
         }
 
         props.unblockContent();

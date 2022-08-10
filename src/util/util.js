@@ -32,13 +32,16 @@ export const deleteUndefinedValues = (obj) => {
     return obj;
 };
 
-export const saveAsExcelFile = (buffer, fileName) => {
+export const excelType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+export const pdfType = 'application/pdf';
+
+export const saveAsFile = (buffer, fileName, mimeType) => {
     import('file-saver').then(module => {
         if (module && module.default) {
             const data = new Blob([buffer], {
-                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+                type: mimeType,
             });
-            module.default.saveAs(data, fileName + '.xlsx');
+            module.default.saveAs(data, fileName);
         }
     });
 }
@@ -48,7 +51,7 @@ export const exportExcel = (list, fileName) => {
         const worksheet = xlsx.utils.json_to_sheet(list);
         const workbook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
         const excelBuffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
-        saveAsExcelFile(excelBuffer, fileName);
+        saveAsFile(excelBuffer, fileName + '.xlsx', excelType, );
     });
 }
 

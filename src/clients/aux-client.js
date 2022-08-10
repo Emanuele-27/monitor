@@ -3,7 +3,7 @@ import { acceptJson, acceptLanguage } from "util/util";
 import { FetchClient } from "./fetch-client";
 
 export class AuxClient extends FetchClient{
-    baseUrl = '/api/SogeiPaySystemRAuxService';
+    baseUrl = '/api/SogeiPaySystemRAuxService/';
 
     constructor(host, accept, acceptLanguage) {
         super(accept, acceptLanguage);
