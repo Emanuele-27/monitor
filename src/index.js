@@ -10,6 +10,7 @@ import { BrowserRouter } from "react-router-dom";
 
 import { suffissiDomini, propsDominio } from 'config/config'
 
+// CSS Per componenti primereact
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";

@@ -8,20 +8,13 @@ import ElencoTable from "./elenco-table/elenco-table";
 import ElencoForm from "./elenco-form/elenco-form";
 import { initialLazyParams, isFinestraAbilitata, modalitaFinestra } from "../content";
 import { useLocation } from "react-router-dom";
-import { calcolaDatePerFinestra, formatDate, today } from "util/date-util";
+import { calcolaDataPerFinestra, formatDate, transformFinestraToDates } from "util/date-util";
 import { statiPagamento } from "model/tutti-i-stati";
 import { monitorClient } from "clients/monitor-client";
 
 function useQuery() {
     const { search } = useLocation();
     return useMemo(() => new URLSearchParams(search), [search]);
-}
-
-// Disabled se almeno uno di questi campi è valorizzato
-export const isFinestraDisabled = (flusso) => {
-    if (flusso.iuv || flusso.codiceContesto || flusso.dataRichiestaList || flusso.dataRicevutaList)
-        return true;
-    return false;
 }
 
 export const emptyFlussoForm = (tab) => {
@@ -35,15 +28,26 @@ export const emptyFlussoForm = (tab) => {
         idPagatore: '',
         idVersante: '',
         statoOrEsito: '',
-        dataRichiestaList: null,
-        dataRicevutaList: null,
-        finestraTemporaleList: calcolaDatePerFinestra(modalitaFinestra, today),
+        dataRichiestaDa: '',
+        dataRichiestaA: '',
+        dataRicevutaDa: '',
+        dataRicevutaA: '',
+        finestra: calcolaDataPerFinestra(modalitaFinestra),
     }
+}
+
+// Disabled se almeno uno di questi campi è valorizzato
+export const isFinestraDisabled = (flusso) => {
+    if (flusso.iuv || flusso.codiceContesto || flusso.dataRichiestaDa || flusso.dataRichiestaA
+        || flusso.dataRicevutaDa || flusso.dataRicevutaA)
+        return true;
+    return false;
 }
 
 // Componente condiviso per il tab Elenco e Avvisi
 export default function Elenco(props) {
 
+    // ***** Inizio Gestione Dettaglio RPT *****
     const query = useQuery();
 
     // Ritorna un oggetto valorizzato con i query params se presenti
@@ -73,9 +77,10 @@ export default function Elenco(props) {
             codiceContesto: urlParams ? urlParams.codiceContesto : '',
         }
     }
+    // ****** Fine Gestione Dettaglio RPT *****
+
     const [flussoForm, setFlussoForm] = useState(initialFlussoForm());
 
-    // Gestione lazy
     const [totalRecords, setTotalRecords] = useState(0);
     const [flussiList, setFlussiList] = useState([]);
     const [lazyParams, setLazyParams] = useState(structuredClone(initialLazyParams));
@@ -91,10 +96,14 @@ export default function Elenco(props) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [flussoForm, lazyParams]);
 
+    useEffect(() => {
+        document.getElementById("elenco-msg").scrollIntoView({ behavior: "smooth", block: "center" });
+    }, [elencoMsg]);
+
     const call = () => {
         props.blockContent();
 
-        let flussoRequest = prepareFlussoRequest();
+        const flussoRequest = prepareFlussoRequest();
 
         const flussoData = {
             filtroFlusso: {
@@ -117,12 +126,21 @@ export default function Elenco(props) {
         let flusso = deleteUndefinedValues(structuredClone(flussoForm));
         valorizzaStatoOrEsito(flusso);
         // Se finestraTemporale è renderizzata e abilitata, valorizza il filtro con la finestra
-        if (isFinestraAbilitata && !isFinestraDisabled(flusso)) {
-            valorizzaDate(flusso, flusso.finestraTemporaleList, 'dataRichiesta')
-            fraseFinestra.current = ` - Finestra Temporale: ${formatDate(flusso.finestraTemporaleList[0])} - ${formatDate(flusso.finestraTemporaleList[1])}`
+        if (isFinestraAbilitata && !isFinestraDisabled(flusso) && flusso.finestra) {
+            const dates = transformFinestraToDates(modalitaFinestra, flusso.finestra);
+            flusso.dataRichiestaDa = dates[0];
+            flusso.dataRichiestaA = dates[1];
+            fraseFinestra.current = ` - Finestra Temporale: ${formatDate(dates[0])} - ${formatDate(dates[1])}`
         } else { // Altrimenti con le altre date
-            valorizzaDate(flusso, flusso.dataRichiestaList, 'dataRichiesta');
-            valorizzaDate(flusso, flusso.dataRicevutaList, 'dataRicevuta');
+            fraseFinestra.current = '';
+            if (flusso.dataRichiestaDa)
+                flusso.dataRichiestaDa = new Date(flusso.dataRichiestaDa);
+            if (flusso.dataRichiestaA)
+                flusso.dataRichiestaA = new Date(flusso.dataRichiestaA);
+            if (flusso.dataRicevutaDa)
+                flusso.dataRicevutaDa = new Date(flusso.dataRicevutaDa);
+            if (flusso.dataRicevutaA)
+                flusso.dataRicevutaA = new Date(flusso.dataRicevutaA);
         }
         eliminaFormProperties(flusso);
         return flusso;
@@ -130,39 +148,23 @@ export default function Elenco(props) {
 
     // Cerco il valore di statoOrEsito tra gli stati e valorizza opportunamente
     const valorizzaStatoOrEsito = (flusso) => {
-        if (flusso.statoOrEsito) {
+        if (flusso.statoOrEsito)
             if (statiPagamento.includes(flusso.statoOrEsito))
                 flusso.statoPagamento = flusso.statoOrEsito;
             else
                 flusso.esitoPagamento = flusso.statoOrEsito;
-        }
-    };
-
-    // Valorizza le date con range del filtro
-    const valorizzaDate = (flusso, dataList, attribute) => {
-        if (dataList && dataList[0]) {
-            flusso[attribute + 'Da'] = dataList[0];
-            if (dataList.length > 1 && dataList[1])
-                flusso[attribute + 'A'] = dataList[1];
-        }
     };
 
     // Elimina le proprietà necessarie al form ma non al filtro
     const eliminaFormProperties = (form) => {
         delete form.statoOrEsito;
-        delete form.dataRichiestaList;
-        delete form.dataRicevutaList;
-        delete form.finestraTemporaleList;
+        delete form.finestra;
     }
 
     const resetFiltri = () => {
         setFlussoForm(structuredClone(emptyFlussoForm(props.tab)));
         setLazyParams(structuredClone(initialLazyParams));
     };
-
-    useEffect(() => {
-        document.getElementById("elenco-msg").scrollIntoView({ behavior: "smooth", block: "center" });
-    }, [elencoMsg]);
 
     const showMsg = (severityParam, summaryParam, detailParam) => {
         setElencoMsg({

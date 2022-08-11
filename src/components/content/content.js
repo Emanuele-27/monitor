@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Route,
     Routes,
@@ -15,9 +15,8 @@ import './content.css';
 import { propsDominio } from "config/config";
 import { esitiPagamento, formatEsito, statiPagamento } from "model/tutti-i-stati";
 import { replaceUnderscore } from "util/string-util";
-import { addLocale } from "primereact/api";
-import { localeDate } from "util/util";
 import { monitorClient } from "clients/monitor-client";
+import { aggiungiMesi, formatDateForInput, formatMonth, getISOWeekDate } from "util/date-util";
 
 export const initialLazyParams = {
     first: 0,
@@ -46,6 +45,14 @@ export const getRptBadgeCount = () => {
     return monitorClient.getRptSenzaRt(flussoData);
 }
 
+export const initialMinDate = aggiungiMesi(new Date(Date.now()), parseInt(propsDominio.intervalloDate));
+export const initialMinDateForInput = formatDateForInput(initialMinDate);
+export const initialMaxDateForInput = formatDateForInput(new Date(Date.now()));
+export const minMonth = formatMonth(initialMinDate);
+export const maxMonth = formatMonth(new Date(Date.now()));
+export const minWeek = getISOWeekDate(initialMinDate);
+export const maxWeek = getISOWeekDate(new Date(Date.now()));
+
 export default function Content() {
 
     const [blockedContent, setBlockedContent] = useState(false);
@@ -55,9 +62,9 @@ export default function Content() {
     const [areeOpt, setAreeOpt] = useState(null);
     const [statiEsitiOpt, setStatiEsitiOpt] = useState(null);
 
-    useMemo(() => {
-        addLocale('it', localeDate);
-    }, []);
+    // useMemo(() => {
+    //     addLocale('it', localeDate);
+    // }, []);
 
     useEffect(() => {
         blockContent();

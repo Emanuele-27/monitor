@@ -2,10 +2,8 @@ import React, { useState } from "react";
 import "./giornale-form.css";
 
 import { removeNumbers, removeSpecialChars } from 'util/string-util';
-import { Calendar } from "primereact/calendar";
 import { propsDominio } from "config/config";
-import { calcolaDatePerFinestra } from "util/date-util";
-import { isFinestraAbilitata, modalitaFinestra } from "components/content/content";
+import { isFinestraAbilitata, maxMonth, maxWeek, minMonth, minWeek, modalitaFinestra } from "components/content/content";
 import { emptyGiornaleForm, isFinestraDisabled } from "../giornale";
 
 
@@ -18,6 +16,34 @@ export default function GiornaleForm(props) {
         props.resetFiltri();
         setGiornaleForm(emptyGiornaleForm());
     };
+
+    const handleChangeGiornale = (value, name) => {
+        setGiornaleForm({
+            ...giornaleForm,
+            [name]: value,
+        })
+    }
+
+    const finestraJSX = () => {
+        if (isFinestraAbilitata) {
+            let type, min, max;
+            if (modalitaFinestra === 'mese') {
+                type = "month";
+                min = minMonth;
+                max = maxMonth;
+            } else if (modalitaFinestra === 'settimana') {
+                type = "week";
+                min = minWeek;
+                max = maxWeek;
+            }
+            return <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
+                <label htmlFor="finestra-temporale" className="form-label">Finestra Temporale:***</label>
+                <input type={type} value={giornaleForm.finestra} id="finestra-temporale" name="finestra-temporale" className="form-control" onKeyDown={(e) => e.preventDefault()}
+                    min={min} max={max} disabled={isFinestraDisabled(giornaleForm)} onChange={(e) => handleChangeGiornale(e.target.value, "finestra")} />
+            </div>
+        }
+        return <></>
+    }
 
     return (<>
         <div className="container">
@@ -34,61 +60,34 @@ export default function GiornaleForm(props) {
                                 <div className="row gx-5 gy-3">
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="iuv" className="form-label">Iuv:*</label>
-                                        <input type="text" id="iuv" name="iuv" className="form-control"
-                                            value={giornaleForm.iuv} onChange={(e) => setGiornaleForm({
-                                                ...giornaleForm,
-                                                iuv: removeSpecialChars(e.target.value).toUpperCase()
-                                            })}
-                                            maxLength={24} />
+                                        <input type="text" id="iuv" name="iuv" className="form-control" maxLength={24}
+                                            value={giornaleForm.iuv} onChange={(e) => handleChangeGiornale(removeSpecialChars(e.target.value).toUpperCase(), "iuv")} />
                                     </div>
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="contesto" className="form-label">Codice Contesto:*</label>
-                                        <input type="text" id="contesto" name="codContesto" className="form-control"
-                                            value={giornaleForm.codContesto} onChange={(e) => setGiornaleForm({
-                                                ...giornaleForm,
-                                                codContesto: removeSpecialChars(e.target.value).toUpperCase()
-                                            })}
-                                            maxLength={35} />
+                                        <input type="text" id="contesto" name="codContesto" className="form-control" maxLength={35}
+                                            value={giornaleForm.codContesto} onChange={(e) => handleChangeGiornale(removeSpecialChars(e.target.value).toUpperCase(), "codContesto")} />
+
                                     </div>
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="esito" className="form-label">Stato:</label>
                                         <select id="esito" name="esito" className="form-select" value={giornaleForm.esito}
-                                            onChange={(e) => setGiornaleForm({
-                                                ...giornaleForm,
-                                                esito: e.target.value
-                                            })}>
+                                            onChange={(e) => handleChangeGiornale(e.target.value, "esito")}>
                                             <option value={null}></option>
                                             {props.stati}
                                         </select>
                                     </div>
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="iuv" className="form-label">Tipo Evento:</label>
-                                        <input type="text" id="tipoEv" name="tipoEvento" className="form-control"
-                                            value={giornaleForm.tipoEvento} onChange={(e) => setGiornaleForm({
-                                                ...giornaleForm,
-                                                tipoEvento: removeNumbers(removeSpecialChars(e.target.value))
-                                            })}
-                                            maxLength={24} />
+                                        <input type="text" id="tipoEv" name="tipoEvento" className="form-control" maxLength={24}
+                                            value={giornaleForm.tipoEvento} onChange={(e) => handleChangeGiornale(removeNumbers(removeSpecialChars(e.target.value)), "tipoEvento")} />
                                     </div>
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
-                                        <label htmlFor="dataRichiesta" className="form-label">Data Evento:</label>
-                                        <Calendar id="dataEvento" name="dataOraEvento" value={giornaleForm.dataOraEvento} readOnlyInput locale="it"
-                                            onChange={(e) => setGiornaleForm({
-                                                ...giornaleForm,
-                                                dataOraEvento: e.value
-                                            })} dateFormat="dd/mm/y" showIcon
-                                        />
+                                        <label htmlFor="data-evento" className="form-label">Data Evento:</label>
+                                        <input type="date" value={giornaleForm.dataOraEvento} onChange={(e) => handleChangeGiornale(e.target.value, "dataOraEvento")}
+                                            id="data-evento" name="data-evento" className="form-control" />
                                     </div>
-                                    {isFinestraAbilitata &&
-                                        (<div className="col-12 col-xs-12 col-lg-6 col-xl-4">
-                                            <label htmlFor="finestraTemporale" className="form-label">Finestra Temporale:**</label>
-                                            <Calendar id="finestraTemporale" value={giornaleForm.finestraTemporaleList} locale="it" selectionMode="range" finestra={propsDominio.modalitaFinestra}
-                                                onChange={(e) => setGiornaleForm({
-                                                    ...giornaleForm,
-                                                    finestraTemporaleList: calcolaDatePerFinestra(modalitaFinestra, e.value)
-                                                })}
-                                                disabled={isFinestraDisabled(giornaleForm)} dateFormat="dd/mm/y" showIcon />{/*view="month"*/}
-                                        </div>)}
+                                    {finestraJSX()}
                                 </div>
                             </form>
                             <div style={{ display: "flex", justifyContent: "center", marginTop: "1.5rem" }}>
@@ -104,7 +103,7 @@ export default function GiornaleForm(props) {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     </>
     );
 }

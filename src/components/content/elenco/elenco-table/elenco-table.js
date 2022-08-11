@@ -135,8 +135,8 @@ export default function ElencoTable(props) {
                 else
                     return <><span disabled><i className="pi pi-file-o"></i></span>
                         <span disabled><i className="pi pi-download"></i></span></>
-        // Opzioni tab avvisi
-        return <span title="Download avviso" onClick={() => downloadAvviso(rowData)}><i className="pi pi-download"></i></span>
+        else if(props.tab === 'avvisi')
+            return <span title="Download avviso" onClick={() => downloadAvviso(rowData)}><i className="pi pi-download"></i></span>
     };
 
     const columnOpzioniComuni = (rowData) => {

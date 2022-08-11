@@ -14,6 +14,13 @@ export default function RptForm(props) {
         props.resetFiltri();
     };
 
+    const handleChangeFlusso = (value, name) => {
+        setFlussoForm({
+            ...flussoForm,
+            [name]: value,
+        })
+    }
+
     return (<>
         <div className="container">
             <div className="accordion" id="rpt-accordion">
@@ -29,29 +36,18 @@ export default function RptForm(props) {
                                 <div className="row gx-5 gy-3">
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="iuv" className="form-label">Iuv:*</label>
-                                        <input type="text" id="iuv" name="iuv" className="form-control"
-                                            value={flussoForm.iuv} onChange={(e) => setFlussoForm({
-                                                ...flussoForm,
-                                                iuv: removeSpecialChars(e.target.value).toUpperCase(),
-                                            })}
-                                            maxLength={24} />
+                                        <input type="text" id="iuv" name="iuv" className="form-control" maxLength={24}
+                                            value={flussoForm.iuv} onChange={(e) => handleChangeFlusso(removeSpecialChars(e.target.value).toUpperCase(), "iuv")} />
                                     </div>
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="contesto" className="form-label">Codice Contesto:*</label>
-                                        <input type="text" id="contesto" name="codiceContesto" className="form-control"
-                                            value={flussoForm.codiceContesto} onChange={(e) => setFlussoForm({
-                                                ...flussoForm,
-                                                codiceContesto: removeSpecialChars(e.target.value).toUpperCase(),
-                                            })}
-                                            maxLength={35} />
+                                        <input type="text" id="contesto" name="codiceContesto" className="form-control" maxLength={35}
+                                            value={flussoForm.codiceContesto} onChange={(e) => handleChangeFlusso(removeSpecialChars(e.target.value).toUpperCase(), "codiceContesto")} />
                                     </div>
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="area" className="form-label">Area:</label>
                                         <select id="area" name="area" className="form-select" value={flussoForm.area}
-                                            onChange={(e) => setFlussoForm({
-                                                ...flussoForm,
-                                                area: e.target.value,
-                                            })}>
+                                            onChange={(e) => handleChangeFlusso(removeSpecialChars(e.target.value).toUpperCase(), "area")}>
                                             <option value={null}></option>
                                             {props.aree}
                                         </select>
@@ -59,10 +55,7 @@ export default function RptForm(props) {
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
                                         <label htmlFor="servizio" className="form-label">Categoria:</label>
                                         <select id="servizio" name="servizio" className="form-select" value={flussoForm.servizio}
-                                            onChange={(e) => setFlussoForm({
-                                                ...flussoForm,
-                                                servizio: e.target.value,
-                                            })}>
+                                            onChange={(e) => handleChangeFlusso(e.target.value, "servizio")}>
                                             <option value={null}></option>
                                             {props.servizi}
                                         </select>
@@ -73,7 +66,6 @@ export default function RptForm(props) {
                                 <button type="button" className="btn btn-primary" form="rpt-form" style={{ fontWeight: "600", marginRight: "0.05rem" }} onClick={() => props.setFlussoForm(flussoForm)}>Cerca</button>
                                 <button type="button" className="btn btn-primary" form="rpt-form" style={{ fontWeight: "600", marginLeft: "0.05rem" }} onClick={resetFiltri}>Reset Filtri</button>
                             </div>
-
                             <p style={{ marginBottom: "0", marginTop: "1rem" }}>
                                 <b>*</b> I campi <b>Iuv</b> e <b>Codice Contesto</b> consentono di effettuare una ricerca puntuale.
                             </p>
@@ -81,7 +73,7 @@ export default function RptForm(props) {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     </>
     );
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { propsDominio } from "config/config";
-import { calcolaDatePerFinestra, formatDate, today } from "util/date-util";
+import { calcolaDataPerFinestra, formatDate, transformFinestraToDates } from "util/date-util";
 import { columnMapper, deleteUndefinedValues, sortMapper } from "util/util";
 import { initialLazyParams, isFinestraAbilitata, modalitaFinestra } from "../content";
 import GiornaleForm from "./giornale-form/giornale-form";
@@ -22,14 +22,13 @@ export const emptyGiornaleForm = () => {
         esito: '',
         tipoEvento: '',
         dataOraEvento: '',
-        finestraTemporaleList: calcolaDatePerFinestra(modalitaFinestra, today),
+        finestra: calcolaDataPerFinestra(modalitaFinestra),
     }
 }
 
 export default function Giornale(props) {
 
     const [giornaleForm, setGiornaleForm] = useState(emptyGiornaleForm());
-    // Gestione lazy
     const [totalRecords, setTotalRecords] = useState(0);
     const [listGiornale, setListGiornale] = useState([]);
     const [lazyParams, setLazyParams] = useState(structuredClone(initialLazyParams));
@@ -69,10 +68,15 @@ export default function Giornale(props) {
         let giornale = deleteUndefinedValues(structuredClone(giornaleForm));
         // Se finestraTemporale è renderizzata e abilitata, valorizza il filtro con la finestra
         // altrimenti con dataOraEvento che sarà già valorizzata
-        if (isFinestraAbilitata && !isFinestraDisabled(giornale)) {
-            valorizzaDate(giornale, giornale.finestraTemporaleList, 'data');
-            fraseFinestra.current = ` - Finestra Temporale: ${formatDate(giornale.finestraTemporaleList[0])} - ${formatDate(giornale.finestraTemporaleList[1])}`;
-            delete giornale.dataOraEvento;
+        if (isFinestraAbilitata && !isFinestraDisabled(giornale) && giornale.finestra) {
+            const dates = transformFinestraToDates(modalitaFinestra, giornale.finestra);
+            giornale.dataDa = dates[0];
+            giornale.dataA = dates[1];
+            fraseFinestra.current = ` - Finestra Temporale: ${formatDate(dates[0])} - ${formatDate(dates[1])}`
+        } else {
+            fraseFinestra.current = '';
+            if (giornale.dataOraEvento)
+                giornale.dataOraEvento = new Date(giornale.dataOraEvento);
         }
         eliminaFormProperties(giornale);
         return giornale;
@@ -80,17 +84,8 @@ export default function Giornale(props) {
 
     // Elimina le proprietà necessarie al form ma non al filtro
     const eliminaFormProperties = (form) => {
-        delete form.finestraTemporaleList;
+        delete form.finestra;
     }
-
-    // Valorizza le date con range del filtro
-    const valorizzaDate = (giornale, dataList, attribute) => {
-        if (dataList && dataList[0]) {
-            giornale[attribute + 'Da'] = dataList[0];
-            if (dataList.length > 1 && dataList[1])
-                giornale[attribute + 'A'] = dataList[1];
-        }
-    };
 
     const resetFiltri = () => {
         setGiornaleForm(emptyGiornaleForm());

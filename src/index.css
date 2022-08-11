@@ -43,3 +43,10 @@ span[id^=finestra] input.p-inputtext.p-component:focus{
     border-color: #94aec2;
     box-shadow: 0 0 0 0.25rem rgb(41 92 132 / 25%);
 }
+
+input::-webkit-datetime-edit-day-field:focus,
+input::-webkit-datetime-edit-month-field:focus,
+input::-webkit-datetime-edit-year-field:focus {
+    background-color: white;
+    color: black;
+}
