@@ -65,7 +65,7 @@ export default function Giornale(props) {
     };
 
     const prepareGiornaleRequest = () => {
-        // Copia il flusso di state e elimina i valori non validi
+        // Copia il flusso e elimina i valori non validi
         let giornale = deleteUndefinedValues(structuredClone(giornaleForm));
         // Se finestraTemporale è renderizzata e abilitata, valorizza il filtro con la finestra
         // altrimenti con dataOraEvento che sarà già valorizzata
@@ -76,8 +76,7 @@ export default function Giornale(props) {
             fraseFinestra.current = buildFrase(modalitaFinestra, dates);
         } else {
             fraseFinestra.current = '';
-            if (giornale.dataOraEvento)
-                giornale.dataOraEvento = new Date(giornale.dataOraEvento);
+            giornale.dataOraEvento = giornale.dataOraEvento ? new Date(giornale.dataOraEvento) : undefined;
         }
         eliminaFormProperties(giornale);
         return giornale;

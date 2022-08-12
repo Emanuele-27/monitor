@@ -8,7 +8,7 @@ import ElencoTable from "./elenco-table/elenco-table";
 import ElencoForm from "./elenco-form/elenco-form";
 import { buildFrase, initialLazyParams, isFinestraAbilitata, mapFasce, modalitaFinestra } from "../content";
 import { useLocation } from "react-router-dom";
-import { calcolaDataPerFinestra, transformFinestraToDates } from "util/date-util";
+import { calcolaDataPerFinestra, setLastMinute, transformFinestraToDates } from "util/date-util";
 import { statiPagamento } from "model/tutti-i-stati";
 import { monitorClient } from "clients/monitor-client";
 
@@ -134,14 +134,10 @@ export default function Elenco(props) {
             fraseFinestra.current = buildFrase(modalitaFinestra, dates);
         } else { // Altrimenti con le altre date
             fraseFinestra.current = '';
-            if (flusso.dataRichiestaDa)
-                flusso.dataRichiestaDa = new Date(flusso.dataRichiestaDa);
-            if (flusso.dataRichiestaA)
-                flusso.dataRichiestaA = new Date(flusso.dataRichiestaA);
-            if (flusso.dataRicevutaDa)
-                flusso.dataRicevutaDa = new Date(flusso.dataRicevutaDa);
-            if (flusso.dataRicevutaA)
-                flusso.dataRicevutaA = new Date(flusso.dataRicevutaA);
+            flusso.dataRichiestaDa = flusso.dataRichiestaDa ? new Date(flusso.dataRichiestaDa) : undefined;
+            flusso.dataRichiestaA = flusso.dataRichiestaA ? setLastMinute(flusso.dataRichiestaA) : undefined;
+            flusso.dataRicevutaDa = flusso.dataRicevutaDa ? new Date(flusso.dataRicevutaDa) : undefined;
+            flusso.dataRicevutaA = flusso.dataRicevutaA ? setLastMinute(flusso.dataRicevutaA) : undefined;
         }
         eliminaFormProperties(flusso);
         return flusso;

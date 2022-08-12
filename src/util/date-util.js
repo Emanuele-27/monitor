@@ -121,49 +121,55 @@ export const transformFinestraToDates = (modalita, finestra, fascia) => {
     }
 }
 
-    export const getISOWeekDate = (date) => {
-        const anno = date.getFullYear()
-        // Primo giorno dell'anno
-        const firstDayYear = new Date(anno, 0, 1);
-        // Primo lunedi dell'anno, quindi prima settimana dell'anno
-        const firstMondayYear = aggiungiGiorni(firstDayYear, daysToAddUntilMonday(firstDayYear.getDay()));
-        // Se date è minore del primo lunedì dell'anno, allora appartiene all'ultima settimana dell'anno precedente
-        if (firstMondayYear.getTime() >= date.getTime())
-            return (anno - 1) + "-W52";
-        // Imposta il giorno della settimana a domenica
-        const firstWeekYear = aggiungiGiorni(firstMondayYear, 6);
-        // Avanzando di settimana in settimana controlla se incontra date
-        for (let hunter = firstWeekYear, weeks = 1; hunter.getFullYear() === anno; hunter = aggiungiGiorni(hunter, 7), weeks++)
-            if (hunter.getTime() >= date.getTime())
-                return anno + "-W" + (weeks > 9 ? weeks : "0" + weeks);
-    }
+export const getISOWeekDate = (date) => {
+    const anno = date.getFullYear()
+    // Primo giorno dell'anno
+    const firstDayYear = new Date(anno, 0, 1);
+    // Primo lunedi dell'anno, quindi prima settimana dell'anno
+    const firstMondayYear = aggiungiGiorni(firstDayYear, daysToAddUntilMonday(firstDayYear.getDay()));
+    // Se date è minore del primo lunedì dell'anno, allora appartiene all'ultima settimana dell'anno precedente
+    if (firstMondayYear.getTime() >= date.getTime())
+        return (anno - 1) + "-W52";
+    // Imposta il giorno della settimana a domenica
+    const firstWeekYear = aggiungiGiorni(firstMondayYear, 6);
+    // Avanzando di settimana in settimana controlla se incontra date
+    for (let hunter = firstWeekYear, weeks = 1; hunter.getFullYear() === anno; hunter = aggiungiGiorni(hunter, 7), weeks++)
+        if (hunter.getTime() >= date.getTime())
+            return anno + "-W" + (weeks > 9 ? weeks : "0" + weeks);
+}
 
-    export const getDatesFromISOWeekDate = (weekDate) => {
-        const parts = weekDate.split('-W');
-        const firstDayYear = new Date(parts[0], 0, 1);
-        const weeks = parts[1];
-        // Primo lunedi dell'anno, quindi prima settimana dell'anno
-        const firstMondayYear = aggiungiGiorni(firstDayYear, daysToAddUntilMonday(firstDayYear.getDay()))
-        // Aggiungiamo al primo lunedì (n settimane - 1) in giorni per trovare il lunedì della settimana selezionata
-        const monday = aggiungiGiorni(firstMondayYear, (weeks - 1) * 7)
-        return [monday, aggiungiGiorni(monday, 6)];// Monday + 6 giorni = Sunday
-    }
+export const getDatesFromISOWeekDate = (weekDate) => {
+    const parts = weekDate.split('-W');
+    const firstDayYear = new Date(parts[0], 0, 1);
+    const weeks = parts[1];
+    // Primo lunedi dell'anno, quindi prima settimana dell'anno
+    const firstMondayYear = aggiungiGiorni(firstDayYear, daysToAddUntilMonday(firstDayYear.getDay()))
+    // Aggiungiamo al primo lunedì (n settimane - 1) in giorni per trovare il lunedì della settimana selezionata
+    const monday = aggiungiGiorni(firstMondayYear, (weeks - 1) * 7)
+    return [monday, aggiungiGiorni(monday, 6)];// Monday + 6 giorni = Sunday
+}
 
-    export const creaIntervalliDiOre = (intervalloOre) => {
-        const start = new Date(Date.now());
-        start.setHours(0, 0, 0, 0);
-        let intervalli = [start];
-        for (let ore = intervalloOre; ore < 24; ore += intervalloOre) {
-            const date = new Date(Date.now());
-            date.setHours(ore, 0, 0, 0);
-            intervalli.push(date);
-        }
-        const end = new Date(Date.now());
-        end.setHours(23, 59, 59, 999);
-        intervalli.push(end);
-        return intervalli;
+export const creaIntervalliDiOre = (intervalloOre) => {
+    const start = new Date(Date.now());
+    start.setHours(0, 0, 0, 0);
+    let intervalli = [start];
+    for (let ore = intervalloOre; ore < 24; ore += intervalloOre) {
+        const date = new Date(Date.now());
+        date.setHours(ore, 0, 0, 0);
+        intervalli.push(date);
     }
+    const end = new Date(Date.now());
+    end.setHours(23, 59, 59, 999);
+    intervalli.push(end);
+    return intervalli;
+}
 
-    export const minutesIn2Digits = (minutes) => {
-        return minutes > 9 ? minutes : "0" + minutes;
-    }
+export const minutesIn2Digits = (minutes) => {
+    return minutes > 9 ? minutes : "0" + minutes;
+}
+
+export const setLastMinute = (date) => {
+    const data = new Date(date);
+    data.setHours(23, 59, 59, 999);
+    return data;
+}
