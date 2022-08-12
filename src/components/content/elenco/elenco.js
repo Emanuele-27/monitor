@@ -6,9 +6,9 @@ import './elenco.css';
 import { columnMapper, deleteUndefinedValues, sortMapper } from 'util/util';
 import ElencoTable from "./elenco-table/elenco-table";
 import ElencoForm from "./elenco-form/elenco-form";
-import { initialLazyParams, isFinestraAbilitata, modalitaFinestra } from "../content";
+import { buildFrase, initialLazyParams, isFinestraAbilitata, mapFasce, modalitaFinestra } from "../content";
 import { useLocation } from "react-router-dom";
-import { calcolaDataPerFinestra, formatDate, transformFinestraToDates } from "util/date-util";
+import { calcolaDataPerFinestra, transformFinestraToDates } from "util/date-util";
 import { statiPagamento } from "model/tutti-i-stati";
 import { monitorClient } from "clients/monitor-client";
 
@@ -33,6 +33,7 @@ export const emptyFlussoForm = (tab) => {
         dataRicevutaDa: '',
         dataRicevutaA: '',
         finestra: calcolaDataPerFinestra(modalitaFinestra),
+        fasciaOraria: Math.trunc(mapFasce.size / 2), // Indice fascia di default è la fascia centrale
     }
 }
 
@@ -127,10 +128,10 @@ export default function Elenco(props) {
         valorizzaStatoOrEsito(flusso);
         // Se finestraTemporale è renderizzata e abilitata, valorizza il filtro con la finestra
         if (isFinestraAbilitata && !isFinestraDisabled(flusso) && flusso.finestra) {
-            const dates = transformFinestraToDates(modalitaFinestra, flusso.finestra);
+            const dates = transformFinestraToDates(modalitaFinestra, flusso.finestra, flusso.fasciaOraria);
             flusso.dataRichiestaDa = dates[0];
             flusso.dataRichiestaA = dates[1];
-            fraseFinestra.current = ` - Finestra Temporale: ${formatDate(dates[0])} - ${formatDate(dates[1])}`
+            fraseFinestra.current = buildFrase(modalitaFinestra, dates);
         } else { // Altrimenti con le altre date
             fraseFinestra.current = '';
             if (flusso.dataRichiestaDa)
@@ -159,6 +160,7 @@ export default function Elenco(props) {
     const eliminaFormProperties = (form) => {
         delete form.statoOrEsito;
         delete form.finestra;
+        delete form.fasciaOraria;
     }
 
     const resetFiltri = () => {
@@ -189,7 +191,7 @@ export default function Elenco(props) {
                 <button type="button" onClick={hideMsg} className="btn-close" aria-label="Chiudi"></button>
             </div>
         </div>
-        <ElencoForm tab={props.tab} aree={props.aree} servizi={props.servizi} stati={props.stati} resetFiltri={resetFiltri}
+        <ElencoForm tab={props.tab} aree={props.aree} servizi={props.servizi} resetFiltri={resetFiltri}
             flussoForm={flussoForm} setFlussoForm={setFlussoForm} fraseFinestra={fraseFinestra.current} />
         <ElencoTable tab={props.tab} flussiList={flussiList} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
             blockContent={props.blockContent} unblockContent={props.unblockContent} call={call} setRptBadgeCount={props.setRptBadgeCount}

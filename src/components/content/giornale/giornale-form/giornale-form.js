@@ -3,7 +3,7 @@ import "./giornale-form.css";
 
 import { removeNumbers, removeSpecialChars } from 'util/string-util';
 import { propsDominio } from "config/config";
-import { isFinestraAbilitata, maxMonth, maxWeek, minMonth, minWeek, modalitaFinestra } from "components/content/content";
+import { esitStatiOpt, isFinestraAbilitata, maxMonth, maxWeek, minMonth, minWeek, modalitaFinestra } from "components/content/content";
 import { emptyGiornaleForm, isFinestraDisabled } from "../giornale";
 
 
@@ -74,7 +74,7 @@ export default function GiornaleForm(props) {
                                         <select id="esito" name="esito" className="form-select" value={giornaleForm.esito}
                                             onChange={(e) => handleChangeGiornale(e.target.value, "esito")}>
                                             <option value={null}></option>
-                                            {props.stati}
+                                            {esitStatiOpt}
                                         </select>
                                     </div>
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">

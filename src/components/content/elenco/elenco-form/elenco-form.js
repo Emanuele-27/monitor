@@ -5,7 +5,7 @@ import { propsDominio } from 'config/config';
 
 import { removeSpecialChars } from 'util/string-util';
 import { aggiungiGiorni, formatDateForInput } from "util/date-util";
-import { initialMaxDateForInput, initialMinDate, initialMinDateForInput, isFinestraAbilitata, maxMonth, maxWeek, minMonth, minWeek, modalitaFinestra } from "components/content/content";
+import { esitStatiOpt, initialMaxDateForInput, initialMinDate, initialMinDateForInput, isFinestraAbilitata, maxMonth, maxWeek, minMonth, minWeek, modalitaFinestra, oreOpt } from "components/content/content";
 import { emptyFlussoForm, isFinestraDisabled } from "../elenco";
 
 // Componente condiviso per il tab Elenco e Avvisi, differenziati da props.tab
@@ -48,21 +48,45 @@ export default function ElencoForm(props) {
 
     const finestraJSX = () => {
         if (isFinestraAbilitata) {
-            let type, min, max;
-            if (modalitaFinestra === 'mese') {
-                type = "month";
-                min = minMonth;
-                max = maxMonth;
-            } else if (modalitaFinestra === 'settimana') {
-                type = "week";
-                min = minWeek;
-                max = maxWeek;
+            if (['mese', 'settimana'].includes(modalitaFinestra)) {
+                let type, min, max;
+                if (modalitaFinestra === 'mese') {
+                    type = "month";
+                    min = minMonth;
+                    max = maxMonth;
+                } else if (modalitaFinestra === 'settimana') {
+                    type = "week";
+                    min = minWeek;
+                    max = maxWeek;
+                }
+                return <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
+                    <label htmlFor="finestra-temporale" className="form-label">Finestra Temporale:***</label>
+                    <input type={type} value={flussoForm.finestra} id="finestra-temporale" name="finestra-temporale" className="form-control" onKeyDown={(e) => e.preventDefault()}
+                        min={min} max={max} disabled={isFinestraDisabled(flussoForm)} onChange={(e) => handleChangeFlusso(e.target.value, "finestra")} />
+                </div>
+            } else if (modalitaFinestra === 'ore') {
+                return <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
+                    <fieldset className="fieldset-bordered">
+                        <legend>Finestra Temporale***</legend>
+                        <div className="row g-4">
+                            <div className="col-12 col-sm-12 col-lg-6">
+                                <label htmlFor="finestra-giorno" className="form-label">Giorno:</label>
+                                <input type="date" value={flussoForm.finestra} id="finestra-giorno" name="finestra-giorno" className="form-control" min={initialMinDateForInput} max={initialMaxDateForInput}
+                                    disabled={isFinestraDisabled(flussoForm)} onKeyDown={(e) => e.preventDefault()} onChange={(e) => handleChangeFlusso(e.target.value, "finestra")}  />
+                            </div>
+                            <div className="col-12 col-sm-12 col-lg-6">
+                                <label htmlFor="fascia-oraria" className="form-label">Fascia oraria:</label>
+                                <select id="fascia-oraria" name="fascia-oraria" className="form-select" disabled={isFinestraDisabled(flussoForm)} 
+                                    value={flussoForm.fasciaOraria} onChange={(e) => {
+                                        console.log(typeof parseInt(e.target.value))
+                                        handleChangeFlusso(parseInt(e.target.value), "fasciaOraria")}} >
+                                    {oreOpt}
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
             }
-            return <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
-                <label htmlFor="finestra-temporale" className="form-label">Finestra Temporale:***</label>
-                <input type={type} value={flussoForm.finestra} id="finestra-temporale" name="finestra-temporale" className="form-control" onKeyDown={(e) => e.preventDefault()}
-                    min={min} max={max} disabled={isFinestraDisabled(flussoForm)} onChange={(e) => handleChangeFlusso(e.target.value, "finestra")} />
-            </div>
         }
         return <></>
     }
@@ -97,7 +121,7 @@ export default function ElencoForm(props) {
                                         <select id="stato" name="tempStatoOrEsito" className="form-select" value={flussoForm.statoOrEsito}
                                             onChange={(e) => handleChangeFlusso(e.target.value, "statoOrEsito")}>
                                             <option value={null}></option>
-                                            {props.stati}
+                                            {esitStatiOpt}
                                         </select>
                                     </div>}
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">

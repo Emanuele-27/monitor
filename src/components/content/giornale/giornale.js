@@ -94,7 +94,7 @@ export default function Giornale(props) {
 
     return (
         <>
-            <GiornaleForm stati={props.stati} resetFiltri={resetFiltri} giornaleForm={giornaleForm} setGiornaleForm={setGiornaleForm} fraseFinestra={fraseFinestra.current} />
+            <GiornaleForm resetFiltri={resetFiltri} giornaleForm={giornaleForm} setGiornaleForm={setGiornaleForm} fraseFinestra={fraseFinestra.current} />
             <GiornaleTable listGiornale={listGiornale} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
                 blockContent={props.blockContent} unblockContent={props.unblockContent} />
         </>

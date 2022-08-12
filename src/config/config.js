@@ -51,6 +51,7 @@ const propsDominio = {
     intervalloDate: process.env['REACT_APP_INTERVALLO_DATE_' + suffissoDom],
     intervalloFiltroDate: process.env['REACT_APP_INTERVALLO_FILTRO_DATE_' + suffissoDom],
     modalitaFinestra: process.env['REACT_APP_INTERVALLO_FINESTRA_TEMPORALE_' + suffissoDom],
+    intervalloOre: process.env['REACT_APP_INTERVALLO_ORE_FASCIA_ORARIA_' + suffissoDom],
     avvisiEnabled: process.env['REACT_APP_AVVISI_ENABLE_' + suffissoDom],
     idIntermediarioPA: process.env['REACT_APP_ID_INTERMEDIARIO_PA_' + suffissoDom],
     idStazionePA: process.env['REACT_APP_ID_STAZIONE_PA_' + suffissoDom],
