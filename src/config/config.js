@@ -7,7 +7,7 @@ const configProps = {
     advHost: process.env.REACT_APP_ADV_HOST,
 }
 
-// Inizio gestione props dominio
+// Inizio gestione riconoscimento dominio da url ******
 const suffissiDomini = {
     suffissoAdm: 'ADM',
     suffissoAe: 'AE',
@@ -41,6 +41,11 @@ switch (window.location.hostname) {
         break
 
 }
+// Fine gestione riconoscimento dominio da url ******
+
+const dominioBase = process.env.REACT_APP_DOMINIO_BASE;
+suffissoDom = dominioBase ? dominioBase : suffissoDom;
+
 // Props per dominio
 const propsDominio = {
     suffissoDom: suffissoDom,
