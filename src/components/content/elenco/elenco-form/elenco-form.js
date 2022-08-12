@@ -72,14 +72,12 @@ export default function ElencoForm(props) {
                             <div className="col-12 col-sm-12 col-lg-6">
                                 <label htmlFor="finestra-giorno" className="form-label">Giorno:</label>
                                 <input type="date" value={flussoForm.finestra} id="finestra-giorno" name="finestra-giorno" className="form-control" min={initialMinDateForInput} max={initialMaxDateForInput}
-                                    disabled={isFinestraDisabled(flussoForm)} onKeyDown={(e) => e.preventDefault()} onChange={(e) => handleChangeFlusso(e.target.value, "finestra")}  />
+                                    disabled={isFinestraDisabled(flussoForm)} onKeyDown={(e) => e.preventDefault()} onChange={(e) => handleChangeFlusso(e.target.value, "finestra")} />
                             </div>
                             <div className="col-12 col-sm-12 col-lg-6">
                                 <label htmlFor="fascia-oraria" className="form-label">Fascia oraria:</label>
-                                <select id="fascia-oraria" name="fascia-oraria" className="form-select" disabled={isFinestraDisabled(flussoForm)} 
-                                    value={flussoForm.fasciaOraria} onChange={(e) => {
-                                        console.log(typeof parseInt(e.target.value))
-                                        handleChangeFlusso(parseInt(e.target.value), "fasciaOraria")}} >
+                                <select id="fascia-oraria" name="fascia-oraria" className="form-select" disabled={isFinestraDisabled(flussoForm)}
+                                    value={flussoForm.fasciaOraria} onChange={(e) => handleChangeFlusso(parseInt(e.target.value), "fasciaOraria")}>
                                     {oreOpt}
                                 </select>
                             </div>

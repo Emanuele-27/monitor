@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { propsDominio } from "config/config";
 import { calcolaDataPerFinestra, formatDate, transformFinestraToDates } from "util/date-util";
 import { columnMapper, deleteUndefinedValues, sortMapper } from "util/util";
-import { initialLazyParams, isFinestraAbilitata, modalitaFinestra } from "../content";
+import { buildFrase, initialLazyParams, isFinestraAbilitata, mapFasce, modalitaFinestra } from "../content";
 import GiornaleForm from "./giornale-form/giornale-form";
 import GiornaleTable from "./giornale-table/giornale-table";
 import { monitorClient } from "clients/monitor-client";
@@ -23,6 +23,7 @@ export const emptyGiornaleForm = () => {
         tipoEvento: '',
         dataOraEvento: '',
         finestra: calcolaDataPerFinestra(modalitaFinestra),
+        fasciaOraria: Math.trunc(mapFasce.size / 2 + 1), // Fascia oraria indica l'indice della mappa di fasce, default value: fascia circa centrale
     }
 }
 
@@ -69,10 +70,10 @@ export default function Giornale(props) {
         // Se finestraTemporale è renderizzata e abilitata, valorizza il filtro con la finestra
         // altrimenti con dataOraEvento che sarà già valorizzata
         if (isFinestraAbilitata && !isFinestraDisabled(giornale) && giornale.finestra) {
-            const dates = transformFinestraToDates(modalitaFinestra, giornale.finestra);
+            const dates = transformFinestraToDates(modalitaFinestra, giornale.finestra, giornale.fasciaOraria);
             giornale.dataDa = dates[0];
             giornale.dataA = dates[1];
-            fraseFinestra.current = ` - Finestra Temporale: ${formatDate(dates[0])} - ${formatDate(dates[1])}`
+            fraseFinestra.current = buildFrase(modalitaFinestra, dates);
         } else {
             fraseFinestra.current = '';
             if (giornale.dataOraEvento)
@@ -85,6 +86,7 @@ export default function Giornale(props) {
     // Elimina le proprietà necessarie al form ma non al filtro
     const eliminaFormProperties = (form) => {
         delete form.finestra;
+        delete form.fasciaOraria;
     }
 
     const resetFiltri = () => {

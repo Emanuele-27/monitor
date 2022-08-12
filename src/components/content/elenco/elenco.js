@@ -33,7 +33,7 @@ export const emptyFlussoForm = (tab) => {
         dataRicevutaDa: '',
         dataRicevutaA: '',
         finestra: calcolaDataPerFinestra(modalitaFinestra),
-        fasciaOraria: Math.trunc(mapFasce.size / 2), // Indice fascia di default è la fascia centrale
+        fasciaOraria: Math.trunc(mapFasce.size / 2 + 1), // Fascia oraria indica l'indice della mappa di fasce, default value: fascia circa centrale
     }
 }
 

@@ -109,8 +109,6 @@ export const transformFinestraToDates = (modalita, finestra, fascia) => {
             return getDatesFromISOWeekDate(finestra);
         case 'ore':
             // data rappresenta il giorno
-            console.log(fascia)
-            console.log(typeof fascia)
             let data = new Date(finestra);
             // orari rappresentano i due orari della fascia oraria
             const orari = mapFasce.get(fascia);
