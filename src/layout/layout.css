@@ -6,3 +6,19 @@ div#bodyDiv, div.p-blockui-container{
 .p-inputswitch.p-inputswitch-checked:not(.p-disabled):hover .p-inputswitch-slider, .p-inputswitch.p-inputswitch-checked .p-inputswitch-slider{
     background:#00366a !important;
 }
+
+div.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 3.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 6px 6px 0 0;
+}
+div.panel-content {
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    padding: 1.25rem;
+}

@@ -116,8 +116,8 @@ export default function Content() {
 
     // Toggle classi css per il focus tra steps in base al click
     const toggleFocusClass = (ev) => {
-        document.getElementById('tabsRow').getElementsByClassName('entrypoint-focus')[0].classList.remove('entrypoint-focus');
-        ev.target.classList.add('entrypoint-focus');
+        document.getElementById('tabsRow').getElementsByClassName('bg-primary')[0].classList.remove('bg-primary', 'text-white');
+        ev.target.classList.add('bg-primary', 'text-white');
     }
 
     // Costruisce option per le select di servizi e aree
@@ -137,7 +137,7 @@ export default function Content() {
         <BlockUI blocked={blockedContent} template={<i className="pi pi-spin pi-spinner" style={{fontSize: "5rem", color: "whitesmoke"}}></i>} >
             <div className="container-fluid" style={{ width: "85%", paddingTop: "2rem" }}>
                 <div id="tabsRow" >
-                    <Link to="/home" id="home-tab" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint entrypoint-focus">
+                    <Link to="/home" id="home-tab" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint bg-primary text-white">
                         HOME
                     </Link>
                     {avvisiEnabled &&

@@ -16590,10 +16590,3 @@ footer h1 small, footer .h1 small, footer h1 .small, footer .h1 .small {
 .wizard .wizard-step.wizard-step-todo>.wizard-dot {
     background-color: #e9ecef;
 }
-
-/* CUSTOM  */
-a.entrypoint-focus{
-    color: #fff;
-    background-color: #295c84;
-    border-color: #295c84;
-}
