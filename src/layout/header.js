@@ -14,8 +14,6 @@ import { ReactComponent as SogeiLogo } from 'assets/sogei/Sogei_arancio.svg';
 
 import { propsDominio, suffissiDomini } from "config/config";
 
-import { InputSwitch } from 'primereact/inputswitch';
-
 import './layout.css';
 
 // Mapping dominio corrente - logo per darkmode
@@ -50,10 +48,14 @@ export default function Header(props) {
                 <a href={propsDominio.provenienzaUrl} target="_self" className={linkClass}>
                     <i className="bi bi-arrow-left me-2"></i>Area di provenienza
                 </a>
-                <InputSwitch checked={checked} onChange={(e) => {
-                    setChecked(e.value);
-                    props.switchTheme();
-                }} style={{ float: "right"}} />
+                <div className="form-check form-switch form-switch-lg" style={{ float: "right" }}>
+                    <input type="checkbox" id="switch" name="switch" className="form-check-input" checked={!checked} onChange={() => {
+                        setChecked(!checked);
+                        props.switchTheme();
+                    }} />
+                    {checked && <label for="switch" className="form-check-label"><i className="pi pi-moon" style={{ color: "white" }} /></label>}
+                    {!checked && <label for="switch" className="form-check-label"><i className="pi pi-sun" /></label>}
+                </div>
             </div>
         </div>
         <div className={"header-" + props.theme}>
