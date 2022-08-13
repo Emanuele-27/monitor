@@ -173,3 +173,14 @@ export const setLastMinute = (date) => {
     data.setHours(23, 59, 59, 999);
     return data;
 }
+
+export const buildFrase = (mod, dates) => {
+    switch (mod) {
+        case 'mese' || 'settimana':
+            return ` - Finestra Temporale: ${formatDate(dates[0])} - ${formatDate(dates[1])}`
+        case 'ore':
+            return ` - Finestra Temporale: ${formatDate(dates[0])} ${formatTimeShort(dates[0])} - ${formatTimeShort(dates[1])}`;
+        default:
+            return '';
+    }
+}

@@ -16,7 +16,7 @@ import { propsDominio } from "config/config";
 import { esitiPagamento, formatEsito, statiPagamento } from "model/tutti-i-stati";
 import { replaceUnderscore } from "util/string-util";
 import { monitorClient } from "clients/monitor-client";
-import { aggiungiMesi, creaIntervalliDiOre, formatDate, formatDateForInput, formatMonth, formatTimeShort, getISOWeekDate, minutesIn2Digits } from "util/date-util";
+import { aggiungiMesi, creaIntervalliDiOre, formatDateForInput, formatMonth, getISOWeekDate, minutesIn2Digits } from "util/date-util";
 
 export const initialLazyParams = {
     first: 0,
@@ -88,17 +88,6 @@ const outputOre = buildIntervalliOre();
 export const oreOpt = outputOre.oreOptions;
 export const mapFasce = outputOre.fasce;
 
-export const buildFrase = (mod, dates) => {
-    switch (mod) {
-        case 'mese' || 'settimana':
-            return ` - Finestra Temporale: ${formatDate(dates[0])} - ${formatDate(dates[1])}`
-        case 'ore':
-            return ` - Finestra Temporale: ${formatDate(dates[0])} ${formatTimeShort(dates[0])} - ${formatTimeShort(dates[1])}`;
-        default:
-            return '';
-    }
-}
-
 export default function Content() {
 
     const [blockedContent, setBlockedContent] = useState(false);
@@ -145,7 +134,7 @@ export default function Content() {
     };
 
     return (
-        <BlockUI blocked={blockedContent} >
+        <BlockUI blocked={blockedContent} template={<i className="pi pi-spin pi-spinner" style={{fontSize: "5rem", color: "whitesmoke"}}></i>} >
             <div className="container-fluid" style={{ width: "85%", paddingTop: "2rem" }}>
                 <div id="tabsRow" >
                     <Link to="/home" id="home-tab" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint entrypoint-focus">

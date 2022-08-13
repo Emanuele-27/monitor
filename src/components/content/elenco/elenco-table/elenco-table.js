@@ -135,8 +135,8 @@ export default function ElencoTable(props) {
                 else
                     return <><span disabled><i className="pi pi-file-o"></i></span>
                         <span disabled><i className="pi pi-download"></i></span></>
-        else if(props.tab === 'avvisi')
-            return <span title="Download avviso" onClick={() => downloadAvviso(rowData)}><i className="pi pi-download"></i></span>
+            else if (props.tab === 'avvisi')
+                return <span title="Download avviso" onClick={() => downloadAvviso(rowData)}><i className="pi pi-download"></i></span>
     };
 
     const columnOpzioniComuni = (rowData) => {
@@ -196,28 +196,32 @@ export default function ElencoTable(props) {
                 }
             }
         }
+        try {
+            const dataResult = await monitorClient.getFlussi(flussoData);
 
-        const dataResult = await monitorClient.getFlussi(flussoData);
+            let rptPromises = [];
 
-        let rptPromises = [];
-
-        // Raccolta pending promises 
-        dataResult.flussoList.forEach((flusso) => {
-            const nodoChiediStatoRPT = getNodoChiediStatoRPTParam(flusso.codiceContesto, flusso.idDominio, flusso.iuv);
-            rptPromises.push(auxClient.nodoChiediStatoRPT(nodoChiediStatoRPT));
-        });
-
-        // Sync promises on fullfilled
-        Promise.allSettled(rptPromises).then(responses => {
-            let countOK = 0;
-            responses.forEach((res) => {
-                const stato = res.value;
-                if (stato && !stato.faultBean && ((stato.nodoChiediCopiaRTRisposta && !stato.nodoChiediCopiaRTRisposta.fault) || (!stato.nodoChiediCopiaRTRisposta)))
-                    countOK++;
+            // Raccolta pending promises 
+            dataResult.flussoList.forEach((flusso) => {
+                const nodoChiediStatoRPT = getNodoChiediStatoRPTParam(flusso.codiceContesto, flusso.idDominio, flusso.iuv);
+                rptPromises.push(auxClient.nodoChiediStatoRPT(nodoChiediStatoRPT));
             });
-            props.call();
-            props.showMsg("info", "Info:", "Operazione effettuata. Sono stati aggiornati " + countOK + " flussi su " + responses.length);
-        })
+
+            // Sync promises on fullfilled
+            Promise.allSettled(rptPromises).then(responses => {
+                let countOK = 0;
+                responses.forEach((res) => {
+                    const stato = res.value;
+                    if (stato && !stato.faultBean && ((stato.nodoChiediCopiaRTRisposta && !stato.nodoChiediCopiaRTRisposta.fault) || (!stato.nodoChiediCopiaRTRisposta)))
+                        countOK++;
+                });
+                props.call();
+                props.showMsg("info", "Info:", "Operazione effettuata. Sono stati aggiornati " + countOK + " flussi su " + responses.length);
+            });
+        } catch (e) {
+            props.unblockContent();
+            props.showMsg("danger", "Errore:", "Riprovare in un altro momento");
+        }
     }
 
     // Condiviso con chiediCopiaRT

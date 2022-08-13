@@ -6,9 +6,9 @@ import './elenco.css';
 import { columnMapper, deleteUndefinedValues, sortMapper } from 'util/util';
 import ElencoTable from "./elenco-table/elenco-table";
 import ElencoForm from "./elenco-form/elenco-form";
-import { buildFrase, initialLazyParams, isFinestraAbilitata, mapFasce, modalitaFinestra } from "../content";
+import { initialLazyParams, isFinestraAbilitata, mapFasce, modalitaFinestra } from "../content";
 import { useLocation } from "react-router-dom";
-import { calcolaDataPerFinestra, setLastMinute, transformFinestraToDates } from "util/date-util";
+import { buildFrase, calcolaDataPerFinestra, setLastMinute, transformFinestraToDates } from "util/date-util";
 import { statiPagamento } from "model/tutti-i-stati";
 import { monitorClient } from "clients/monitor-client";
 

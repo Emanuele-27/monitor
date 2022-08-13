@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { propsDominio } from "config/config";
-import { calcolaDataPerFinestra, transformFinestraToDates } from "util/date-util";
+import { buildFrase, calcolaDataPerFinestra, transformFinestraToDates } from "util/date-util";
 import { columnMapper, deleteUndefinedValues, sortMapper } from "util/util";
-import { buildFrase, initialLazyParams, isFinestraAbilitata, mapFasce, modalitaFinestra } from "../content";
+import { initialLazyParams, isFinestraAbilitata, mapFasce, modalitaFinestra } from "../content";
 import GiornaleForm from "./giornale-form/giornale-form";
 import GiornaleTable from "./giornale-table/giornale-table";
 import { monitorClient } from "clients/monitor-client";
