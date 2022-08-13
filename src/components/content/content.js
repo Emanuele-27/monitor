@@ -134,7 +134,7 @@ export default function Content() {
     };
 
     return (
-        <BlockUI blocked={blockedContent} template={<i className="pi pi-spin pi-spinner" style={{fontSize: "5rem", color: "whitesmoke"}}></i>} >
+        <BlockUI blocked={blockedContent} template={<i className="pi pi-spin pi-spinner" style={{ fontSize: "5rem", color: "whitesmoke" }}></i>} >
             <div className="container-fluid" style={{ width: "85%", paddingTop: "2rem" }}>
                 <div id="tabsRow" >
                     <Link to="/home" id="home-tab" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint bg-primary text-white">

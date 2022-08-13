@@ -61,6 +61,7 @@ const propsDominio = {
     idIntermediarioPA: process.env['REACT_APP_ID_INTERMEDIARIO_PA_' + suffissoDom],
     idStazionePA: process.env['REACT_APP_ID_STAZIONE_PA_' + suffissoDom],
     pwdPA: process.env['REACT_APP_PWD_PA_' + suffissoDom],
+    theme: process.env['REACT_APP_DEFAULT_THEME_' + suffissoDom],
 }
 
 export { configProps, suffissiDomini, propsDominio };

@@ -36,11 +36,7 @@ export default function Header(props) {
 
     const [checked, setChecked] = useState(props.theme === 'dark');
 
-    let linkClass;
-    if (props.theme === 'dark')
-        linkClass = 'link-white';
-    else if (props.theme === 'light')
-        linkClass = 'link-primary';
+    const linkClass = props.theme === 'dark' ? 'link-white' : props.theme === 'light' ? 'link-primary' : '';
 
     return <> <header aria-label="Informazioni e strumenti utente">
         <div className={"header-top-" + props.theme + " d-none d-md-block"}>
@@ -53,8 +49,8 @@ export default function Header(props) {
                         setChecked(!checked);
                         props.switchTheme();
                     }} />
-                    {checked && <label for="switch" className="form-check-label"><i className="pi pi-moon" style={{ color: "white" }} /></label>}
-                    {!checked && <label for="switch" className="form-check-label"><i className="pi pi-sun" /></label>}
+                    {checked ? <label htmlFor="switch" className="form-check-label"><i className="pi pi-moon" style={{ color: "white" }} /></label>
+                        : <label htmlFor="switch" className="form-check-label"><i className="pi pi-sun" /></label>}
                 </div>
             </div>
         </div>
