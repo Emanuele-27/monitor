@@ -13,7 +13,6 @@ import "primeicons/primeicons.css";
 
 import "./index.css";
 
-
 const rootElement = document.getElementById('root');
 const root = createRoot(rootElement);
 
