@@ -3,7 +3,6 @@ import "./rpt-table.css";
 
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { Button } from 'primereact/button';
 
 import { exportExcel } from 'util/util';
 import { formatDateTime } from "util/date-util";
@@ -37,7 +36,9 @@ export default function RptTable(props) {
 
     const header = (
         <div style={{ marginRight: "0", marginLeft: "auto" }}>
-            <Button type="button" icon="pi pi-file-excel" onClick={() => exportExcel(prepareList(props.listaRpt), 'rpt-senza-rpt')} className="p-button-success mr-2" data-pr-tooltip="XLS" />
+            <button type="button" className="btn btn-success export-button" onClick={() => exportExcel(prepareList(props.listaRpt), 'rpt-senza-rpt')} title="Esporta in Excel">
+                <i className="pi pi-file-excel" />
+            </button>
         </div>
     );
 

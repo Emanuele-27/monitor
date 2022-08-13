@@ -16,37 +16,3 @@ span[disabled] {
     pointer-events: none; 
     opacity: 0.5;
 }
-
-/* Buttons Exporter */
-.p-datatable-header, .p-datatable-footer {
-    display: flex;
-    align-items: center;
-}
-.p-button.p-component.p-button-success.mr-2.p-button-icon-only {
-    width: 2.5rem;
-    height: 2.5rem;
-}
-
-/* Campi data e finestre temporali */
-span[id^=data], span[id^=finestra] {
-    display: block
-}
-span[id^=data] input.p-inputtext.p-component, 
-span[id^=finestra] input.p-inputtext.p-component{
-    height: 38px;
-    width: 85%;
-    border: 1px solid #939496;
-    border-radius: 0.5rem 0 0 0.5rem;
-}
-span[id^=data] input.p-inputtext.p-component:focus, 
-span[id^=finestra] input.p-inputtext.p-component:focus{
-    border-color: #94aec2;
-    box-shadow: 0 0 0 0.25rem rgb(41 92 132 / 25%);
-}
-
-input::-webkit-datetime-edit-day-field:focus,
-input::-webkit-datetime-edit-month-field:focus,
-input::-webkit-datetime-edit-year-field:focus {
-    background-color: white;
-    color: black;
-}

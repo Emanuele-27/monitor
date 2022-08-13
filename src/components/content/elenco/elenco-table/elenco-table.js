@@ -5,7 +5,6 @@ import { formatEsito } from 'model/tutti-i-stati';
 
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { Button } from 'primereact/button';
 
 import { exportExcel, isIuvRF, localeIT, pdfType } from 'util/util';
 import { capitalizeFirstLetter, replaceUnderscore, splitCamelCase } from "util/string-util";
@@ -43,11 +42,12 @@ export default function ElencoTable(props) {
                 Numero Transazioni: {props.totalRecords}
             </div>
             <div style={{ marginRight: "0", marginLeft: "auto" }}>
-                <Button type="button" icon="pi pi-file-excel" onClick={() => exportExcel(prepareList(props.flussiList), 'elenco')}
-                    title="Esporta in Excel" className="p-button-success mr-2" data-pr-tooltip="XLS" />
-                <Button label="Aggiorna Elenco" onClick={props.call} className="p-button-info header-button" />
+                <button type="button" className="btn btn-success export-button" onClick={() => exportExcel(prepareList(props.flussiList), 'elenco')} title="Esporta in Excel">
+                    <i className="pi pi-file-excel" />
+                </button>
+                <button type="button" className="btn btn-primary header-button" onClick={props.call}>Aggiorna Elenco</button>
                 {props.tab === 'elenco' &&
-                    <Button label="Aggiorna Stati" onClick={aggiornaStati} className="p-button-info header-button" />}
+                    <button type="button" onClick={aggiornaStati} className="btn btn-primary header-button">Aggiorna Stati</button>}
             </div>
         </>
     }
