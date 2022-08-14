@@ -35,8 +35,8 @@ const widthTabs = avvisiEnabled ? '20%' : '25%';
 export const getRptBadgeCount = () => {
     const flussoData = {
         filtroFlusso: {
-            da: 1,
-            a: 2,
+            da: 0,
+            a: 1,
             flusso: {
                 // idDominio: propsDominio.idDominio
             }

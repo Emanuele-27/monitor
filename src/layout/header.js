@@ -45,7 +45,7 @@ export default function Header(props) {
                     <i className="bi bi-arrow-left me-2"></i>Area di provenienza
                 </a>
                 <div className="form-check form-switch form-switch-lg" style={{ float: "right" }}>
-                    <input type="checkbox" id="switch" name="switch" className="form-check-input" checked={!checked} onChange={() => {
+                    <input type="checkbox" aria-label="Switch per alternare light mode e dark mode" id="switch" name="switch" className="form-check-input" checked={!checked} onChange={() => {
                         setChecked(!checked);
                         props.switchTheme();
                     }} />

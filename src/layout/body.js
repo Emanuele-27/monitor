@@ -11,7 +11,7 @@ import {
 
 export default function Body() {
     return (
-        <div id="bodyDiv">
+        <div id="body">
             <Routes>
                 <Route path="/*" element={<Content />} />
                 <Route path="/informativa" element={<Informativa />} />
