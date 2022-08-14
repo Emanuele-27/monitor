@@ -55,6 +55,4 @@ export const exportExcel = (list, fileName) => {
     });
 }
 
-export const isIuvRF = (iuv) => {
-    return iuv && iuv.startsWith('RF');
-};
+export const isIuvRF = iuv => iuv && iuv.startsWith('RF');

@@ -29,7 +29,7 @@ const statiPagamento = [
     'RT_ESITO_SCONOSCIUTO_PA'
 ]
 
-function formatEsito(string) {
+const formatEsito = (string) => {
     if (string.includes('PAGAMENTO'))
         string = string.slice(string.indexOf('PAGAMENTO') + 9);
     return replaceUnderscore(string);

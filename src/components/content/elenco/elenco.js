@@ -12,7 +12,7 @@ import { buildFrase, calcolaDataPerFinestra, setLastMinute, transformFinestraToD
 import { statiPagamento } from "model/tutti-i-stati";
 import { monitorClient } from "clients/monitor-client";
 
-function useQuery() {
+const useQuery = () => {
     const { search } = useLocation();
     return useMemo(() => new URLSearchParams(search), [search]);
 }

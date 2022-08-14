@@ -1,15 +1,10 @@
 import { mapFasce } from "components/content/content";
 import { localeIT } from "./util";
 
-export function lastDayOfMonth(year, month) {
-    return new Date(year, month + 1, 0);
-}
+export const lastDayOfMonth = (year, month) => new Date(year, month + 1, 0);
+export const firstDayOfMonth = (year, month) => new Date(year, month, 1);
 
-export function firstDayOfMonth(year, month) {
-    return new Date(year, month, 1);
-}
-
-export const daysToAddUntilMonday = (day) => {
+export const daysToAddUntilMonday = day => {
     switch (day) {
         case 0:
             return 1;
@@ -30,62 +25,49 @@ export const daysToAddUntilMonday = (day) => {
     }
 }
 
-export function aggiungiMesi(date, mesi) {
+export const aggiungiMesi = (date, mesi) => {
     const datePiuMesi = new Date(date);
     datePiuMesi.setMonth(datePiuMesi.getMonth() + mesi);
     return datePiuMesi;
 }
 
-export function aggiungiGiorni(date, giorni) {
+export const aggiungiGiorni = (date, giorni) => {
     const datePiuGiorni = new Date(date);
     datePiuGiorni.setDate(datePiuGiorni.getDate() + giorni);
     return datePiuGiorni;
 }
 
-export function aggiungiOre(date, ore) {
+export const aggiungiOre = (date, ore) => {
     const datePiuOre = new Date(date);
     datePiuOre.setHours(datePiuOre.getHours() + ore);
     return datePiuOre;
 }
 
 // dd/MM/yyyy HH:mm:ss
-export function formatDateTime(date) {
-    return new Date(date).toLocaleString(localeIT).replace(',', '');
-}
-
+export const formatDateTime = date => new Date(date).toLocaleString(localeIT).replace(',', '');
 // dd/MM/yyyy
-export function formatDate(date) {
-    return new Date(date).toLocaleDateString(localeIT)
-}
-
+export const formatDate = date => new Date(date).toLocaleDateString(localeIT);
 // yyyy-MM-dd
-export function formatDateForInput(date) {
+export const formatDateForInput = date => {
     const offset = date.getTimezoneOffset()
     date = new Date(date.getTime() - (offset * 60 * 1000))
     return date.toISOString().split('T')[0]
 }
-
 // yyyy-MM
-export function formatMonth(date) {
+export const formatMonth = date => {
     const dateParts = formatDateForInput(date).split('-');
     return dateParts[0] + '-' + dateParts[1];
 }
-
 // HH:mm
-export function formatTimeShort(date) {
-    return new Date(date).toLocaleTimeString(localeIT, {
-        timeStyle: "short"
-    });
-}
-
+export const formatTimeShort = date => new Date(date).toLocaleTimeString(localeIT, {
+    timeStyle: "short"
+});
 // HH:mm:ss
-export function formatTime(date) {
-    return new Date(date).toLocaleTimeString(localeIT, {
-        timeStyle: "medium"
-    });
-}
+export const formatTime = date => new Date(date).toLocaleTimeString(localeIT, {
+    timeStyle: "medium"
+});
 
-export function calcolaDataPerFinestra(modalita) {
+export const calcolaDataPerFinestra = modalita => {
     switch (modalita) {
         case 'mese':
             return formatMonth(new Date(Date.now()));
@@ -121,7 +103,7 @@ export const transformFinestraToDates = (modalita, finestra, fascia) => {
     }
 }
 
-export const getISOWeekDate = (date) => {
+export const getISOWeekDate = date => {
     const anno = date.getFullYear()
     // Primo giorno dell'anno
     const firstDayYear = new Date(anno, 0, 1);

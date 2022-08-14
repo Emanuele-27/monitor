@@ -1,23 +1,11 @@
-// export function isAlphaNumeric(key){
-//     return key.match(/[a-zA-Z0-9]{1}/);
-// }
+const removeSpecialChars = str => str.replace(/(\W|_)/g, '');
 
-export function removeSpecialChars(string){
-    return string.replace(/(\W|_)/g, '');
-}
+const removeNumbers = str => str.replace(/[0-9]/g, '');
 
-export function removeNumbers(string){
-    return string.replace(/[0-9]/g, '');
-}
+const replaceUnderscore = str => str.replaceAll('_', ' ').trim();
 
-export function replaceUnderscore(string){
-    return string.replaceAll('_', ' ').trim();
-}
+const splitCamelCase = str => str.split(/(?=[A-Z])/).reduce((prev, current) => prev + " " + current);
 
-export function splitCamelCase(string){
-    return string.split(/(?=[A-Z])/).reduce((prev, current) => prev + " " + current)
-}
+const capitalizeFirstLetter = str => str.at(0).toUpperCase() + str.substring(1);
 
-export function capitalizeFirstLetter(string){
-    return string.at(0).toUpperCase() + string.substring(1)
-}
+export {removeSpecialChars, removeNumbers, replaceUnderscore, splitCamelCase, capitalizeFirstLetter};
