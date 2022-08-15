@@ -12,14 +12,20 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 
 import "./index.css";
+import { propsDominio } from "config/config";
+
+const link = document.createElement('link');
+link.setAttribute('rel', 'stylesheet');
+link.setAttribute('href', '/css/' + propsDominio.css + '.css');
+document.head.appendChild(link);
 
 const rootElement = document.getElementById('root');
 const root = createRoot(rootElement);
 
 root.render(
-  // <StrictMode>
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>
-  // </StrictMode>
+    // <StrictMode>
+    <BrowserRouter>
+        <App />
+    </BrowserRouter>
+    // </StrictMode>
 );

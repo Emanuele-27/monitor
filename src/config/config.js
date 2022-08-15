@@ -15,6 +15,13 @@ const suffissiDomini = {
     suffissoSogei: 'SOGEI'
 };
 
+const cssFile = new Map([
+    [suffissiDomini.suffissoAdm, 'adm'],
+    [suffissiDomini.suffissoAe, 'agenzia-entrate'],
+    [suffissiDomini.suffissoAer, 'ader'],
+    [suffissiDomini.suffissoSogei, 'sogei'],
+])
+
 const hostAdm = process.env['REACT_APP_HOST_' + suffissiDomini.suffissoAdm];
 const hostAe = process.env['REACT_APP_HOST_' + suffissiDomini.suffissoAe];
 const hostAer = process.env['REACT_APP_HOST_' + suffissiDomini.suffissoAer];
@@ -48,7 +55,7 @@ suffissoDom = dominioBase ? dominioBase : suffissoDom;
 
 // Props per dominio
 const propsDominio = {
-    suffissoDom: suffissoDom,
+    suffissoDom,
     idDominio: process.env['REACT_APP_ID_DOMINIO_' + suffissoDom],
     denominazione: process.env['REACT_APP_DENOMINAZIONE_PA_' + suffissoDom],
     provenienzaUrl: process.env['REACT_APP_PROVENIENZA_URL_' + suffissoDom],
@@ -61,6 +68,7 @@ const propsDominio = {
     idIntermediarioPA: process.env['REACT_APP_ID_INTERMEDIARIO_PA_' + suffissoDom],
     idStazionePA: process.env['REACT_APP_ID_STAZIONE_PA_' + suffissoDom],
     pwdPA: process.env['REACT_APP_PWD_PA_' + suffissoDom],
+    css: cssFile.get(suffissoDom),
     theme: process.env['REACT_APP_DEFAULT_THEME_' + suffissoDom],
 }
 

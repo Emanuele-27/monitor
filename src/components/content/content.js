@@ -98,12 +98,13 @@ export default function Content() {
 
     useEffect(() => {
         blockContent();
-        Promise.allSettled([monitorClient.getServizi(), getRptBadgeCount()]).then(res => {
-            const serviziEAree = buildServiziEAree(res[0].value);
+        getRptBadgeCount().then(res => setRptBadgeCount(res.filtroFlusso.count < 0 ? 0 : res.filtroFlusso.count))
+            .finally(() => unblockContent());
+        monitorClient.getServizi().then(res => {
+            const serviziEAree = buildServiziEAree(res);
             setServizi(serviziEAree.servizi);
             setAree(serviziEAree.aree);
-            setRptBadgeCount(res[1].value.filtroFlusso.count < 0 ? 0 : res[1].value.filtroFlusso.count);
-        }).finally(() => unblockContent())
+        })
     }, [])
 
     const blockContent = () => {
@@ -114,7 +115,7 @@ export default function Content() {
         setBlockedContent(false)
     }
 
-    // Toggle classi css per il focus tra steps in base al click
+    // Aggiunge o rimuove le classi per indicare il tab focused
     const toggleFocusClass = (ev) => {
         document.getElementById('tabsRow').getElementsByClassName('bg-primary')[0].classList.remove('bg-primary', 'text-white');
         ev.target.classList.add('bg-primary', 'text-white');
