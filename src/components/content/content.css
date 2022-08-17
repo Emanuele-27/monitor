@@ -61,3 +61,7 @@ input::-webkit-datetime-edit-year-field:focus {
     background-color: white;
     color: black;
 }
+
+button.font-normal {
+    font-weight: normal;
+}

@@ -112,8 +112,8 @@ export default function GiornaleForm(props) {
                                 </div>
                             </form>
                             <div style={{ display: "flex", justifyContent: "center", marginTop: "1.5rem" }}>
-                                <button type="button" className="btn btn-primary" form="giornale-form" style={{ fontWeight: "600", marginRight: "0.05rem" }} onClick={() => props.setGiornaleForm(giornaleForm)}>Cerca</button>
-                                <button type="button" className="btn btn-primary" form="giornale-form" style={{ fontWeight: "600", marginLeft: "0.05rem" }} onClick={resetFiltri}>Reset Filtri</button>
+                                <button type="button" className="btn btn-primary font-normal" form="giornale-form" style={{ marginRight: "0.05rem" }} onClick={() => props.setGiornaleForm(giornaleForm)}>Cerca</button>
+                                <button type="button" className="btn btn-primary font-normal" form="giornale-form" style={{ marginLeft: "0.05rem" }} onClick={resetFiltri}>Reset Filtri</button>
                             </div>
 
                             <p style={{ marginBottom: "0", marginTop: "1rem" }}>

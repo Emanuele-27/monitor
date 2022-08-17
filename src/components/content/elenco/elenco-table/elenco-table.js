@@ -44,9 +44,9 @@ export default function ElencoTable(props) {
                 <button type="button" className="btn btn-success export-button" onClick={() => exportExcel(prepareList(props.flussiList), 'elenco')} title="Esporta in Excel">
                     <i className="pi pi-file-excel" />
                 </button>
-                <button type="button" className="btn btn-primary header-button" onClick={props.call}>Aggiorna Elenco</button>
+                <button type="button" className="btn btn-primary header-button font-normal" onClick={props.call}>Aggiorna Elenco</button>
                 {props.tab === 'elenco' &&
-                    <button type="button" onClick={aggiornaStati} className="btn btn-primary header-button">Aggiorna Stati</button>}
+                    <button type="button" onClick={aggiornaStati} className="btn btn-primary header-button font-normal">Aggiorna Stati</button>}
             </div>
         </>
     }

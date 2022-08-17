@@ -63,8 +63,8 @@ export default function RptForm(props) {
                                 </div>
                             </form>
                             <div style={{ display: "flex", justifyContent: "center", marginTop: "1.5rem" }}>
-                                <button type="button" className="btn btn-primary" form="rpt-form" style={{ fontWeight: "600", marginRight: "0.05rem" }} onClick={() => props.setFlussoForm(flussoForm)}>Cerca</button>
-                                <button type="button" className="btn btn-primary" form="rpt-form" style={{ fontWeight: "600", marginLeft: "0.05rem" }} onClick={resetFiltri}>Reset Filtri</button>
+                                <button type="button" className="btn btn-primary font-normal" form="rpt-form" style={{ marginRight: "0.05rem" }} onClick={() => props.setFlussoForm(flussoForm)}>Cerca</button>
+                                <button type="button" className="btn btn-primary font-normal" form="rpt-form" style={{ marginLeft: "0.05rem" }} onClick={resetFiltri}>Reset Filtri</button>
                             </div>
                             <p style={{ marginBottom: "0", marginTop: "1rem" }}>
                                 <b>*</b> I campi <b>Iuv</b> e <b>Codice Contesto</b> consentono di effettuare una ricerca puntuale.

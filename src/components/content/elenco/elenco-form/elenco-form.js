@@ -191,8 +191,8 @@ export default function ElencoForm(props) {
                                 </div>
                             </form>
                             <div style={{ display: "flex", justifyContent: "center", marginTop: "1.5rem" }}>                                                        {/* Triggera il componente padre per eseguire una chiamata*/}
-                                <button type="button" className="btn btn-primary" form="elenco-form" style={{ fontWeight: "600", marginRight: "0.05rem" }} onClick={() => props.setFlussoForm(flussoForm)}>Cerca</button>
-                                <button type="button" className="btn btn-primary" form="elenco-form" style={{ fontWeight: "600", marginLeft: "0.05rem" }} onClick={resetFiltri}>Reset Filtri</button>
+                                <button type="button" className="btn btn-primary font-normal" form="elenco-form" style={{ marginRight: "0.05rem" }} onClick={() => props.setFlussoForm(flussoForm)}>Cerca</button>
+                                <button type="button" className="btn btn-primary font-normal" form="elenco-form" style={{ marginLeft: "0.05rem" }} onClick={resetFiltri}>Reset Filtri</button>
                             </div>
 
                             <p style={{ marginBottom: "0", marginTop: "1rem" }}>

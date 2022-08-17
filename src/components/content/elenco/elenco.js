@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { propsDominio } from 'config/config';
 import './elenco.css';
 
-import { columnMapper, deleteUndefinedValues, sortMapper } from 'util/util';
+import { columnMapper, deleteEmptyValues, sortMapper } from 'util/util';
 import ElencoTable from "./elenco-table/elenco-table";
 import ElencoForm from "./elenco-form/elenco-form";
 import { initialLazyParams, isFinestraAbilitata, mapFasce, modalitaFinestra } from "../content";
@@ -95,7 +95,7 @@ export default function Elenco(props) {
     };
 
     const prepareFlussoRequest = () => {
-        let flusso = deleteUndefinedValues(structuredClone(flussoForm));
+        let flusso = deleteEmptyValues(structuredClone(flussoForm));
         valorizzaStatoOrEsito(flusso);
         // Se finestraTemporale è renderizzata e abilitata, valorizza il filtro con la finestra
         if (isFinestraAbilitata && !isFinestraDisabled(flusso) && flusso.finestra) {

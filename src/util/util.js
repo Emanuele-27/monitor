@@ -24,7 +24,7 @@ export const localeDate = {
     clear: 'Clear'
 };
 
-export const deleteUndefinedValues = (obj) => {
+export const deleteEmptyValues = (obj) => {
     Object.keys(obj).forEach(key => {
         if (!obj[key])
             delete obj[key];

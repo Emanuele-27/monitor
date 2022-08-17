@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { propsDominio } from "config/config";
 import { buildFrase, calcolaDataPerFinestra, transformFinestraToDates } from "util/date-util";
-import { columnMapper, deleteUndefinedValues, sortMapper } from "util/util";
+import { columnMapper, deleteEmptyValues, sortMapper } from "util/util";
 import { initialLazyParams, isFinestraAbilitata, mapFasce, modalitaFinestra } from "../content";
 import GiornaleForm from "./giornale-form/giornale-form";
 import GiornaleTable from "./giornale-table/giornale-table";
@@ -65,7 +65,7 @@ export default function Giornale(props) {
 
     const prepareGiornaleRequest = () => {
         // Copia il flusso e elimina i valori non validi
-        let giornale = deleteUndefinedValues(structuredClone(giornaleForm));
+        let giornale = deleteEmptyValues(structuredClone(giornaleForm));
         // Se finestraTemporale è renderizzata e abilitata, valorizza il filtro con la finestra
         // altrimenti con dataOraEvento che sarà già valorizzata
         if (isFinestraAbilitata && !isFinestraDisabled(giornale) && giornale.finestra) {

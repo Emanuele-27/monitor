@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import RptForm from "./rpt-form/rpt-form";
 import RptTable from "./rpt-table/rpt-table";
 import { initialLazyParams } from "../content";
-import { deleteUndefinedValues } from "util/util";
+import { deleteEmptyValues } from "util/util";
 import { monitorClient } from "clients/monitor-client";
 
 export const emptyFlussoForm = {
@@ -32,7 +32,7 @@ export default function Rpt(props) {
     const call = async () => {
         props.blockContent();
 
-        let flussoParam = deleteUndefinedValues(structuredClone(flussoForm));
+        let flussoParam = deleteEmptyValues(structuredClone(flussoForm));
 
         const flussoData = {
             filtroFlusso: {
