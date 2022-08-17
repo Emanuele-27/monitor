@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { propsDominio } from 'config/config';
 import './elenco.css';
@@ -7,22 +7,17 @@ import { columnMapper, deleteUndefinedValues, sortMapper } from 'util/util';
 import ElencoTable from "./elenco-table/elenco-table";
 import ElencoForm from "./elenco-form/elenco-form";
 import { initialLazyParams, isFinestraAbilitata, mapFasce, modalitaFinestra } from "../content";
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { buildFrase, calcolaDataPerFinestra, setLastMinute, transformFinestraToDates } from "util/date-util";
 import { statiPagamento } from "model/tutti-i-stati";
 import { monitorClient } from "clients/monitor-client";
 
-const useQuery = () => {
-    const { search } = useLocation();
-    return useMemo(() => new URLSearchParams(search), [search]);
-}
-
-export const emptyFlussoForm = (tab) => {
+export const emptyFlussoForm = (tab, iuv, codContesto) => {
     return {
         // idDominio: propsDominio.idDominio,
         ...(tab === 'avvisi' && { flagAnnullamento: 1 }),
-        iuv: '',
-        codiceContesto: '',
+        iuv: iuv ? iuv : '',
+        codiceContesto: codContesto ? codContesto : '',
         area: '',
         servizio: '',
         idPagatore: '',
@@ -48,39 +43,10 @@ export const isFinestraDisabled = (flusso) => {
 // Componente condiviso per il tab Elenco e Avvisi
 export default function Elenco(props) {
 
-    // ***** Inizio Gestione Dettaglio RPT *****
-    const query = useQuery();
+    // Gestione Dettaglio RPT 
+    const { iuv, codContesto } = useParams();
 
-    // Ritorna un oggetto valorizzato con i query params se presenti
-    const manageUrlParams = () => {
-        if (query.toString()) {
-            let iuvParam = query.get("iuv");
-            let codiceContestoParam = query.get("codContesto");
-            query.delete("iuv");
-            query.delete("codContesto");
-            // Rimuove queryParams dall'url
-            window.history.replaceState(null, '', window.location.origin + window.location.pathname);
-            return {
-                iuv: iuvParam,
-                codiceContesto: codiceContestoParam
-            }
-        }
-        return null;
-    }
-
-    // Per definire lo stato iniziale viene controllato se si proviene
-    // dal dettaglio rpt
-    const initialFlussoForm = () => {
-        const urlParams = manageUrlParams();
-        return {
-            ...emptyFlussoForm(props.tab),
-            iuv: urlParams ? urlParams.iuv : '',
-            codiceContesto: urlParams ? urlParams.codiceContesto : '',
-        }
-    }
-    // ****** Fine Gestione Dettaglio RPT *****
-
-    const [flussoForm, setFlussoForm] = useState(initialFlussoForm());
+    const [flussoForm, setFlussoForm] = useState(emptyFlussoForm(props.tab, iuv, codContesto));
 
     const [totalRecords, setTotalRecords] = useState(0);
     const [flussiList, setFlussiList] = useState([]);
@@ -121,11 +87,11 @@ export default function Elenco(props) {
             const res = await monitorClient.getFlussi(flussoData);
             setTotalRecords(res.filtroFlusso.count < 0 ? 0 : res.filtroFlusso.count);
             setFlussiList(res.flussoList);
-        } catch(e){
+        } catch (e) {
             props.showMsg("danger", "Errore:", "Errore durante il recupero delle informazioni. Riprovare più tardi");
         } finally {
             props.unblockContent();
-        }   
+        }
     };
 
     const prepareFlussoRequest = () => {

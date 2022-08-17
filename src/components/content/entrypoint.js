@@ -15,7 +15,7 @@ export const Entrypoint = (props) => {
         ev.target.classList.add('bg-primary', 'text-white');
     }
 
-    return <Link to={`/${props.route}`} onClick={toggleFocusClass} className={'btn btn-outline-primary btn-lg entrypoint ' + (props.default ? ' bg-primary text-white' : '')}>
+    return <Link to={`/${props.route}`} {...props} onClick={toggleFocusClass} className={'btn btn-outline-primary btn-lg entrypoint ' + (props.default ? ' bg-primary text-white' : '')}>
         {props.children}
     </Link>
 

@@ -138,10 +138,10 @@ export default function Content() {
                     {avvisiEnabled && <Entrypoint route="content/avvisi">
                         AVVISI
                     </Entrypoint>}
-                    <Entrypoint route="content/rpt">
+                    <Entrypoint id="rpt-tab" route="content/rpt">
                         RPT SENZA RT <span style={{ marginLeft: "0.5rem" }} className={"badge badge-" + (rptBadgeCount > 0 ? "danger" : "success")}>{rptBadgeCount}</span>
                     </Entrypoint>
-                    <Entrypoint route="content/elenco">
+                    <Entrypoint id="elenco-tab" route="content/elenco">
                         ELENCO FLUSSI
                     </Entrypoint>
                     <Entrypoint route="content/giornale">
@@ -156,9 +156,12 @@ export default function Content() {
                     {/* L'attributo key diverso serve a far ricreare il componente invece di riutilizzarlo, causa query diversa */}
                     <Route path="/avvisi" element={<Elenco key="2" tab="avvisi" servizi={servizi} aree={aree} blockContent={blockContent} unblockContent={unblockContent} />} />
                     <Route path="/rpt" element={<Rpt servizi={servizi} aree={aree} blockContent={blockContent} unblockContent={unblockContent} />} />
-                    <Route path="/elenco" element={<Elenco key="1" tab="elenco" servizi={servizi} aree={aree} blockContent={blockContent} unblockContent={unblockContent} setRptBadgeCount={setRptBadgeCount} />} />
+                    <Route path="/elenco" element={
+                        <Elenco key="1" tab="elenco" servizi={servizi} aree={aree} blockContent={blockContent} unblockContent={unblockContent} setRptBadgeCount={setRptBadgeCount} />} />
+                    <Route path="/elenco/:iuv/:codContesto" element={
+                        <Elenco key="1" tab="elenco" servizi={servizi} aree={aree} blockContent={blockContent} unblockContent={unblockContent} setRptBadgeCount={setRptBadgeCount} />} />
                     <Route path="/giornale" element={<Giornale blockContent={blockContent} unblockContent={unblockContent} />} />
-                    <Route path="*" element={<Navigate to="/not-found"  />} />
+                    <Route path="*" element={<Navigate to="/not-found" />} />
                 </Routes>
             </div>
         </BlockUI >

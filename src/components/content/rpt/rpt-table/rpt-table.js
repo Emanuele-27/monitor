@@ -23,15 +23,16 @@ export default function RptTable(props) {
     }
 
     const columnOpzioni = (rowData) => {
-        return (<Link to={`/content/elenco?iuv=${rowData.iuv}&codContesto=${rowData.codiceContesto}`}>
+        console.log(`/content/elenco/${rowData.iuv}/${rowData.codiceContesto}`)
+        return (<Link to={`/content/elenco/${rowData.iuv}/${rowData.codiceContesto}`}>
             <span title="Visualizza dettaglio" onClick={() => clickElencoTab()}><i className="pi pi-search"></i></span>
         </Link>
         );
     };
 
     const clickElencoTab = () => {
-        document.getElementById('rpt-tab').classList.remove('entrypoint-focus');
-        document.getElementById('elenco-tab').classList.add('entrypoint-focus');
+        document.getElementById('rpt-tab').classList.remove('bg-primary', 'text-white');
+        document.getElementById('elenco-tab').classList.add('bg-primary', 'text-white');
     }
 
     const header = (
