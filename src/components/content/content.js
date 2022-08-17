@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import {
+    Navigate,
     Route,
     Routes,
-    Link,
 } from "react-router-dom";
 import Elenco from "./elenco/elenco";
 import Giornale from "./giornale/giornale";
@@ -132,32 +132,33 @@ export default function Content() {
         <BlockUI blocked={blockedContent} template={<i className="pi pi-spin pi-spinner" style={{ fontSize: "5rem", color: "whitesmoke" }}></i>} >
             <div className="container-fluid" style={{ width: "85%", paddingTop: "2rem" }}>
                 <div id="tabs-row" >
-                    <Entrypoint route="home" default>
+                    <Entrypoint route="content/home" default>
                         HOME
                     </Entrypoint>
-                    {avvisiEnabled && <Entrypoint route="avvisi">
+                    {avvisiEnabled && <Entrypoint route="content/avvisi">
                         AVVISI
                     </Entrypoint>}
-                    <Entrypoint route="rpt">
+                    <Entrypoint route="content/rpt">
                         RPT SENZA RT <span style={{ marginLeft: "0.5rem" }} className={"badge badge-" + (rptBadgeCount > 0 ? "danger" : "success")}>{rptBadgeCount}</span>
                     </Entrypoint>
-                    <Entrypoint route="elenco">
+                    <Entrypoint route="content/elenco">
                         ELENCO FLUSSI
                     </Entrypoint>
-                    <Entrypoint route="giornale">
+                    <Entrypoint route="content/giornale">
                         GIORNALE EVENTI
                     </Entrypoint>
                 </div>
             </div>
             <div style={{ paddingTop: "2rem", paddingBottom: "2rem" }}>
                 <Routes>
-                    <Route exact path="/" element={<Home blockContent={blockContent} unblockContent={unblockContent} />} />
+                    <Route path="/" element={<Navigate to="/content/home" />} />
                     <Route path="/home" element={<Home blockContent={blockContent} unblockContent={unblockContent} />} />
                     {/* L'attributo key diverso serve a far ricreare il componente invece di riutilizzarlo, causa query diversa */}
                     <Route path="/avvisi" element={<Elenco key="2" tab="avvisi" servizi={servizi} aree={aree} blockContent={blockContent} unblockContent={unblockContent} />} />
                     <Route path="/rpt" element={<Rpt servizi={servizi} aree={aree} blockContent={blockContent} unblockContent={unblockContent} />} />
                     <Route path="/elenco" element={<Elenco key="1" tab="elenco" servizi={servizi} aree={aree} blockContent={blockContent} unblockContent={unblockContent} setRptBadgeCount={setRptBadgeCount} />} />
                     <Route path="/giornale" element={<Giornale blockContent={blockContent} unblockContent={unblockContent} />} />
+                    <Route path="*" element={<Navigate to="/not-found"  />} />
                 </Routes>
             </div>
         </BlockUI >

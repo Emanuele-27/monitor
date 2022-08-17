@@ -109,7 +109,7 @@ export default function Header(props) {
                     <div className="navbar-collapse collapse" id="navbar-menu">
                         <ul className="navbar-nav me-auto">
                             <li className="nav-item">
-                                <Link to="/" className="nav-link"><i className="bi bi-house" style={{ paddingRight: "0.2rem" }}></i> Home</Link>
+                                <Link to="/content" className="nav-link"><i className="bi bi-house" style={{ paddingRight: "0.2rem" }}></i> Home</Link>
                             </li>
                             <li className="nav-item">
                                 <Link to="/informativa" className="nav-link"> <i className="bi bi-info-square" style={{ paddingRight: "0.2rem" }}></i> Informativa</Link>
