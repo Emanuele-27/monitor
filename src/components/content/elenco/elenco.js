@@ -32,7 +32,7 @@ export const emptyFlussoForm = (tab) => {
         dataRichiestaA: '',
         dataRicevutaDa: '',
         dataRicevutaA: '',
-        finestra: calcolaDataPerFinestra(modalitaFinestra),
+        finestra: calcolaDataPerFinestra(modalitaFinestra),// Contiene le date in formato string come da specifiche html5 per input type date, week, month
         fasciaOraria: Math.trunc(mapFasce.size / 2 + 1), // Fascia oraria indica l'indice della mappa di fasce, default value: fascia circa centrale
     }
 }
@@ -116,10 +116,16 @@ export default function Elenco(props) {
                 flusso: flussoRequest
             }
         }
-        const res = await monitorClient.getFlussi(flussoData);
-        setTotalRecords(res.filtroFlusso.count < 0 ? 0 : res.filtroFlusso.count);
-        setFlussiList(res.flussoList);
-        props.unblockContent();
+
+        try {
+            const res = await monitorClient.getFlussi(flussoData);
+            setTotalRecords(res.filtroFlusso.count < 0 ? 0 : res.filtroFlusso.count);
+            setFlussiList(res.flussoList);
+        } catch(e){
+            props.showMsg("danger", "Errore:", "Errore durante il recupero delle informazioni. Riprovare più tardi");
+        } finally {
+            props.unblockContent();
+        }   
     };
 
     const prepareFlussoRequest = () => {

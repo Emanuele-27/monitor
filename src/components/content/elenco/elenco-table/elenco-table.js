@@ -6,7 +6,7 @@ import { formatEsito } from 'model/tutti-i-stati';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 
-import { exportExcel, isIuvRF, localeIT, pdfType } from 'util/util';
+import { exportExcel, isIuvRF, localeIT, pdfType, saveAsFile } from 'util/util';
 import { capitalizeFirstLetter, replaceUnderscore, splitCamelCase } from "util/string-util";
 import { formatDateTime } from "util/date-util";
 import { monitorClient } from "clients/monitor-client";
@@ -14,7 +14,6 @@ import { propsDominio } from "config/config";
 import { getRptBadgeCount } from "components/content/content";
 import { auxClient } from "clients/aux-client";
 import { advClient } from "clients/adv-client";
-import FileSaver from "file-saver";
 
 const esitoStatoRPTMap = new Map();
 
@@ -127,7 +126,7 @@ export default function ElencoTable(props) {
     };
 
     const renderAltreOpzioni = (rowData) => {
-        if (props.tab === 'elenco')
+        if (props.tab === 'elenco') {
             if (isStatoValido(rowData.statoPagamento))
                 if (isIuvRF(rowData.iuv))
                     return <><span title="Aggiorna stato" onClick={() => aggiornaStato(rowData)}><i className="pi pi-file-o"></i></span>
@@ -135,8 +134,9 @@ export default function ElencoTable(props) {
                 else
                     return <><span disabled><i className="pi pi-file-o"></i></span>
                         <span disabled><i className="pi pi-download"></i></span></>
-            else if (props.tab === 'avvisi')
-                return <span title="Download avviso" onClick={() => downloadAvviso(rowData)}><i className="pi pi-download"></i></span>
+        }
+        else if (props.tab === 'avvisi')
+            return <span title="Download avviso" onClick={() => downloadAvviso(rowData)}><i className="pi pi-download"></i></span>
     };
 
     const columnOpzioniComuni = (rowData) => {
@@ -280,15 +280,19 @@ export default function ElencoTable(props) {
             }
         }
 
-        const stato = await auxClient.nodoChiediStatoRPTCarrello(statoRPTCopiaRTCarrello);
+        try {
+            const stato = await auxClient.nodoChiediStatoRPTCarrello(statoRPTCopiaRTCarrello);
 
-        // Se nessun elemento della lista contiene errore
-        if (stato && stato.statoRPTCopiaRT && !stato.statoRPTCopiaRT.find((element) => element.nodoChiediCopiaRTRisposta.fault))
-            props.showMsg("info", "Info:", "Operazione effettuata con successo. E' possibile consultare l'esito nel pannello dettagli");
-        else
+            // Se nessun elemento della lista contiene errore
+            if (stato && stato.statoRPTCopiaRT && !stato.statoRPTCopiaRT.find((element) => element.nodoChiediCopiaRTRisposta.fault))
+                props.showMsg("info", "Info:", "Operazione effettuata con successo. E' possibile consultare l'esito nel pannello dettagli");
+            else
+                throw new Error();
+        } catch (e) {
             props.showMsg("danger", "Errore di sistema:", "Riprovare in un altro momento");
-
-        props.unblockContent();
+        } finally {
+            props.unblockContent();
+        }
     };
 
     const chiediRicevuta = async (rowData) => {
@@ -296,18 +300,24 @@ export default function ElencoTable(props) {
         props.blockContent();
 
         const nodoChiediCopiaRT = getNodoChiediStatoRPTParam(rowData.codiceContesto, rowData.idDominio, rowData.iuv);
-        const ricevuta = await auxClient.nodoChiediCopiaRT(nodoChiediCopiaRT);
 
-        if (ricevuta) {
-            if (ricevuta.fault)
-                props.showMsg("warning", "Attenzione:", ricevuta.fault.description);
-            else
-                props.showMsg("info", "Info:", "Operazione effettuata con successo. E' possibile consultare l'esito nel pannello dettagli");
-        } else {
+        try {
+            const ricevuta = await auxClient.nodoChiediCopiaRT(nodoChiediCopiaRT);
+
+            if (ricevuta) {
+                if (ricevuta.fault)
+                    props.showMsg("warning", "Attenzione:", ricevuta.fault.description);
+                else
+                    props.showMsg("info", "Info:", "Operazione effettuata con successo. E' possibile consultare l'esito nel pannello dettagli");
+            } else {
+                throw new Error();
+            }
+
+        } catch (e) {
             props.showMsg("danger", "Errore:", "Errore nel recupero della ricevuta");
+        } finally {
+            props.unblockContent();
         }
-
-        props.unblockContent();
     };
 
     const chiediRicevutaCarrello = async (rowData) => {
@@ -323,15 +333,18 @@ export default function ElencoTable(props) {
             },
         }
 
-        const ricevuta = await auxClient.nodoChiediCopiaRTCarrello(statoRPTCopiaRTCarrello);
+        try {
+            const ricevuta = await auxClient.nodoChiediCopiaRTCarrello(statoRPTCopiaRTCarrello);
 
-        if (ricevuta && ricevuta.nodoChiediCopiaRTRisposta && !ricevuta.nodoChiediCopiaRTRisposta.find((element) => !element || element.nodoChiediCopiaRTRisposta.fault))
-            props.showMsg("info", "Info:", "Operazione effettuata con successo. E' possibile consultare l'esito nel pannello dettagli");
-        else
+            if (ricevuta && ricevuta.nodoChiediCopiaRTRisposta && !ricevuta.nodoChiediCopiaRTRisposta.find(element => !element || element.nodoChiediCopiaRTRisposta.fault))
+                props.showMsg("info", "Info:", "Operazione effettuata con successo. E' possibile consultare l'esito nel pannello dettagli");
+            else
+                throw new Error();
+        } catch (e) {
             props.showMsg("danger", "Errore di sistema:", "Riprovare in un altro momento");
-
-
-        props.unblockContent();
+        } finally {
+            props.unblockContent();
+        }
     };
 
     const downloadAvviso = async (rowData) => {
@@ -345,17 +358,15 @@ export default function ElencoTable(props) {
                 idDominio: rowData.idDominio,
             }
         };
-
-        avvisoPagamentoDoc = await advClient.recuperaAvvisoPagamento(avvisoPagamentoDoc);
-
-        if (avvisoPagamentoDoc && avvisoPagamentoDoc.avvisoPagamento && avvisoPagamentoDoc.avvisoPagamento.pdfDoc)
-            fetch("data:" + pdfType + ";base64," + avvisoPagamentoDoc.avvisoPagamento.pdfDoc)
-                .then((resp) => resp.blob())
-                .then((blob) => FileSaver.saveAs(blob, avvisoPagamentoDoc.avvisoPagamento.nomeFile + '.pdf'));
-        else 
-            props.showMsg("info", "Info:", "Download avviso di pagamento non disponibile");
-        
-        props.unblockContent();
+        try {
+            avvisoPagamentoDoc = await advClient.recuperaAvvisoPagamento(avvisoPagamentoDoc);
+            const blob = await (await fetch("data:" + pdfType + ";base64," + avvisoPagamentoDoc.avvisoPagamento.pdfDoc)).blob();
+            saveAsFile(blob, avvisoPagamentoDoc.avvisoPagamento.nomeFile + '.pdf')
+        } catch (e) {
+            props.showMsg("warning", "Attenzione:", "Download avviso di pagamento non disponibile");
+        } finally {
+            props.unblockContent();
+        }
     }
 
     return (

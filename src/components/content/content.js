@@ -17,6 +17,7 @@ import { esitiPagamento, formatEsito, statiPagamento } from "model/tutti-i-stati
 import { replaceUnderscore } from "util/string-util";
 import { monitorClient } from "clients/monitor-client";
 import { aggiungiMesi, creaIntervalliDiOre, formatDateForInput, formatMonth, getISOWeekDate, minutesIn2Digits } from "util/date-util";
+import { Entrypoint } from "./entrypoint";
 
 export const initialLazyParams = {
     first: 0,
@@ -30,7 +31,6 @@ export const isFinestraAbilitata = propsDominio.finestraTemporale === 'true';
 export const modalitaFinestra = propsDominio.modalitaFinestra;
 
 const avvisiEnabled = propsDominio.avvisiEnabled === 'true';
-const widthTabs = avvisiEnabled ? '20%' : '25%';
 
 export const getRptBadgeCount = () => {
     const flussoData = {
@@ -74,7 +74,7 @@ const buildIntervalliOre = () => {
     for (let i = 1; i < intervalli.length; i++) {
         const left = intervalli[i - 1];
         const right = intervalli[i];
-        // Creo una mappa e associo a ogni indice la coppia di date per poterli manipolare agilmente successivamente
+        // Creo una mappa e associo a ogni indice la coppia di date per poterli manipolare successivamente
         mapFasce.set(i, [left, right]);
         options.push(<option key={i} value={i}>{left.getHours() + ":" + minutesIn2Digits(left.getMinutes()) + " - "
             + right.getHours() + ":" + minutesIn2Digits(right.getMinutes())}</option>);
@@ -115,12 +115,6 @@ export default function Content() {
         setBlockedContent(false)
     }
 
-    // Aggiunge o rimuove le classi per indicare il tab focused
-    const toggleFocusClass = (ev) => {
-        document.getElementById('tabsRow').getElementsByClassName('bg-primary')[0].classList.remove('bg-primary', 'text-white');
-        ev.target.classList.add('bg-primary', 'text-white');
-    }
-
     // Costruisce option per le select di servizi e aree
     const buildServiziEAree = (serviziData) => {
         const serviziDominioCorrente = serviziData.serviziList.filter(servizio => servizio.idDominio === propsDominio.idDominio);
@@ -137,24 +131,22 @@ export default function Content() {
     return (
         <BlockUI blocked={blockedContent} template={<i className="pi pi-spin pi-spinner" style={{ fontSize: "5rem", color: "whitesmoke" }}></i>} >
             <div className="container-fluid" style={{ width: "85%", paddingTop: "2rem" }}>
-                <div id="tabsRow" >
-                    <Link to="/home" id="home-tab" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint bg-primary text-white">
+                <div id="tabs-row" >
+                    <Entrypoint route="home" default>
                         HOME
-                    </Link>
-                    {avvisiEnabled &&
-                        <Link to="/avvisi" id="avvisi-tab" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
-                            AVVISI
-                        </Link>
-                    }
-                    <Link to="/rpt" id="rpt-tab" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
+                    </Entrypoint>
+                    {avvisiEnabled && <Entrypoint route="avvisi">
+                        AVVISI
+                    </Entrypoint>}
+                    <Entrypoint route="rpt">
                         RPT SENZA RT <span style={{ marginLeft: "0.5rem" }} className={"badge badge-" + (rptBadgeCount > 0 ? "danger" : "success")}>{rptBadgeCount}</span>
-                    </Link>
-                    <Link to="/elenco" id="elenco-tab" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
+                    </Entrypoint>
+                    <Entrypoint route="elenco">
                         ELENCO FLUSSI
-                    </Link>
-                    <Link to="/giornale" id="giornale-tab" style={{ width: widthTabs }} onClick={toggleFocusClass} className="btn btn-outline-primary btn-lg entrypoint">
+                    </Entrypoint>
+                    <Entrypoint route="giornale">
                         GIORNALE EVENTI
-                    </Link>
+                    </Entrypoint>
                 </div>
             </div>
             <div style={{ paddingTop: "2rem", paddingBottom: "2rem" }}>
