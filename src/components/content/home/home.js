@@ -66,7 +66,7 @@ export default function Home(props) {
     const [builtChart, setBuiltChart] = useState(false);
     const [collapsed, setCollapsed] = useState(true);
 
-    const buildCharts = (event) => {
+    const buildCharts = async (event) => {
         const isAccordionCollapsed = event.target.classList.contains('collapsed');
         setCollapsed(isAccordionCollapsed);
         // Crea i chart solo se il click espande l'accordion e se non sono già stati creati per quest'istanza
@@ -74,16 +74,14 @@ export default function Home(props) {
 
             props.blockContent();
 
-            Promise.allSettled([monitorClient.welcomeTest(), monitorStatClient.welcomeTest(), monitorAccountabilityClient.welcomeTest()])
-                .then(responses => {
-                    buildChart('monitor-pie', responses[0].value && responses[0].value.isOnline === true ? dataOK : dataKO);
-                    buildChart('monitor-stat-pie', responses[1].value && responses[1].value.isOnline === true ? dataOK : dataKO);
-                    buildChart('monitor-acc-pie', responses[2].value && responses[2].value.isOnline === true ? dataOK : dataKO);
-                    setBuiltChart(true);
-                })
-                .finally(() => {
-                    props.unblockContent();
-                });
+            const [monitor, monitorStat, monitorAcc] = await Promise.allSettled([monitorClient.welcomeTest(),
+            monitorStatClient.welcomeTest(), monitorAccountabilityClient.welcomeTest()]);
+
+            buildChart('monitor-pie', monitor.value && monitor.value.isOnline === true ? dataOK : dataKO);
+            buildChart('monitor-stat-pie', monitorStat.value && monitorStat.value.isOnline === true ? dataOK : dataKO);
+            buildChart('monitor-acc-pie', monitorAcc.value && monitorAcc.value.isOnline === true ? dataOK : dataKO);
+            setBuiltChart(true);
+            props.unblockContent();
         }
     }
 

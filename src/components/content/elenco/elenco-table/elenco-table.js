@@ -173,9 +173,7 @@ export default function ElencoTable(props) {
             codContesto: rowData.codiceContesto
         };
 
-        monitorClient.getGiornalePerPagamento(giornaleEventi).then(
-            res => setListGiornaleModal(res.giornaleList)
-        );
+        setListGiornaleModal((await monitorClient.getGiornalePerPagamento(giornaleEventi)).giornaleList);
 
         // Dati per terzo tab
         setInfoStatoRPT(esitoStatoRPTMap.get(rowData.idFlusso));
@@ -208,16 +206,18 @@ export default function ElencoTable(props) {
             });
 
             // Sync promises on fullfilled
-            Promise.allSettled(rptPromises).then(responses => {
-                let countOK = 0;
-                responses.forEach((res) => {
-                    const stato = res.value;
-                    if (stato && !stato.faultBean && ((stato.nodoChiediCopiaRTRisposta && !stato.nodoChiediCopiaRTRisposta.fault) || (!stato.nodoChiediCopiaRTRisposta)))
-                        countOK++;
-                });
-                props.call();
-                props.showMsg("info", "Info:", "Operazione effettuata. Sono stati aggiornati " + countOK + " flussi su " + responses.length);
+            const responses = await Promise.allSettled(rptPromises);
+
+            let countOK = 0;
+            responses.forEach(res => {
+                const stato = res.value;
+                if (stato && !stato.faultBean && ((stato.nodoChiediCopiaRTRisposta && !stato.nodoChiediCopiaRTRisposta.fault) || (!stato.nodoChiediCopiaRTRisposta)))
+                    countOK++;
             });
+
+            props.call();
+            props.showMsg("info", "Info:", "Operazione effettuata. Sono stati aggiornati " + countOK + " flussi su " + responses.length);
+
         } catch (e) {
             props.unblockContent();
             props.showMsg("danger", "Errore:", "Riprovare in un altro momento");
@@ -348,14 +348,13 @@ export default function ElencoTable(props) {
 
         avvisoPagamentoDoc = await advClient.recuperaAvvisoPagamento(avvisoPagamentoDoc);
 
-        if (avvisoPagamentoDoc && avvisoPagamentoDoc.avvisoPagamento && avvisoPagamentoDoc.avvisoPagamento.pdfDoc) {
+        if (avvisoPagamentoDoc && avvisoPagamentoDoc.avvisoPagamento && avvisoPagamentoDoc.avvisoPagamento.pdfDoc)
             fetch("data:" + pdfType + ";base64," + avvisoPagamentoDoc.avvisoPagamento.pdfDoc)
                 .then((resp) => resp.blob())
                 .then((blob) => FileSaver.saveAs(blob, avvisoPagamentoDoc.avvisoPagamento.nomeFile + '.pdf'));
-        } else {
+        else 
             props.showMsg("info", "Info:", "Download avviso di pagamento non disponibile");
-        }
-
+        
         props.unblockContent();
     }
 

@@ -101,7 +101,7 @@ export default function Elenco(props) {
         document.getElementById("elenco-msg").scrollIntoView({ behavior: "smooth", block: "center" });
     }, [elencoMsg]);
 
-    const call = () => {
+    const call = async () => {
         props.blockContent();
 
         const flussoRequest = prepareFlussoRequest();
@@ -116,11 +116,10 @@ export default function Elenco(props) {
                 flusso: flussoRequest
             }
         }
-        monitorClient.getFlussi(flussoData).then(fdResult => {
-            setTotalRecords(fdResult.filtroFlusso.count < 0 ? 0 : fdResult.filtroFlusso.count);
-            setFlussiList(fdResult.flussoList);
-        })
-            .finally(() => props.unblockContent());
+        const res = await monitorClient.getFlussi(flussoData);
+        setTotalRecords(res.filtroFlusso.count < 0 ? 0 : res.filtroFlusso.count);
+        setFlussiList(res.flussoList);
+        props.unblockContent();
     };
 
     const prepareFlussoRequest = () => {

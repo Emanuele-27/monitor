@@ -41,7 +41,7 @@ export default function Giornale(props) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [giornaleForm, lazyParams]);
 
-    const call = () => {
+    const call = async () => {
         props.blockContent();
 
         let giornaleRequest = prepareGiornaleRequest();
@@ -57,11 +57,10 @@ export default function Giornale(props) {
             }
         }
 
-        monitorClient.getGiornale(flussoGiornaleEventi).then(flussoResult => {
-            setTotalRecords(flussoResult.filtroflussoGiornaleEventi.count < 0 ? 0 : flussoResult.filtroflussoGiornaleEventi.count);
-            setListGiornale(flussoResult.giornaleList);
-        })
-            .finally(() => props.unblockContent());
+        const res = await monitorClient.getGiornale(flussoGiornaleEventi);
+        setTotalRecords(res.filtroflussoGiornaleEventi.count < 0 ? 0 : res.filtroflussoGiornaleEventi.count);
+        setListGiornale(res.giornaleList);
+        props.unblockContent();
     };
 
     const prepareGiornaleRequest = () => {

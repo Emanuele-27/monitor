@@ -29,7 +29,7 @@ export default function Rpt(props) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [flussoForm, lazyParams]);
 
-    const call = () => {
+    const call = async () => {
         props.blockContent();
 
         let flussoParam = deleteUndefinedValues(structuredClone(flussoForm));
@@ -41,11 +41,10 @@ export default function Rpt(props) {
                 flusso: flussoParam
             }
         }
-        monitorClient.getRptSenzaRt(flussoData).then(fdResult => {
-            setTotalRecords(fdResult.filtroFlusso.count < 0 ? 0 : fdResult.filtroFlusso.count);
-            setListaRpt(fdResult.flussoList);
-        })
-            .finally(() => props.unblockContent());
+        const res = await monitorClient.getRptSenzaRt(flussoData)
+        setTotalRecords(res.filtroFlusso.count < 0 ? 0 : res.filtroFlusso.count);
+        setListaRpt(res.flussoList);
+        props.unblockContent();
     };
 
     const resetFiltri = () => {
