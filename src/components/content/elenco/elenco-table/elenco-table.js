@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./elenco-table.css";
 
-import { formatEsito } from 'model/tutti-i-stati';
+import { formatEsito, isIuvRF } from "util/string-util";
 
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 
-import { exportExcel, isIuvRF, localeIT, pdfType, saveAsFile } from 'util/util';
+import { exportExcel, MimeTypes, saveAsFile } from 'util/export-util';
 import { capitalizeFirstLetter, replaceUnderscore, splitCamelCase } from "util/string-util";
 import { formatDateTime } from "util/date-util";
 import { monitorClient } from "clients/monitor-client";
@@ -14,6 +14,8 @@ import { propsDominio } from "config/config";
 import { getRptBadgeCount } from "components/content/content";
 import { auxClient } from "clients/aux-client";
 import { advClient } from "clients/adv-client";
+import { formatEuro } from "util/number-util";
+import { Severities } from "util/util";
 
 const esitoStatoRPTMap = new Map();
 
@@ -87,10 +89,7 @@ export default function ElencoTable(props) {
     };
 
     const columnImporto = (rowData) => {
-        return rowData.importo.toLocaleString(localeIT, {
-            style: 'currency',
-            currency: 'EUR',
-        });
+        return formatEuro(rowData.importo)
     };
 
     // Gestione date formattandole in dd/MM/yyy HH:mm:ss
@@ -216,11 +215,11 @@ export default function ElencoTable(props) {
             });
 
             props.call();
-            props.showMsg("info", "Info:", "Operazione effettuata. Sono stati aggiornati " + countOK + " flussi su " + responses.length);
+            props.showMsg(Severities.info, "Info:", "Operazione effettuata. Sono stati aggiornati " + countOK + " flussi su " + responses.length);
 
         } catch (e) {
             props.unblockContent();
-            props.showMsg("danger", "Errore:", "Riprovare in un altro momento");
+            props.showMsg(Severities.error, "Errore:", "Riprovare in un altro momento");
         }
     }
 
@@ -259,9 +258,9 @@ export default function ElencoTable(props) {
             props.call();
             const count = (await getRptBadgeCount()).filtroFlusso.count;
             props.setRptBadgeCount(count > 0 ? count : 0);
-            props.showMsg("info", "Info:", "Operazione effettuata con successo. E' possibile consultare l'esito nel pannello dettagli");
+            props.showMsg(Severities.info, "Info:", "Operazione effettuata con successo. E' possibile consultare l'esito nel pannello dettagli");
         } catch (e) {
-            props.showMsg("danger", "Errore di sistema:", e.message);
+            props.showMsg(Severities.error, "Errore di sistema:", e.message);
         } finally {
             props.unblockContent();
         }
@@ -285,11 +284,11 @@ export default function ElencoTable(props) {
 
             // Se nessun elemento della lista contiene errore
             if (stato && stato.statoRPTCopiaRT && !stato.statoRPTCopiaRT.find((element) => element.nodoChiediCopiaRTRisposta.fault))
-                props.showMsg("info", "Info:", "Operazione effettuata con successo. E' possibile consultare l'esito nel pannello dettagli");
+                props.showMsg(Severities.info, "Info:", "Operazione effettuata con successo. E' possibile consultare l'esito nel pannello dettagli");
             else
                 throw new Error();
         } catch (e) {
-            props.showMsg("danger", "Errore di sistema:", "Riprovare in un altro momento");
+            props.showMsg(Severities.error, "Errore di sistema:", "Riprovare in un altro momento");
         } finally {
             props.unblockContent();
         }
@@ -306,15 +305,15 @@ export default function ElencoTable(props) {
 
             if (ricevuta) {
                 if (ricevuta.fault)
-                    props.showMsg("warning", "Attenzione:", ricevuta.fault.description);
+                    props.showMsg(Severities.warn, "Attenzione:", ricevuta.fault.description);
                 else
-                    props.showMsg("info", "Info:", "Operazione effettuata con successo. E' possibile consultare l'esito nel pannello dettagli");
+                    props.showMsg(Severities.info, "Info:", "Operazione effettuata con successo. E' possibile consultare l'esito nel pannello dettagli");
             } else {
                 throw new Error();
             }
 
         } catch (e) {
-            props.showMsg("danger", "Errore:", "Errore nel recupero della ricevuta");
+            props.showMsg(Severities.error, "Errore:", "Errore nel recupero della ricevuta");
         } finally {
             props.unblockContent();
         }
@@ -337,11 +336,11 @@ export default function ElencoTable(props) {
             const ricevuta = await auxClient.nodoChiediCopiaRTCarrello(statoRPTCopiaRTCarrello);
 
             if (ricevuta && ricevuta.nodoChiediCopiaRTRisposta && !ricevuta.nodoChiediCopiaRTRisposta.find(element => !element || element.nodoChiediCopiaRTRisposta.fault))
-                props.showMsg("info", "Info:", "Operazione effettuata con successo. E' possibile consultare l'esito nel pannello dettagli");
+                props.showMsg(Severities.info, "Info:", "Operazione effettuata con successo. E' possibile consultare l'esito nel pannello dettagli");
             else
                 throw new Error();
         } catch (e) {
-            props.showMsg("danger", "Errore di sistema:", "Riprovare in un altro momento");
+            props.showMsg(Severities.error, "Errore di sistema:", "Riprovare in un altro momento");
         } finally {
             props.unblockContent();
         }
@@ -360,10 +359,10 @@ export default function ElencoTable(props) {
         };
         try {
             avvisoPagamentoDoc = await advClient.recuperaAvvisoPagamento(avvisoPagamentoDoc);
-            const blob = await (await fetch("data:" + pdfType + ";base64," + avvisoPagamentoDoc.avvisoPagamento.pdfDoc)).blob();
+            const blob = await (await fetch("data:" + MimeTypes.pdf + ";base64," + avvisoPagamentoDoc.avvisoPagamento.pdfDoc)).blob();
             saveAsFile(blob, avvisoPagamentoDoc.avvisoPagamento.nomeFile + '.pdf')
         } catch (e) {
-            props.showMsg("warning", "Attenzione:", "Download avviso di pagamento non disponibile");
+            props.showMsg(Severities.warn, "Attenzione:", "Download avviso di pagamento non disponibile");
         } finally {
             props.unblockContent();
         }

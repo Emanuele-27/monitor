@@ -5,7 +5,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 
 import { formatDateTime } from "util/date-util";
-import { formatEsito } from "model/tutti-i-stati";
+import { formatEsito } from "util/string-util";
 
 export default function GiornaleTable(props) {
 

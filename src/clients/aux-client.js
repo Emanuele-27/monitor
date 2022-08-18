@@ -1,5 +1,5 @@
 import { configProps } from "config/config";
-import { acceptJson, acceptLanguage } from "util/util";
+import { Accept, AcceptLanguage } from "util/client-util";
 import { FetchClient } from "./fetch-client";
 
 export class AuxClient extends FetchClient{
@@ -27,4 +27,4 @@ export class AuxClient extends FetchClient{
     }
 }
 
-export const auxClient = new AuxClient(configProps.auxHost, acceptJson, acceptLanguage)
+export const auxClient = new AuxClient(configProps.auxHost, Accept.json, AcceptLanguage.it)

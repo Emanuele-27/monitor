@@ -1,5 +1,5 @@
 import { configProps } from "config/config";
-import { acceptJson, acceptLanguage } from "util/util";
+import { Accept, AcceptLanguage } from "util/client-util";
 import { FetchClient } from "./fetch-client";
 
 export class MonitorStatClient extends FetchClient{
@@ -16,4 +16,4 @@ export class MonitorStatClient extends FetchClient{
     }
 }
 
-export const monitorStatClient = new MonitorStatClient(configProps.monitorStatHost, acceptJson, acceptLanguage);
+export const monitorStatClient = new MonitorStatClient(configProps.monitorStatHost, Accept.json, AcceptLanguage.it);

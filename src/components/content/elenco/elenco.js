@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { propsDominio } from 'config/config';
 import './elenco.css';
 
-import { columnMapper, deleteEmptyValues, sortMapper } from 'util/util';
+import { columnMapper, deleteEmptyValues, Severities, sortMapper } from 'util/util';
 import ElencoTable from "./elenco-table/elenco-table";
 import ElencoForm from "./elenco-form/elenco-form";
 import { initialLazyParams, isFinestraAbilitata, mapFasce, modalitaFinestra } from "../content";
@@ -88,7 +88,7 @@ export default function Elenco(props) {
             setTotalRecords(res.filtroFlusso.count < 0 ? 0 : res.filtroFlusso.count);
             setFlussiList(res.flussoList);
         } catch (e) {
-            props.showMsg("danger", "Errore:", "Errore durante il recupero delle informazioni. Riprovare più tardi");
+            props.showMsg(Severities.error, "Errore:", "Errore durante il recupero delle informazioni. Riprovare più tardi");
         } finally {
             props.unblockContent();
         }
@@ -151,7 +151,7 @@ export default function Elenco(props) {
     }
 
     return (<>
-        <div className="container">        {/* Severities possibili: success, danger, warning, info */}
+        <div className="container">     
             <div id="elenco-msg" className={"alert alert-" + elencoMsg.severity + " alert-dismissible fade show " + (elencoMsg.show ? '' : 'hidden')} role="alert">
                 <b>{elencoMsg.summary + " "}</b>
                 {elencoMsg.detail}

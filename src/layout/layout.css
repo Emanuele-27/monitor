@@ -3,10 +3,6 @@ div#body, div.p-blockui-container{
     min-height: calc(100vh - 370.98px); 
 }
 
-.p-inputswitch.p-inputswitch-checked:not(.p-disabled):hover .p-inputswitch-slider, .p-inputswitch.p-inputswitch-checked .p-inputswitch-slider{
-    background:#00366a !important;
-}
-
 div.panel-header {
     display: flex;
     align-items: center;

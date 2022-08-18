@@ -1,5 +1,5 @@
 import { configProps } from "config/config";
-import { acceptJson, acceptLanguage } from "util/util";
+import { Accept, AcceptLanguage } from "util/client-util";
 import { FetchClient } from "./fetch-client";
 
 export class AdvClient extends FetchClient{
@@ -16,4 +16,4 @@ export class AdvClient extends FetchClient{
 
 }
 
-export const advClient = new AdvClient(configProps.advHost, acceptJson, acceptLanguage)
+export const advClient = new AdvClient(configProps.advHost, Accept.json, AcceptLanguage.it)

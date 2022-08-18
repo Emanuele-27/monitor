@@ -13,8 +13,8 @@ import { BlockUI } from 'primereact/blockui';
 
 import './content.css';
 import { propsDominio } from "config/config";
-import { esitiPagamento, formatEsito, statiPagamento } from "model/tutti-i-stati";
-import { replaceUnderscore } from "util/string-util";
+import { statiPagamento, esitiPagamento } from "model/tutti-i-stati";
+import { replaceUnderscore, formatEsito } from "util/string-util";
 import { monitorClient } from "clients/monitor-client";
 import { aggiungiMesi, creaIntervalliDiOre, formatDateForInput, formatMonth, getISOWeekDate, minutesIn2Digits } from "util/date-util";
 import { Entrypoint } from "./entrypoint";
@@ -60,7 +60,7 @@ export const maxWeek = getISOWeekDate(new Date(Date.now()));
 // Nel dropdown di stato ci sono sia stati che esiti, in fase  
 // di ricerca vengono distinti e valorizzati opportunamente
 const buildOptionsStatiEsiti = () => {
-    const esitiOptions = esitiPagamento.map(esito => <option key={esito.name} value={esito.name}>{formatEsito(esito.name)}</option>);
+    const esitiOptions = esitiPagamento.map(esito => <option key={esito} value={esito}>{formatEsito(esito)}</option>);
     const statiOptions = statiPagamento.filter(stato => stato !== 'RT_ACCETTATA_PA').map(stato => <option key={stato} value={stato}>{replaceUnderscore(stato)}</option>);
     return esitiOptions.concat(statiOptions);
 };

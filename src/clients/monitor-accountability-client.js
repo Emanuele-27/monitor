@@ -1,5 +1,5 @@
 import { configProps } from "config/config";
-import { acceptJson, acceptLanguage } from "util/util";
+import { Accept, AcceptLanguage } from "util/client-util";
 import { FetchClient } from "./fetch-client";
 
 export class MonitorAccountabilityClient extends FetchClient {
@@ -16,4 +16,4 @@ export class MonitorAccountabilityClient extends FetchClient {
     }
 }
 
-export const monitorAccountabilityClient = new MonitorAccountabilityClient(configProps.monitorAccHost, acceptJson, acceptLanguage);
+export const monitorAccountabilityClient = new MonitorAccountabilityClient(configProps.monitorAccHost, Accept.json, AcceptLanguage.it);

@@ -4,7 +4,7 @@ import "./rpt-table.css";
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 
-import { exportExcel } from 'util/util';
+import { exportExcel } from 'util/export-util';
 import { formatDateTime } from "util/date-util";
 import { capitalizeFirstLetter, splitCamelCase } from "util/string-util";
 import { Link } from "react-router-dom";
