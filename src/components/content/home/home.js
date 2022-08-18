@@ -72,7 +72,7 @@ export default function Home(props) {
         // Crea i chart solo se il click espande l'accordion e se non sono già stati creati per quest'istanza
         if (!isAccordionCollapsed && !builtChart) {
 
-            props.blockContent();
+            props.block();
 
             const [monitor, monitorStat, monitorAcc] = await Promise.allSettled([monitorClient.welcomeTest(),
             monitorStatClient.welcomeTest(), monitorAccountabilityClient.welcomeTest()]);
@@ -81,7 +81,7 @@ export default function Home(props) {
             buildChart('monitor-stat-pie', monitorStat.value && monitorStat.value.isOnline === true ? dataOK : dataKO);
             buildChart('monitor-acc-pie', monitorAcc.value && monitorAcc.value.isOnline === true ? dataOK : dataKO);
             setBuiltChart(true);
-            props.unblockContent();
+            props.unblock();
         }
     }
 

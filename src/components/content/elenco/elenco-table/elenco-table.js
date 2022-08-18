@@ -180,7 +180,7 @@ export default function ElencoTable(props) {
 
     const aggiornaStati = async () => {
 
-        props.blockContent();
+        props.block();
 
         const flussoData = {
             filtroFlusso: {
@@ -218,7 +218,7 @@ export default function ElencoTable(props) {
             props.showMsg(Severities.info, "Info:", "Operazione effettuata. Sono stati aggiornati " + countOK + " flussi su " + responses.length);
 
         } catch (e) {
-            props.unblockContent();
+            props.unblock();
             props.showMsg(Severities.error, "Errore:", "Riprovare in un altro momento");
         }
     }
@@ -236,7 +236,7 @@ export default function ElencoTable(props) {
     }
 
     const aggiornaStato = async (rowData) => {
-        props.blockContent();
+        props.block();
 
         const nodoChiediStatoRPT = getNodoChiediStatoRPTParam(rowData.codiceContesto, rowData.idDominio, rowData.iuv);
         try {
@@ -262,13 +262,13 @@ export default function ElencoTable(props) {
         } catch (e) {
             props.showMsg(Severities.error, "Errore di sistema:", e.message);
         } finally {
-            props.unblockContent();
+            props.unblock();
         }
     };
 
     const aggiornaStatoCarrello = async (rowData) => {
 
-        props.blockContent();
+        props.block();
 
         const statoRPTCopiaRTCarrello = {
             password: propsDominio.pwdPA,
@@ -290,13 +290,13 @@ export default function ElencoTable(props) {
         } catch (e) {
             props.showMsg(Severities.error, "Errore di sistema:", "Riprovare in un altro momento");
         } finally {
-            props.unblockContent();
+            props.unblock();
         }
     };
 
     const chiediRicevuta = async (rowData) => {
 
-        props.blockContent();
+        props.block();
 
         const nodoChiediCopiaRT = getNodoChiediStatoRPTParam(rowData.codiceContesto, rowData.idDominio, rowData.iuv);
 
@@ -315,13 +315,13 @@ export default function ElencoTable(props) {
         } catch (e) {
             props.showMsg(Severities.error, "Errore:", "Errore nel recupero della ricevuta");
         } finally {
-            props.unblockContent();
+            props.unblock();
         }
     };
 
     const chiediRicevutaCarrello = async (rowData) => {
 
-        props.blockContent();
+        props.block();
 
         const statoRPTCopiaRTCarrello = {
             password: propsDominio.pwdPA,
@@ -342,13 +342,13 @@ export default function ElencoTable(props) {
         } catch (e) {
             props.showMsg(Severities.error, "Errore di sistema:", "Riprovare in un altro momento");
         } finally {
-            props.unblockContent();
+            props.unblock();
         }
     };
 
     const downloadAvviso = async (rowData) => {
 
-        props.blockContent();
+        props.block();
 
         let avvisoPagamentoDoc = {
             richiesta: {
@@ -364,7 +364,7 @@ export default function ElencoTable(props) {
         } catch (e) {
             props.showMsg(Severities.warn, "Attenzione:", "Download avviso di pagamento non disponibile");
         } finally {
-            props.unblockContent();
+            props.unblock();
         }
     }
 

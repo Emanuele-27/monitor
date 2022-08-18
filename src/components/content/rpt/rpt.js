@@ -30,7 +30,7 @@ export default function Rpt(props) {
     }, [flussoForm, lazyParams]);
 
     const call = async () => {
-        props.blockContent();
+        props.block();
 
         let flussoParam = deleteEmptyValues(structuredClone(flussoForm));
 
@@ -44,7 +44,7 @@ export default function Rpt(props) {
         const res = await monitorClient.getRptSenzaRt(flussoData)
         setTotalRecords(res.filtroFlusso.count < 0 ? 0 : res.filtroFlusso.count);
         setListaRpt(res.flussoList);
-        props.unblockContent();
+        props.unblock();
     };
 
     const resetFiltri = () => {
@@ -55,7 +55,7 @@ export default function Rpt(props) {
     return (<>
         <RptForm aree={props.aree} servizi={props.servizi} flussoForm={flussoForm} setFlussoForm={setFlussoForm} resetFiltri={resetFiltri} />
         <RptTable listaRpt={listaRpt} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
-            blockContent={props.blockContent} unblockContent={props.unblockContent} />
+            block={props.block} unblock={props.unblock} />
     </>
     );
 }

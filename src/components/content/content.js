@@ -97,9 +97,9 @@ export default function Content() {
     const [aree, setAree] = useState(null);
 
     useEffect(() => {
-        blockContent();
+        block();
         getRptBadgeCount().then(res => setRptBadgeCount(res.filtroFlusso.count < 0 ? 0 : res.filtroFlusso.count))
-            .finally(() => unblockContent());
+            .finally(() => unblock());
         monitorClient.getServizi().then(res => {
             const serviziEAree = buildServiziEAree(res);
             setServizi(serviziEAree.servizi);
@@ -107,11 +107,11 @@ export default function Content() {
         })
     }, [])
 
-    const blockContent = () => {
+    const block = () => {
         setBlockedContent(true)
     }
 
-    const unblockContent = () => {
+    const unblock = () => {
         setBlockedContent(false)
     }
 
@@ -152,15 +152,15 @@ export default function Content() {
             <div style={{ paddingTop: "2rem", paddingBottom: "2rem" }}>
                 <Routes>
                     <Route path="/" element={<Navigate to="/content/home" />} />
-                    <Route path="/home" element={<Home blockContent={blockContent} unblockContent={unblockContent} />} />
+                    <Route path="/home" element={<Home block={block} unblock={unblock} />} />
                     {/* L'attributo key diverso serve a far ricreare il componente invece di riutilizzarlo, causa query diversa */}
-                    <Route path="/avvisi" element={<Elenco key="2" tab="avvisi" servizi={servizi} aree={aree} blockContent={blockContent} unblockContent={unblockContent} />} />
-                    <Route path="/rpt" element={<Rpt servizi={servizi} aree={aree} blockContent={blockContent} unblockContent={unblockContent} />} />
+                    <Route path="/avvisi" element={<Elenco key="2" tab="avvisi" servizi={servizi} aree={aree} block={block} unblock={unblock} />} />
+                    <Route path="/rpt" element={<Rpt servizi={servizi} aree={aree} block={block} unblock={unblock} />} />
                     <Route path="/elenco" element={
-                        <Elenco key="1" tab="elenco" servizi={servizi} aree={aree} blockContent={blockContent} unblockContent={unblockContent} setRptBadgeCount={setRptBadgeCount} />} />
+                        <Elenco key="1" tab="elenco" servizi={servizi} aree={aree} block={block} unblock={unblock} setRptBadgeCount={setRptBadgeCount} />} />
                     <Route path="/elenco/:iuv/:codContesto" element={
-                        <Elenco key="1" tab="elenco" servizi={servizi} aree={aree} blockContent={blockContent} unblockContent={unblockContent} setRptBadgeCount={setRptBadgeCount} />} />
-                    <Route path="/giornale" element={<Giornale blockContent={blockContent} unblockContent={unblockContent} />} />
+                        <Elenco key="1" tab="elenco" servizi={servizi} aree={aree} block={block} unblock={unblock} setRptBadgeCount={setRptBadgeCount} />} />
+                    <Route path="/giornale" element={<Giornale block={block} unblock={unblock} />} />
                     <Route path="*" element={<Navigate to="/not-found" />} />
                 </Routes>
             </div>

@@ -42,7 +42,7 @@ export default function Giornale(props) {
     }, [giornaleForm, lazyParams]);
 
     const call = async () => {
-        props.blockContent();
+        props.block();
 
         let giornaleRequest = prepareGiornaleRequest();
 
@@ -60,7 +60,7 @@ export default function Giornale(props) {
         const res = await monitorClient.getGiornale(flussoGiornaleEventi);
         setTotalRecords(res.filtroflussoGiornaleEventi.count < 0 ? 0 : res.filtroflussoGiornaleEventi.count);
         setListGiornale(res.giornaleList);
-        props.unblockContent();
+        props.unblock();
     };
 
     const prepareGiornaleRequest = () => {
@@ -96,7 +96,7 @@ export default function Giornale(props) {
         <>
             <GiornaleForm resetFiltri={resetFiltri} giornaleForm={giornaleForm} setGiornaleForm={setGiornaleForm} fraseFinestra={fraseFinestra.current} />
             <GiornaleTable listGiornale={listGiornale} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
-                blockContent={props.blockContent} unblockContent={props.unblockContent} />
+                block={props.block} unblock={props.unblock} />
         </>
     );
 }

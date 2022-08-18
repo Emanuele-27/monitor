@@ -68,7 +68,7 @@ export default function Elenco(props) {
     }, [elencoMsg]);
 
     const call = async () => {
-        props.blockContent();
+        props.block();
 
         const flussoRequest = prepareFlussoRequest();
 
@@ -90,7 +90,7 @@ export default function Elenco(props) {
         } catch (e) {
             props.showMsg(Severities.error, "Errore:", "Errore durante il recupero delle informazioni. Riprovare più tardi");
         } finally {
-            props.unblockContent();
+            props.unblock();
         }
     };
 
@@ -161,7 +161,7 @@ export default function Elenco(props) {
         <ElencoForm tab={props.tab} aree={props.aree} servizi={props.servizi} resetFiltri={resetFiltri}
             flussoForm={flussoForm} setFlussoForm={setFlussoForm} fraseFinestra={fraseFinestra.current} />
         <ElencoTable tab={props.tab} flussiList={flussiList} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
-            blockContent={props.blockContent} unblockContent={props.unblockContent} call={call} setRptBadgeCount={props.setRptBadgeCount}
+            block={props.block} unblock={props.unblock} call={call} setRptBadgeCount={props.setRptBadgeCount}
             showMsg={showMsg} />
     </>
     );
