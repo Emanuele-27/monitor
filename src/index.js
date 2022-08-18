@@ -3,7 +3,7 @@ import React from "react";
 // Triggera 2 volte il render (e componentDidMount ?)
 // import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import App from './App';
+import App from './app';
 import { BrowserRouter } from "react-router-dom";
 
 // CSS Per componenti primereact

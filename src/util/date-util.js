@@ -1,10 +1,10 @@
 import { mapFasce } from "components/content/content";
 import { localeIT } from "./util";
 
-export const lastDayOfMonth = (year: number, month: number) => new Date(year, month + 1, 0);
-export const firstDayOfMonth = (year: number, month: number) => new Date(year, month, 1);
+export const lastDayOfMonth = (year, month) => new Date(year, month + 1, 0);
+export const firstDayOfMonth = (year, month) => new Date(year, month, 1);
 
-export const daysToAddUntilMonday = (day: number) => {
+export const daysToAddUntilMonday = (day) => {
     switch (day) {
         case 0:
             return 1;
@@ -25,49 +25,49 @@ export const daysToAddUntilMonday = (day: number) => {
     }
 }
 
-export const aggiungiMesi = (date: Date, mesi: number) => {
+export const aggiungiMesi = (date, mesi) => {
     const datePiuMesi = new Date(date);
     datePiuMesi.setMonth(datePiuMesi.getMonth() + mesi);
     return datePiuMesi;
 }
 
-export const aggiungiGiorni = (date: Date, giorni: number) => {
+export const aggiungiGiorni = (date, giorni) => {
     const datePiuGiorni = new Date(date);
     datePiuGiorni.setDate(datePiuGiorni.getDate() + giorni);
     return datePiuGiorni;
 }
 
-export const aggiungiOre = (date: Date, ore: number) => {
+export const aggiungiOre = (date, ore) => {
     const datePiuOre = new Date(date);
     datePiuOre.setHours(datePiuOre.getHours() + ore);
     return datePiuOre;
 }
 
 // dd/MM/yyyy HH:mm:ss
-export const formatDateTime = (date: Date) => new Date(date).toLocaleString(localeIT).replace(',', '');
+export const formatDateTime = (date) => new Date(date).toLocaleString(localeIT).replace(',', '');
 // dd/MM/yyyy
-export const formatDate = (date: Date) => new Date(date).toLocaleDateString(localeIT);
+export const formatDate = (date) => new Date(date).toLocaleDateString(localeIT);
 // yyyy-MM-dd
-export const formatDateForInput = (date: Date) => {
+export const formatDateForInput = (date) => {
     const offset = date.getTimezoneOffset()
     date = new Date(date.getTime() - (offset * 60 * 1000))
     return date.toISOString().split('T')[0]
 }
 // yyyy-MM
-export const formatMonth = (date: Date) => {
+export const formatMonth = (date) => {
     const dateParts = formatDateForInput(date).split('-');
     return dateParts[0] + '-' + dateParts[1];
 }
 // HH:mm
-export const formatTimeShort = (date: Date) => new Date(date).toLocaleTimeString(localeIT, {
+export const formatTimeShort = (date) => new Date(date).toLocaleTimeString(localeIT, {
     timeStyle: "short"
 });
 // HH:mm:ss
-export const formatTime = (date: Date) => new Date(date).toLocaleTimeString(localeIT, {
+export const formatTime = (date) => new Date(date).toLocaleTimeString(localeIT, {
     timeStyle: "medium"
 });
 
-export const calcolaDataPerFinestra = (modalita: string) => {
+export const calcolaDataPerFinestra = (modalita) => {
     switch (modalita) {
         case 'mese':
             return formatMonth(new Date(Date.now()));
@@ -80,7 +80,7 @@ export const calcolaDataPerFinestra = (modalita: string) => {
     }
 }
 
-export const transformFinestraToDates = (modalita: string, finestra: string, fascia?: number) => {
+export const transformFinestraToDates = (modalita, finestra, fascia) => {
     switch (modalita) {
         case 'mese':
             const date = new Date(finestra);
@@ -103,12 +103,12 @@ export const transformFinestraToDates = (modalita: string, finestra: string, fas
     }
 }
 
-export const getISOWeekDate = (date :Date) => {
+export const getISOWeekDate = (date) => {
     const anno = date.getFullYear()
     // Primo giorno dell'anno
     const firstDayYear = new Date(anno, 0, 1);
     // Primo lunedi dell'anno, quindi prima settimana dell'anno
-    const firstMondayYear = aggiungiGiorni(firstDayYear, daysToAddUntilMonday(firstDayYear.getDay())!);
+    const firstMondayYear = aggiungiGiorni(firstDayYear, daysToAddUntilMonday(firstDayYear.getDay()));
     // Se date è minore del primo lunedì dell'anno, allora appartiene all'ultima settimana dell'anno precedente
     if (firstMondayYear.getTime() >= date.getTime())
         return (anno - 1) + "-W52";
@@ -120,18 +120,18 @@ export const getISOWeekDate = (date :Date) => {
             return anno + "-W" + (weeks > 9 ? weeks : "0" + weeks);
 }
 
-export const getDatesFromISOWeekDate = (weekDate: string) => {
+export const getDatesFromISOWeekDate = (weekDate) => {
     const parts = weekDate.split('-W');
     const firstDayYear = new Date(parseInt(parts[0]), 0, 1);
     const weeks = parseInt(parts[1]);
     // Primo lunedi dell'anno, quindi prima settimana dell'anno
-    const firstMondayYear = aggiungiGiorni(firstDayYear, daysToAddUntilMonday(firstDayYear.getDay())!)
+    const firstMondayYear = aggiungiGiorni(firstDayYear, daysToAddUntilMonday(firstDayYear.getDay()))
     // Aggiungiamo al primo lunedì (n settimane - 1) in giorni per trovare il lunedì della settimana selezionata
     const monday = aggiungiGiorni(firstMondayYear, (weeks - 1) * 7)
     return [monday, aggiungiGiorni(monday, 6)];// Monday + 6 giorni = Sunday
 }
 
-export const creaIntervalliDiOre = (intervalloOre: number) => {
+export const creaIntervalliDiOre = (intervalloOre) => {
     const start = new Date(Date.now());
     start.setHours(0, 0, 0, 0);
     let intervalli = [start];
@@ -146,17 +146,17 @@ export const creaIntervalliDiOre = (intervalloOre: number) => {
     return intervalli;
 }
 
-export const minutesIn2Digits = (minutes: number) => {
+export const minutesIn2Digits = (minutes) => {
     return minutes > 9 ? minutes : "0" + minutes;
 }
 
-export const setLastMinute = (date :Date) => {
+export const setLastMinute = (date) => {
     const data = new Date(date);
     data.setHours(23, 59, 59, 999);
     return data;
 }
 
-export const buildFrase = (mod:string, dates: Date[]) => {
+export const buildFrase = (mod, dates) => {
     switch (mod) {
         case 'mese' || 'settimana':
             return ` - Finestra Temporale: ${formatDate(dates[0])} - ${formatDate(dates[1])}`

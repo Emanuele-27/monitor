@@ -22,19 +22,15 @@ export const sortMapper = new Map([
     [-1, 'DESC'],
 ]);
 
-export enum Severities {
-    success = "success",
-    info = "info",
-    warn = "warning",
-    error = "danger"
+export const Severities = {
+    success: "success",
+    info: "info",
+    warn: "warning",
+    error: "danger"
 }
 
-export type Indexable = {
-    [key: string]: any;
-}
-
-export const deleteEmptyValues = (obj: Indexable): object => {
-    Object.keys(obj).forEach((key: string) => {
+export const deleteEmptyValues = (obj) => {
+    Object.keys(obj).forEach((key) => {
         if (!obj[key])
             delete obj[key];
     });
