@@ -1,16 +1,16 @@
-div#tabs-row  {
+div#tabs-row {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     column-gap: 0.4rem;
     row-gap: 0.4rem;
-} 
+}
 
-div#tabs-row a  {
+div#tabs-row a {
     flex-grow: 1;
     flex-basis: 20%;
     justify-content: center;
-} 
+}
 
 /* Lasciare classe, bug uikit css */
 .entrypoint+.entrypoint {
@@ -24,35 +24,22 @@ div#tabs-row a  {
 }
 
 /* Buttons Exporter */
-.p-datatable-header, .p-datatable-footer {
+.p-datatable-header,
+.p-datatable-footer {
     display: flex;
     align-items: center;
 }
+
 button.export-button {
     width: 2.5rem;
     height: 2.5rem;
 }
+
 button.export-button i {
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 1.3rem;
-}
-/* Campi data e finestre temporali */
-span[id^=data], span[id^=finestra] {
-    display: block
-}
-span[id^=data] input.p-inputtext.p-component, 
-span[id^=finestra] input.p-inputtext.p-component{
-    height: 38px;
-    width: 85%;
-    border: 1px solid #939496;
-    border-radius: 0.5rem 0 0 0.5rem;
-}
-span[id^=data] input.p-inputtext.p-component:focus, 
-span[id^=finestra] input.p-inputtext.p-component:focus{
-    border-color: #94aec2;
-    box-shadow: 0 0 0 0.25rem rgb(41 92 132 / 25%);
 }
 
 input::-webkit-datetime-edit-day-field:focus,
