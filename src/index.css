@@ -1,18 +1,19 @@
 :root {
-    --font-uikit: "Titillium Web", system-ui, -apple-system, "Segoe UI", 
-    "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --font-uikit: "Titillium Web", system-ui, -apple-system, "Segoe UI",
+        "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
-svg {
+img[class=logo] {
     width: 100%;
 }
 
-html, .p-component{
+html,
+.p-component {
     font-family: var(--font-uikit);
 }
 
-span[disabled] { 
-    pointer-events: none; 
+span[disabled] {
+    pointer-events: none;
     opacity: 0.5;
 }

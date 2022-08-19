@@ -1,47 +1,18 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-import { ReactComponent as ADMLogoBianco } from 'assets/adm/ADM_ita-bianco.svg';
-import { ReactComponent as ADMLogo } from 'assets/adm/ADM_ita.svg';
-
-import { ReactComponent as AELogoBianco } from 'assets/ae/ae_bianco.svg';
-import { ReactComponent as AELogo } from 'assets/ae/ae_colori.svg';
-
-import { ReactComponent as AERLogo } from 'assets/ader/ADER_logo.svg';
-
-import { ReactComponent as SogeiLogoBianco } from 'assets/sogei/Sogei_arancio_bianco.svg';
-import { ReactComponent as SogeiLogo } from 'assets/sogei/Sogei_arancio.svg';
-
-import { propsDominio, suffissiDomini } from "config/config";
+import { propsDominio } from "config/config";
 
 import './layout.css';
-
-// Mapping dominio corrente - logo per darkmode
-export const mapperDominioLogoDark = new Map([
-    [suffissiDomini.suffissoAdm, <ADMLogoBianco className="logo" />],
-    [suffissiDomini.suffissoAe, <AELogoBianco className="logo" />],
-    [suffissiDomini.suffissoAer, <AERLogo className="logo" />], //non c'è un logo per aer bianco
-    [suffissiDomini.suffissoSogei, <SogeiLogoBianco className="logo" />]
-]);
-
-// Mapping dominio corrente - logo per lightmode
-export const mapperDominioLogoLight = new Map([
-    [suffissiDomini.suffissoAdm, <ADMLogo className="logo" />],
-    [suffissiDomini.suffissoAe, <AELogo className="logo" />],
-    [suffissiDomini.suffissoAer, <AERLogo className="logo" />],
-    [suffissiDomini.suffissoSogei, <SogeiLogo className="logo" />]
-]);
 
 export default function Header(props) {
 
     const [checked, setChecked] = useState(props.theme === 'dark');
 
-    const linkClass = props.theme === 'dark' ? 'link-white' : 'link-primary';
-
     return <> <header aria-label="Informazioni e strumenti utente">
         <div className={"header-top-" + props.theme + " d-none d-md-block"}>
             <div className="container py-2">
-                <a href={propsDominio.provenienzaUrl} target="_self" className={linkClass}>
+                <a href={propsDominio.provenienzaUrl} target="_self" className={props.linkStyle}>
                     <i className="bi bi-arrow-left me-2"></i>Area di provenienza
                 </a>
                 <div className="form-check form-switch form-switch-lg" style={{ float: "right" }}>
@@ -64,14 +35,14 @@ export default function Header(props) {
                         </button>
                     </div>
                     <div className="col-auto">
-                        {props.theme === 'dark' ? mapperDominioLogoDark.get(propsDominio.suffissoDom) : mapperDominioLogoLight.get(propsDominio.suffissoDom)}
+                        {props.img}
                     </div>
                     <div className="col">
                         <h1>Monitoraggio PagoPA</h1>
                     </div>
                     <div className="col-auto">
                         <div className="dropdown">
-                            <button type="button" id="notification-list" className={"btn " + linkClass + " p-0"} data-bs-toggle="dropdown" aria-expanded="false">
+                            <button type="button" id="notification-list" className={"btn " + props.linkStyle + " p-0"} data-bs-toggle="dropdown" aria-expanded="false">
                                 <i className="bi bi-bell bi-lg"></i>
                                 <span className="badge badge-secondary rounded-circle position-absolute top-0 start-100 translate-middle">2<span className="visually-hidden">nuove notifiche</span>
                                 </span>
@@ -92,7 +63,7 @@ export default function Header(props) {
                     <div className="col-auto">
                         <span className="d-none d-md-inline">Ciao,<strong className="ms-2">Nome Cognome</strong>
                         </span>
-                        <a href="#" className={"btn " + linkClass + " p-0 ms-3"}>
+                        <a href="#" className={"btn " + props.linkStyle + " p-0 ms-3"}>
                             <i className="bi bi-person-circle bi-lg bi-md-2x"></i>
                             <span className="visually-hidden">Informazioni utente</span>
                         </a>

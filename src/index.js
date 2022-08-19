@@ -12,11 +12,18 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 
 import "./index.css";
-import { propsDominio } from "config/config";
+import { propsDominio, suffissiDomini } from "config/config";
+
+const cssFile = new Map([
+    [suffissiDomini.suffissoAdm, 'adm'],
+    [suffissiDomini.suffissoAe, 'agenzia-entrate'],
+    [suffissiDomini.suffissoAer, 'ader'],
+    [suffissiDomini.suffissoSogei, 'sogei'],
+])
 
 const link = document.createElement('link');
 link.setAttribute('rel', 'stylesheet');
-link.setAttribute('href', '/css/' + propsDominio.css + '.css');
+link.setAttribute('href', '/css/' + cssFile.get(propsDominio.suffissoDom) + '.css');
 document.head.appendChild(link);
 
 const rootElement = document.getElementById('root');
