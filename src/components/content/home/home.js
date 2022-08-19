@@ -77,9 +77,9 @@ export default function Home(props) {
             const [monitor, monitorStat, monitorAcc] = await Promise.allSettled([monitorClient.welcomeTest(),
             monitorStatClient.welcomeTest(), monitorAccountabilityClient.welcomeTest()]);
 
-            buildChart('monitor-pie', monitor.value && monitor.value.isOnline === true ? dataOK : dataKO);
-            buildChart('monitor-stat-pie', monitorStat.value && monitorStat.value.isOnline === true ? dataOK : dataKO);
-            buildChart('monitor-acc-pie', monitorAcc.value && monitorAcc.value.isOnline === true ? dataOK : dataKO);
+            buildChart('monitor-pie', monitor.value && monitor.value.isOnline ? dataOK : dataKO);
+            buildChart('monitor-stat-pie', monitorStat.value && monitorStat.value.isOnline ? dataOK : dataKO);
+            buildChart('monitor-acc-pie', monitorAcc.value && monitorAcc.value.isOnline ? dataOK : dataKO);
             setBuiltChart(true);
             props.unblock();
         }

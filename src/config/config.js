@@ -51,7 +51,7 @@ switch (window.location.hostname) {
 // Fine gestione riconoscimento dominio da url ******
 
 const dominioBase = process.env.REACT_APP_DOMINIO_BASE;
-suffissoDom = dominioBase ? dominioBase : suffissoDom;
+suffissoDom = dominioBase || suffissoDom;
 
 // Props per dominio
 const propsDominio = {

@@ -10,7 +10,7 @@ export default function App(props) {
     const [theme, setTheme] = useState(propsDominio.theme);
 
     const switchTheme = () => {
-        setTheme(theme === 'dark' ? 'light' : theme === 'light' ? 'dark' : '');
+        setTheme(theme === 'dark' ? 'light' : 'dark');
     }
 
     return (

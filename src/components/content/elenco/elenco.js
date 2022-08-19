@@ -16,8 +16,8 @@ export const emptyFlussoForm = (tab, iuv, codContesto) => {
     return {
         // idDominio: propsDominio.idDominio,
         ...(tab === 'avvisi' && { flagAnnullamento: 1 }),
-        iuv: iuv ? iuv : '',
-        codiceContesto: codContesto ? codContesto : '',
+        iuv: iuv || '',
+        codiceContesto: codContesto || '',
         area: '',
         servizio: '',
         idPagatore: '',
@@ -151,7 +151,7 @@ export default function Elenco(props) {
     }
 
     return (<>
-        <div className="container">     
+        <div className="container">
             <div id="elenco-msg" className={"alert alert-" + elencoMsg.severity + " alert-dismissible fade show " + (elencoMsg.show ? '' : 'hidden')} role="alert">
                 <b>{elencoMsg.summary + " "}</b>
                 {elencoMsg.detail}

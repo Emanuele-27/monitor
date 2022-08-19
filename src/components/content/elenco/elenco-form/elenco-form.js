@@ -157,13 +157,13 @@ export default function ElencoForm(props) {
                                                     <label htmlFor="data-richiesta-da" className="form-label">Dal:</label>
                                                     <input type="date" value={flussoForm.dataRichiestaDa} onChange={(e) => handleChangeFlusso(e.target.value, "dataRichiestaDa")}
                                                         name="data-richiesta-da" className="form-control" id="data-richiesta-da" onKeyDown={(e) => e.preventDefault()}
-                                                        min={calcolaMinData(flussoForm.dataRichiestaA)} max={flussoForm.dataRichiestaA ? flussoForm.dataRichiestaA : initialMaxDateForInput} />
+                                                        min={calcolaMinData(flussoForm.dataRichiestaA)} max={flussoForm.dataRichiestaA || initialMaxDateForInput} />
                                                 </div>
                                                 <div className="col-12 col-sm-12 col-lg-6">
                                                     <label htmlFor="data-richiesta-a" className="form-label">Al:</label>
                                                     <input type="date" value={flussoForm.dataRichiestaA} onChange={(e) => handleChangeFlusso(e.target.value, "dataRichiestaA")}
                                                         name="data-richiesta-a" className="form-control" id="data-richiesta-a" onKeyDown={(e) => e.preventDefault()}
-                                                        min={flussoForm.dataRichiestaDa ? flussoForm.dataRichiestaDa : initialMinDateForInput} max={calcolaMaxData(flussoForm.dataRichiestaDa)} />
+                                                        min={flussoForm.dataRichiestaDa || initialMinDateForInput} max={calcolaMaxData(flussoForm.dataRichiestaDa)} />
                                                 </div>
                                             </div>
                                         </fieldset>
@@ -176,13 +176,13 @@ export default function ElencoForm(props) {
                                                     <label htmlFor="data-ricevuta-da" className="form-label">Dal:</label>
                                                     <input type="date" value={flussoForm.dataRicevutaDa} onChange={(e) => handleChangeFlusso(e.target.value, "dataRicevutaDa")}
                                                         name="data-ricevuta-da" className="form-control" id="data-ricevuta-da" onKeyDown={(e) => e.preventDefault()}
-                                                        min={calcolaMinData(flussoForm.dataRicevutaA)} max={flussoForm.dataRicevutaA ? flussoForm.dataRicevutaA : initialMaxDateForInput} />
+                                                        min={calcolaMinData(flussoForm.dataRicevutaA)} max={flussoForm.dataRicevutaA || initialMaxDateForInput} />
                                                 </div>
                                                 <div className="col-12 col-sm-12 col-lg-6">
                                                     <label htmlFor="data-ricevuta-a" className="form-label">Al:</label>
                                                     <input type="date" value={flussoForm.dataRicevutaA} onChange={(e) => handleChangeFlusso(e.target.value, "dataRicevutaA")}
                                                         name="data-ricevuta-a" className="form-control" id="data-ricevuta-a" onKeyDown={(e) => e.preventDefault()}
-                                                        min={flussoForm.dataRicevutaDa ? flussoForm.dataRicevutaDa : initialMinDateForInput} max={calcolaMaxData(flussoForm.dataRicevutaDa)} />
+                                                        min={flussoForm.dataRicevutaDa || initialMinDateForInput} max={calcolaMaxData(flussoForm.dataRicevutaDa)} />
                                                 </div>
                                             </div>
                                         </fieldset>

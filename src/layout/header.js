@@ -36,7 +36,7 @@ export default function Header(props) {
 
     const [checked, setChecked] = useState(props.theme === 'dark');
 
-    const linkClass = props.theme === 'dark' ? 'link-white' : props.theme === 'light' ? 'link-primary' : '';
+    const linkClass = props.theme === 'dark' ? 'link-white' : 'link-primary';
 
     return <> <header aria-label="Informazioni e strumenti utente">
         <div className={"header-top-" + props.theme + " d-none d-md-block"}>

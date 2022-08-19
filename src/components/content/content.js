@@ -119,7 +119,7 @@ export default function Content() {
     const buildServiziEAree = (serviziData) => {
         const serviziDominioCorrente = serviziData.serviziList.filter(servizio => servizio.idDominio === propsDominio.idDominio);
         const serviziOpt = serviziDominioCorrente.map(servizio =>
-            <option key={servizio.servizio} value={servizio.servizio}>{servizio.servizio + (servizio.denominazioneServizio ? ' - ' + servizio.denominazioneServizio : '')}</option>);
+            <option key={servizio.servizio} value={servizio.servizio}>{servizio.servizio + (servizio.denominazioneServizio || '')}</option>);
         // Crea una lista di option dalla lista di aree univoche del set
         const areeOpt = Array.from(new Set(serviziDominioCorrente.map(s => s.area))).map(a => <option key={a} value={a}>{a}</option>);
         return {
