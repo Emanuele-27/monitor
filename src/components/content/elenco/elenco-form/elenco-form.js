@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "./elenco-form.css";
 
 import { propsDominio } from 'config/config';
 

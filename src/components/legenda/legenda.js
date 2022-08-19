@@ -1,5 +1,4 @@
 import React from "react";
-import '../informativa/informativa.css';
 import './legenda.css';
 
 export default function Legenda() {

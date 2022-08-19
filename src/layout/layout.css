@@ -1,6 +1,7 @@
-div#body, div.p-blockui-container{
+div#body,
+div.p-blockui-container {
     /* min-height = 100% - (altezza header + altezza footer) (217.98px+ 153px) */
-    min-height: calc(100vh - 370.98px); 
+    min-height: calc(100vh - 370.98px);
 }
 
 div.panel-header {
@@ -8,10 +9,11 @@ div.panel-header {
     align-items: center;
     justify-content: center;
     height: 3.5rem;
-    font-size: 1rem;
+    font-size: 1.25rem;
     font-weight: 600;
     border-radius: 6px 6px 0 0;
 }
+
 div.panel-content {
     border: 1px solid #dee2e6;
     border-top: none;

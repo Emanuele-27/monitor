@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "./giornale-table.css";
 
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
