@@ -152,7 +152,7 @@ export default function Content() {
             <div style={{ paddingTop: "2rem", paddingBottom: "2rem" }}>
                 <Routes>
                     <Route path="/" element={<Navigate to="/content/home" />} />
-                    <Route path="/home" element={<Home block={block} unblock={unblock} />} />
+                    <Route path="/home" element={<Home />} />
                     {/* L'attributo key diverso serve a far ricreare il componente invece di riutilizzarlo, causa query diversa */}
                     <Route path="/avvisi" element={<Elenco key="2" tab="avvisi" servizi={servizi} aree={aree} block={block} unblock={unblock} />} />
                     <Route path="/rpt" element={<Rpt servizi={servizi} aree={aree} block={block} unblock={unblock} />} />

@@ -86,7 +86,7 @@ export default function Home() {
         getStats();
     }, [])
 
-    const handleCollpse = async (e) => {
+    const handleCollpse = (e) => {
 
         const isCollapsed = e.target.classList.contains('collapsed');
         setCollapsed(isCollapsed);
