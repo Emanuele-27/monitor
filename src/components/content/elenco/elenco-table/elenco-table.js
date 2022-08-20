@@ -15,7 +15,7 @@ import { getRptBadgeCount } from "components/content/content";
 import { auxClient } from "clients/aux-client";
 import { advClient } from "clients/adv-client";
 import { formatEuro } from "util/number-util";
-import { Severities } from "util/util";
+import { Severities } from "components/message/message";
 
 const esitoStatoRPTMap = new Map();
 

@@ -166,3 +166,22 @@ export const buildFrase = (mod, dates) => {
             return '';
     }
 }
+
+// Costruisce le option per la fascia oraria della finestra temporale
+export const buildIntervalliOre = (intervallo) => {
+    const intervalli = creaIntervalliDiOre(parseInt(intervallo));
+    const options = [];
+    const mapFasce = new Map();
+    for (let i = 1; i < intervalli.length; i++) {
+        const left = intervalli[i - 1];
+        const right = intervalli[i];
+        // Creo una mappa e associo a ogni indice la coppia di date per poterli manipolare successivamente
+        mapFasce.set(i, [left, right]);
+        options.push(<option key={i} value={i}>{left.getHours() + ":" + minutesIn2Digits(left.getMinutes()) + " - "
+            + right.getHours() + ":" + minutesIn2Digits(right.getMinutes())}</option>);
+    }
+    return {
+        oreOptions: options,
+        fasce: mapFasce,
+    };
+}

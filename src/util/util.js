@@ -1,3 +1,6 @@
+import { esitiPagamento, statiPagamento } from "model/tutti-i-stati";
+import { formatEsito, replaceUnderscore } from "./string-util";
+
 export const localeIT = 'it-IT';
 
 export const localeDate = {
@@ -22,17 +25,18 @@ export const sortMapper = new Map([
     [-1, 'DESC'],
 ]);
 
-export const Severities = {
-    success: "success",
-    info: "info",
-    warn: "warning",
-    error: "danger"
-}
-
 export const deleteEmptyValues = (obj) => {
     Object.keys(obj).forEach((key) => {
         if (!obj[key])
             delete obj[key];
     });
     return obj;
+};
+
+// Nel dropdown di stato ci sono sia stati che esiti, in fase  
+// di ricerca vengono distinti e valorizzati opportunamente
+export const buildOptionsStatiEsiti = () => {
+    const esitiOptions = esitiPagamento.map(esito => <option key={esito} value={esito}>{formatEsito(esito)}</option>);
+    const statiOptions = statiPagamento.filter(stato => stato !== 'RT_ACCETTATA_PA').map(stato => <option key={stato} value={stato}>{replaceUnderscore(stato)}</option>);
+    return esitiOptions.concat(statiOptions);
 };

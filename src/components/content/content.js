@@ -13,12 +13,11 @@ import { BlockUI } from 'primereact/blockui';
 
 import './content.css';
 import { propsDominio } from "config/config";
-import { statiPagamento, esitiPagamento } from "model/tutti-i-stati";
-import { replaceUnderscore, formatEsito } from "util/string-util";
 import { monitorClient } from "clients/monitor-client";
-import { aggiungiMesi, creaIntervalliDiOre, formatDateForInput, formatMonth, getISOWeekDate, minutesIn2Digits } from "util/date-util";
-import { Entrypoint } from "./entrypoint";
+import { aggiungiMesi, buildIntervalliOre, formatDateForInput, formatMonth, getISOWeekDate } from "util/date-util";
+import { Entrypoint } from "../entrypoint/entrypoint";
 import { keys, LocalStorage } from "util/storage-util";
+import { buildOptionsStatiEsiti } from "util/util";
 
 export const initialLazyParams = {
     first: 0,
@@ -58,34 +57,9 @@ export const maxMonth = formatMonth(new Date(Date.now()));
 export const minWeek = getISOWeekDate(initialMinDate);
 export const maxWeek = getISOWeekDate(new Date(Date.now()));
 
-// Nel dropdown di stato ci sono sia stati che esiti, in fase  
-// di ricerca vengono distinti e valorizzati opportunamente
-const buildOptionsStatiEsiti = () => {
-    const esitiOptions = esitiPagamento.map(esito => <option key={esito} value={esito}>{formatEsito(esito)}</option>);
-    const statiOptions = statiPagamento.filter(stato => stato !== 'RT_ACCETTATA_PA').map(stato => <option key={stato} value={stato}>{replaceUnderscore(stato)}</option>);
-    return esitiOptions.concat(statiOptions);
-};
 export const esitStatiOpt = buildOptionsStatiEsiti();
 
-// Costruisce le option per la fascia oraria della finestra temporale
-const buildIntervalliOre = () => {
-    const intervalli = creaIntervalliDiOre(parseInt(propsDominio.intervalloOre));
-    const options = [];
-    const mapFasce = new Map();
-    for (let i = 1; i < intervalli.length; i++) {
-        const left = intervalli[i - 1];
-        const right = intervalli[i];
-        // Creo una mappa e associo a ogni indice la coppia di date per poterli manipolare successivamente
-        mapFasce.set(i, [left, right]);
-        options.push(<option key={i} value={i}>{left.getHours() + ":" + minutesIn2Digits(left.getMinutes()) + " - "
-            + right.getHours() + ":" + minutesIn2Digits(right.getMinutes())}</option>);
-    }
-    return {
-        oreOptions: options,
-        fasce: mapFasce,
-    };
-}
-const outputOre = buildIntervalliOre();
+const outputOre = buildIntervalliOre(propsDominio.intervalloOre);
 export const oreOpt = outputOre.oreOptions;
 export const mapFasce = outputOre.fasce;
 

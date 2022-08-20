@@ -6,6 +6,7 @@ import { initialLazyParams, isFinestraAbilitata, mapFasce, modalitaFinestra } fr
 import GiornaleForm from "./giornale-form/giornale-form";
 import GiornaleTable from "./giornale-table/giornale-table";
 import { monitorClient } from "clients/monitor-client";
+import { Message, messageDefault, Severities } from "components/message/message";
 
 // Disabled se almeno uno di questi campi è valorizzato
 export const isFinestraDisabled = (giornale) => {
@@ -34,6 +35,8 @@ export default function Giornale(props) {
     const [listGiornale, setListGiornale] = useState([]);
     const [lazyParams, setLazyParams] = useState(structuredClone(initialLazyParams));
 
+    const [giornaleMsg, setGiornaleMsg] = useState(messageDefault);
+
     const fraseFinestra = useRef('');
 
     useEffect(() => {
@@ -57,10 +60,15 @@ export default function Giornale(props) {
             }
         }
 
-        const res = await monitorClient.getGiornale(flussoGiornaleEventi);
-        setTotalRecords(res.filtroflussoGiornaleEventi.count < 0 ? 0 : res.filtroflussoGiornaleEventi.count);
-        setListGiornale(res.giornaleList);
-        props.unblock();
+        try {
+            const res = await monitorClient.getGiornale(flussoGiornaleEventi);
+            setTotalRecords(res.filtroflussoGiornaleEventi.count < 0 ? 0 : res.filtroflussoGiornaleEventi.count);
+            setListGiornale(res.giornaleList);
+        } catch (e) {
+            showMsg(Severities.error, "Errore di sistema:", "Riprovare in un altro momento");
+        } finally {
+            props.unblock();
+        }
     };
 
     const prepareGiornaleRequest = () => {
@@ -92,8 +100,22 @@ export default function Giornale(props) {
         setLazyParams(structuredClone(initialLazyParams));
     };
 
+    const showMsg = (severityParam, summaryParam, detailParam) => {
+        setGiornaleMsg({
+            severity: severityParam,
+            summary: summaryParam,
+            detail: detailParam,
+            show: true,
+        });
+    }
+
+    const hideMsg = () => {
+        setGiornaleMsg({ show: false });
+    }
+
     return (
         <>
+            <Message id='giornale-msg' onHide={hideMsg} {...giornaleMsg} />
             <GiornaleForm resetFiltri={resetFiltri} giornaleForm={giornaleForm} setGiornaleForm={setGiornaleForm} fraseFinestra={fraseFinestra.current} />
             <GiornaleTable listGiornale={listGiornale} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
                 block={props.block} unblock={props.unblock} />

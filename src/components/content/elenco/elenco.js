@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { propsDominio } from 'config/config';
 import './elenco.css';
 
-import { columnMapper, deleteEmptyValues, Severities, sortMapper } from 'util/util';
+import { columnMapper, deleteEmptyValues, sortMapper } from 'util/util';
 import ElencoTable from "./elenco-table/elenco-table";
 import ElencoForm from "./elenco-form/elenco-form";
 import { initialLazyParams, isFinestraAbilitata, mapFasce, modalitaFinestra } from "../content";
@@ -11,6 +11,7 @@ import { useParams } from "react-router-dom";
 import { buildFrase, calcolaDataPerFinestra, setLastMinute, transformFinestraToDates } from "util/date-util";
 import { statiPagamento } from "model/tutti-i-stati";
 import { monitorClient } from "clients/monitor-client";
+import { Message, messageDefault, Severities } from "components/message/message";
 
 export const emptyFlussoForm = (tab, iuv, codContesto) => {
     return {
@@ -52,9 +53,7 @@ export default function Elenco(props) {
     const [flussiList, setFlussiList] = useState([]);
     const [lazyParams, setLazyParams] = useState(structuredClone(initialLazyParams));
 
-    const [elencoMsg, setElencoMsg] = useState({
-        show: false,
-    });
+    const [elencoMsg, setElencoMsg] = useState(messageDefault);
 
     const fraseFinestra = useRef('');
 
@@ -62,10 +61,6 @@ export default function Elenco(props) {
         call();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [flussoForm, lazyParams]);
-
-    useEffect(() => {
-        document.getElementById("elenco-msg").scrollIntoView({ behavior: "smooth", block: "center" });
-    }, [elencoMsg]);
 
     const call = async () => {
         props.block();
@@ -88,7 +83,7 @@ export default function Elenco(props) {
             setTotalRecords(res.filtroFlusso.count < 0 ? 0 : res.filtroFlusso.count);
             setFlussiList(res.flussoList);
         } catch (e) {
-            props.showMsg(Severities.error, "Errore:", "Errore durante il recupero delle informazioni. Riprovare più tardi");
+            showMsg(Severities.error, "Errore:", "Errore durante il recupero delle informazioni. Riprovare più tardi");
         } finally {
             props.unblock();
         }
@@ -145,19 +140,11 @@ export default function Elenco(props) {
     }
 
     const hideMsg = () => {
-        setElencoMsg({
-            show: false
-        });;
+        setElencoMsg({ show: false });
     }
 
     return (<>
-        <div className="container">
-            <div id="elenco-msg" className={"alert alert-" + elencoMsg.severity + " alert-dismissible fade show " + (elencoMsg.show ? '' : 'hidden')} role="alert">
-                <b>{elencoMsg.summary + " "}</b>
-                {elencoMsg.detail}
-                <button type="button" onClick={hideMsg} className="btn-close" aria-label="Chiudi"></button>
-            </div>
-        </div>
+        <Message id='elenco-msg' onHide={hideMsg} {...elencoMsg} />
         <ElencoForm tab={props.tab} aree={props.aree} servizi={props.servizi} resetFiltri={resetFiltri}
             flussoForm={flussoForm} setFlussoForm={setFlussoForm} fraseFinestra={fraseFinestra.current} />
         <ElencoTable tab={props.tab} flussiList={flussiList} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
