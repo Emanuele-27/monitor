@@ -18,6 +18,7 @@ import { replaceUnderscore, formatEsito } from "util/string-util";
 import { monitorClient } from "clients/monitor-client";
 import { aggiungiMesi, creaIntervalliDiOre, formatDateForInput, formatMonth, getISOWeekDate, minutesIn2Digits } from "util/date-util";
 import { Entrypoint } from "./entrypoint";
+import { keys, LocalStorage } from "util/storage";
 
 export const initialLazyParams = {
     first: 0,
@@ -88,6 +89,8 @@ const outputOre = buildIntervalliOre();
 export const oreOpt = outputOre.oreOptions;
 export const mapFasce = outputOre.fasce;
 
+const SERVIZI_AREE = keys.SERVIZI_AREE;
+
 export default function Content() {
 
     const [blockedContent, setBlockedContent] = useState(false);
@@ -97,15 +100,22 @@ export default function Content() {
     const [aree, setAree] = useState(null);
 
     useEffect(() => {
-        block();
-        getRptBadgeCount().then(res => setRptBadgeCount(res.filtroFlusso.count < 0 ? 0 : res.filtroFlusso.count))
-            .finally(() => unblock());
-        monitorClient.getServizi().then(res => {
-            const serviziEAree = buildServiziEAree(res);
+        const getData = async () => {
+            block();
+            getRptBadgeCount().then(res => setRptBadgeCount(res.filtroFlusso.count < 0 ? 0 : res.filtroFlusso.count))
+                .finally(() => unblock());
+            const serviziEAree = buildServiziEAree(LocalStorage.get(SERVIZI_AREE) ?? await callServizi());
             setServizi(serviziEAree.servizi);
             setAree(serviziEAree.aree);
-        })
+        };
+        getData()
     }, [])
+
+    const callServizi = async () => {
+        const res = await monitorClient.getServizi();
+        LocalStorage.set(SERVIZI_AREE, res);
+        return res;
+    }
 
     const block = () => {
         setBlockedContent(true)
@@ -119,7 +129,7 @@ export default function Content() {
     const buildServiziEAree = (serviziData) => {
         const serviziDominioCorrente = serviziData.serviziList.filter(servizio => servizio.idDominio === propsDominio.idDominio);
         const serviziOpt = serviziDominioCorrente.map(servizio =>
-            <option key={servizio.servizio} value={servizio.servizio}>{servizio.servizio + (servizio.denominazioneServizio || '')}</option>);
+            <option key={servizio.servizio} value={servizio.servizio}>{servizio.servizio + (servizio.denominazioneServizio ? ' ' + servizio.denominazioneServizio : '')}</option>);
         // Crea una lista di option dalla lista di aree univoche del set
         const areeOpt = Array.from(new Set(serviziDominioCorrente.map(s => s.area))).map(a => <option key={a} value={a}>{a}</option>);
         return {

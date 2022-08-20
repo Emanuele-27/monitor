@@ -4,6 +4,7 @@ import './home.css';
 import { monitorClient } from "clients/monitor-client";
 import { monitorStatClient } from "clients/monitor-stat-client";
 import { monitorAccountabilityClient } from "clients/monitor-accountability-client";
+import { keys, SessionStorage } from "util/storage";
 
 const chartOptions = {
     aspectRatio: 1,
@@ -61,7 +62,7 @@ const dataKO = {
     options: chartOptions
 };
 
-const HOME_STATS = 'home-stats';
+const HOME_STATS = keys.HOME_STATS;
 
 export default function Home() {
 
@@ -70,8 +71,8 @@ export default function Home() {
 
     useEffect(() => {
         const getStats = async () => {
-            if (sessionStorage.getItem(HOME_STATS))
-                setStats(JSON.parse(sessionStorage.getItem(HOME_STATS)));
+            if (SessionStorage.get(HOME_STATS))
+                setStats(SessionStorage.get(HOME_STATS));
             else {
                 const res = await Promise.allSettled([monitorClient.welcomeTest(), monitorStatClient.welcomeTest(), monitorAccountabilityClient.welcomeTest()]);
                 const respObj = {
@@ -80,7 +81,7 @@ export default function Home() {
                     monitorAcc: res[2]
                 };
                 setStats(respObj);
-                sessionStorage.setItem(HOME_STATS, JSON.stringify(respObj));
+                SessionStorage.set(HOME_STATS, respObj)
             }
         }
         getStats();
