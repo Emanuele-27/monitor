@@ -4,7 +4,7 @@ import './home.css';
 import { monitorClient } from "clients/monitor-client";
 import { monitorStatClient } from "clients/monitor-stat-client";
 import { monitorAccountabilityClient } from "clients/monitor-accountability-client";
-import { keys, SessionStorage } from "util/storage";
+import { keys, SessionStorage } from "util/storage-util";
 
 const chartOptions = {
     aspectRatio: 1,
