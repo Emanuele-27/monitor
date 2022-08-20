@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Chart from 'chart.js/auto';
 import './home.css';
 import { monitorClient } from "clients/monitor-client";
@@ -61,32 +61,45 @@ const dataKO = {
     options: chartOptions
 };
 
-export default function Home(props) {
+const HOME_STATS = 'home-stats';
 
-    const [builtChart, setBuiltChart] = useState(false);
+export default function Home() {
+
     const [collapsed, setCollapsed] = useState(true);
+    const [stats, setStats] = useState(null);
 
-    const buildCharts = async (event) => {
-        const isAccordionCollapsed = event.target.classList.contains('collapsed');
-        setCollapsed(isAccordionCollapsed);
-        // Crea i chart solo se il click espande l'accordion e se non sono già stati creati per quest'istanza
-        if (!isAccordionCollapsed && !builtChart) {
+    useEffect(() => {
+        const getStats = async () => {
+            if (sessionStorage.getItem(HOME_STATS))
+                setStats(JSON.parse(sessionStorage.getItem(HOME_STATS)));
+            else {
+                const res = await Promise.allSettled([monitorClient.welcomeTest(), monitorStatClient.welcomeTest(), monitorAccountabilityClient.welcomeTest()]);
+                const respObj = {
+                    monitor: res[0],
+                    monitorStat: res[1],
+                    monitorAcc: res[2]
+                };
+                setStats(respObj);
+                sessionStorage.setItem(HOME_STATS, JSON.stringify(respObj));
+            }
+        }
+        getStats();
+    }, [])
 
-            props.block();
+    const handleCollpse = async (e) => {
 
-            const [monitor, monitorStat, monitorAcc] = await Promise.allSettled([monitorClient.welcomeTest(),
-            monitorStatClient.welcomeTest(), monitorAccountabilityClient.welcomeTest()]);
+        const isCollapsed = e.target.classList.contains('collapsed');
+        setCollapsed(isCollapsed);
 
-            buildChart('monitor-pie', monitor.value && monitor.value.isOnline ? dataOK : dataKO);
-            buildChart('monitor-stat-pie', monitorStat.value && monitorStat.value.isOnline ? dataOK : dataKO);
-            buildChart('monitor-acc-pie', monitorAcc.value && monitorAcc.value.isOnline ? dataOK : dataKO);
-            setBuiltChart(true);
-            props.unblock();
+        if (!isCollapsed) {
+            buildChart('monitor-pie', stats.monitor.value && stats.monitor.value.isOnline ? dataOK : dataKO);
+            buildChart('monitor-stat-pie', stats.monitorStat.value && stats.monitorStat.value.isOnline ? dataOK : dataKO);
+            buildChart('monitor-acc-pie', stats.monitorAcc.value && stats.monitorAcc.value.isOnline ? dataOK : dataKO);
         }
     }
 
     const buildChart = (id, data) => {
-        let chartStatus = Chart.getChart(id);
+        const chartStatus = Chart.getChart(id);
         if (chartStatus)
             chartStatus.destroy();
         new Chart(id, data);
@@ -97,7 +110,7 @@ export default function Home(props) {
             <div className="accordion" id="home-accordion">
                 <div className="accordion-item">
                     <h3 className="accordion-header" id="home-accordion-heading">
-                        <button id="home-accordion-button" className="accordion-button collapsed" onClick={buildCharts} type="button" data-bs-toggle="collapse" data-bs-target="#div-collapsible-1" aria-controls="div-collapsible-1">Monitor</button>
+                        <button id="home-accordion-button" className="accordion-button collapsed" onClick={handleCollpse} type="button" data-bs-toggle="collapse" data-bs-target="#div-collapsible-1" aria-controls="div-collapsible-1">Monitor</button>
                     </h3>
                     <div id="div-collapsible-1" className="accordion-collapse collapse" aria-labelledby="home-accordion-heading" data-bs-parent="#home-accordion">
                         <div id="pies" className="accordion-body">
@@ -119,18 +132,20 @@ export default function Home(props) {
                     </div>
                 </div>
             </div>
-            {collapsed && (
-                <div className="card card-horizontal" style={{ marginTop: "1rem" }} >
-                    <div className="card-body">
-                        <p className="card-text">
-                            L'applicazione consente di monitorare lo stato delle transazioni e
-                            permette di disporre delle funzionalità ausiliarie disponibili all'interno del Sistema pagoPA,
-                            funzionalità accessorie per la gestione dei processi correlati alle operazioni di pagamento
-                            che possono essere utilizzate dagli Enti Creditori (EC) per il rientro da situazioni anomale.
-                        </p>
-                    </div>
-                </div>)}
-        </div>
+            {collapsed
+                && (
+                    <div className="card card-horizontal" style={{ marginTop: "1rem" }} >
+                        <div className="card-body">
+                            <p className="card-text">
+                                L'applicazione consente di monitorare lo stato delle transazioni e
+                                permette di disporre delle funzionalità ausiliarie disponibili all'interno del Sistema pagoPA,
+                                funzionalità accessorie per la gestione dei processi correlati alle operazioni di pagamento
+                                che possono essere utilizzate dagli Enti Creditori (EC) per il rientro da situazioni anomale.
+                            </p>
+                        </div>
+                    </div>)
+            }
+        </div >
 
     );
 }

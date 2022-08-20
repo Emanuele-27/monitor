@@ -1,5 +1,5 @@
 div#body,
-div.p-blockui-container {
+div.p-blockui-container#content-bui {
     /* min-height = 100% - (altezza header + altezza footer) (217.98px+ 153px) */
     min-height: calc(100vh - 370.98px);
 }

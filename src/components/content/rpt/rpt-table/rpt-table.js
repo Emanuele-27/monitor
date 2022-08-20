@@ -23,7 +23,6 @@ export default function RptTable(props) {
     }
 
     const columnOpzioni = (rowData) => {
-        console.log(`/content/elenco/${rowData.iuv}/${rowData.codiceContesto}`)
         return (<Link to={`/content/elenco/${rowData.iuv}/${rowData.codiceContesto}`}>
             <span title="Visualizza dettaglio" onClick={() => clickElencoTab()}><i className="pi pi-search"></i></span>
         </Link>

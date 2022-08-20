@@ -129,7 +129,7 @@ export default function Content() {
     };
 
     return (
-        <BlockUI blocked={blockedContent} template={<i className="pi pi-spin pi-spinner" style={{ fontSize: "5rem", color: "whitesmoke" }}></i>} >
+        <BlockUI id="content-bui" blocked={blockedContent} template={<i className="pi pi-spin pi-spinner" style={{ fontSize: "5rem", color: "whitesmoke" }}></i>} >
             <div className="container-fluid" style={{ width: "85%", paddingTop: "2rem" }}>
                 <div id="tabs-row" >
                     <Entrypoint route="content/home" default>
