@@ -33,6 +33,10 @@ export const deleteEmptyValues = (obj) => {
     return obj;
 };
 
+export const deleteProps = (item, ...props) => {
+    props.forEach(p => delete item[p]);
+};
+
 // Nel dropdown di stato ci sono sia stati che esiti, in fase  
 // di ricerca vengono distinti e valorizzati opportunamente
 export const buildOptionsStatiEsiti = () => {

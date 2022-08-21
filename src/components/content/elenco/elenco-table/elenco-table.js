@@ -16,6 +16,7 @@ import { auxClient } from "clients/aux-client";
 import { advClient } from "clients/adv-client";
 import { formatEuro } from "util/number-util";
 import { Severities } from "components/message/message";
+import { deleteProps } from "util/util";
 
 const esitoStatoRPTMap = new Map();
 
@@ -60,19 +61,9 @@ export default function ElencoTable(props) {
         listNormalized.forEach(item => {
             item.dataRichiesta = item.dataRichiesta ? formatDateTime(item.dataRichiesta) : '';
             item.dataRicevuta = item.dataRicevuta ? formatDateTime(item.dataRicevuta) : '';
-            delete item.idDominio;
-            delete item.idServizio;
-            delete item.idBeneficiario;
-            delete item.idFlusso;
-            delete item.dataRegistrazione;
-            delete item.dataScadenza;
-            delete item.dataModifica;
-            delete item.idRichiesta;
-            delete item.redirectUrl;
-            delete item.idPsp;
-            delete item.tipoVersamento;
-            delete item.idCarrello;
-            delete item.numPagamenti;
+            deleteProps(item, 'idDominio', 'idServizio', 'idBeneficiario', 'idFlusso',
+                'dataRegistrazione', 'dataScadenza', 'dataModifica', 'idRichiesta',
+                'redirectUrl', 'idPsp', 'tipoVersamento', 'idCarrello', 'numPagamenti')
             Object.keys(item).forEach(key => {
                 let newKey = capitalizeFirstLetter(splitCamelCase(key));
                 item[newKey] = item[key];

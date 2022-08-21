@@ -8,6 +8,7 @@ import { exportExcel } from 'util/export-util';
 import { formatDateTime } from "util/date-util";
 import { capitalizeFirstLetter, splitCamelCase } from "util/string-util";
 import { Link } from "react-router-dom";
+import { deleteProps } from "util/util";
 
 export default function RptTable(props) {
 
@@ -47,10 +48,7 @@ export default function RptTable(props) {
 
         listNormalized.forEach(item => {
             item.dataRichiesta = item.dataRichiesta ? formatDateTime(item.dataRichiesta) : '';
-            delete item.statoPagamento;
-            delete item.idDominio;
-            delete item.numPagamenti;
-            delete item.idServizio;
+            deleteProps(item, 'statoPagamento', 'idDominio', 'numPagamenti', 'idServizio');
             Object.keys(item).forEach(key => {
                 let newKey = capitalizeFirstLetter(splitCamelCase(key));
                 item[newKey] = item[key];
