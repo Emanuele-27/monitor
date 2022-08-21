@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import "./rpt-form.css";
 
 import { removeSpecialChars } from 'util/string-util';
 import { emptyFlussoForm } from "../rpt";
+import { TabsContext } from "components/content/content";
 
 export default function RptForm(props) {
 
     // Contiene i dati del form
     const [flussoForm, setFlussoForm] = useState(props.flussoForm);
+
+    const content = useContext(TabsContext);
 
     const resetFiltri = () => {
         setFlussoForm(emptyFlussoForm);
@@ -49,7 +52,7 @@ export default function RptForm(props) {
                                         <select id="area" name="area" className="form-select" value={flussoForm.area}
                                             onChange={(e) => handleChangeFlusso(removeSpecialChars(e.target.value).toUpperCase(), "area")}>
                                             <option value={null}></option>
-                                            {props.aree}
+                                            {content.aree}
                                         </select>
                                     </div>
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
@@ -57,7 +60,7 @@ export default function RptForm(props) {
                                         <select id="servizio" name="servizio" className="form-select" value={flussoForm.servizio}
                                             onChange={(e) => handleChangeFlusso(e.target.value, "servizio")}>
                                             <option value={null}></option>
-                                            {props.servizi}
+                                            {content.servizi}
                                         </select>
                                     </div>
                                 </div>

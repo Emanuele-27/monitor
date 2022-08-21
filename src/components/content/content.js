@@ -17,7 +17,7 @@ import { monitorClient } from "clients/monitor-client";
 import { aggiungiMesi, buildIntervalliOre, formatDateForInput, formatMonth, getISOWeekDate } from "util/date-util";
 import { Entrypoint } from "../entrypoint/entrypoint";
 import { keys, LocalStorage } from "util/storage-util";
-import { buildOptionsStatiEsiti } from "util/util";
+import { buildOptionsStatiEsiti, buildServiziEAree } from "util/util";
 
 export const initialLazyParams = {
     first: 0,
@@ -63,7 +63,9 @@ const outputOre = buildIntervalliOre(propsDominio.intervalloOre);
 export const oreOpt = outputOre.oreOptions;
 export const mapFasce = outputOre.fasce;
 
-const SERVIZI_AREE = keys.SERVIZI_AREE;
+const SERVIZI = keys.SERVIZI;
+
+export const TabsContext = React.createContext({});
 
 export default function Content() {
 
@@ -78,7 +80,7 @@ export default function Content() {
             block();
             getRptBadgeCount().then(res => setRptBadgeCount(res.filtroFlusso.count < 0 ? 0 : res.filtroFlusso.count))
                 .finally(() => unblock());
-            const serviziEAree = buildServiziEAree(LocalStorage.get(SERVIZI_AREE) ?? await callServizi());
+            const serviziEAree = buildServiziEAree(LocalStorage.get(SERVIZI) ?? await callServizi(), propsDominio.idDominio);
             setServizi(serviziEAree.servizi);
             setAree(serviziEAree.aree);
         };
@@ -87,7 +89,7 @@ export default function Content() {
 
     const callServizi = async () => {
         const res = await monitorClient.getServizi();
-        LocalStorage.set(SERVIZI_AREE, res);
+        LocalStorage.set(SERVIZI, res);
         return res;
     }
 
@@ -98,19 +100,6 @@ export default function Content() {
     const unblock = () => {
         setBlockedContent(false)
     }
-
-    // Costruisce option per le select di servizi e aree
-    const buildServiziEAree = (serviziData) => {
-        const serviziDominioCorrente = serviziData.serviziList.filter(servizio => servizio.idDominio === propsDominio.idDominio);
-        const serviziOpt = serviziDominioCorrente.map(servizio =>
-            <option key={servizio.servizio} value={servizio.servizio}>{servizio.servizio + (servizio.denominazioneServizio ? ' ' + servizio.denominazioneServizio : '')}</option>);
-        // Crea una lista di option dalla lista di aree univoche del set
-        const areeOpt = Array.from(new Set(serviziDominioCorrente.map(s => s.area))).map(a => <option key={a} value={a}>{a}</option>);
-        return {
-            servizi: serviziOpt,
-            aree: areeOpt,
-        }
-    };
 
     return (
         <BlockUI id="content-bui" blocked={blockedContent} template={<i className="pi pi-spin pi-spinner" style={{ fontSize: "5rem", color: "whitesmoke" }}></i>} >
@@ -134,19 +123,19 @@ export default function Content() {
                 </div>
             </div>
             <div style={{ paddingTop: "2rem", paddingBottom: "2rem" }}>
-                <Routes>
-                    <Route path="/" element={<Navigate to="/content/home" />} />
-                    <Route path="/home" element={<Home />} />
-                    {/* L'attributo key diverso serve a far ricreare il componente invece di riutilizzarlo, causa query diversa */}
-                    <Route path="/avvisi" element={<Elenco key="2" tab="avvisi" servizi={servizi} aree={aree} block={block} unblock={unblock} />} />
-                    <Route path="/rpt" element={<Rpt servizi={servizi} aree={aree} block={block} unblock={unblock} />} />
-                    <Route path="/elenco" element={
-                        <Elenco key="1" tab="elenco" servizi={servizi} aree={aree} block={block} unblock={unblock} setRptBadgeCount={setRptBadgeCount} />} />
-                    <Route path="/elenco/:iuv/:codContesto" element={
-                        <Elenco key="1" tab="elenco" servizi={servizi} aree={aree} block={block} unblock={unblock} setRptBadgeCount={setRptBadgeCount} />} />
-                    <Route path="/giornale" element={<Giornale block={block} unblock={unblock} />} />
-                    <Route path="*" element={<Navigate to="/not-found" />} />
-                </Routes>
+                <TabsContext.Provider value={{ servizi, aree, block, unblock, setRptBadgeCount }}>
+                    <Routes>
+                        <Route path="/" element={<Navigate to="/content/home" />} />
+                        <Route path="/home" element={<Home />} />
+                        {/* L'attributo key diverso serve a far ricreare il componente invece di riutilizzarlo, causa query diversa */}
+                        <Route path="/avvisi" element={<Elenco key="2" tab="avvisi" />} />
+                        <Route path="/rpt" element={<Rpt />} />
+                        <Route path="/elenco" element={<Elenco key="1" tab="elenco" />} />
+                        <Route path="/elenco/:iuv/:codContesto" element={<Elenco key="1" tab="elenco" />} />
+                        <Route path="/giornale" element={<Giornale />} />
+                        <Route path="*" element={<Navigate to="/not-found" />} />
+                    </Routes>
+                </TabsContext.Provider>
             </div>
         </BlockUI >
     );

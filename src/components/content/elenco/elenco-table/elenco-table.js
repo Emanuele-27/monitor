@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import "./elenco-table.css";
 
 import { formatEsito, isIuvRF } from "util/string-util";
@@ -11,7 +11,7 @@ import { capitalizeFirstLetter, replaceUnderscore, splitCamelCase } from "util/s
 import { formatDateTime } from "util/date-util";
 import { monitorClient } from "clients/monitor-client";
 import { propsDominio } from "config/config";
-import { getRptBadgeCount } from "components/content/content";
+import { getRptBadgeCount, TabsContext } from "components/content/content";
 import { auxClient } from "clients/aux-client";
 import { advClient } from "clients/adv-client";
 import { formatEuro } from "util/number-util";
@@ -28,6 +28,8 @@ export default function ElencoTable(props) {
     const [listGiornaleModal, setListGiornaleModal] = useState({});
     // Terzo tab opzione dettaglio
     const [infoStatoRPT, setInfoStatoRPT] = useState({});
+
+    const content = useContext(TabsContext);
 
     const onPage = (event) => {
         props.setLazyParams(event);
@@ -180,7 +182,7 @@ export default function ElencoTable(props) {
 
     const aggiornaStati = async () => {
 
-        props.block();
+        content.block();
 
         const flussoData = {
             filtroFlusso: {
@@ -218,7 +220,7 @@ export default function ElencoTable(props) {
             props.showMsg(Severities.info, "Info:", "Operazione effettuata. Sono stati aggiornati " + countOK + " flussi su " + responses.length);
 
         } catch (e) {
-            props.unblock();
+            content.unblock();
             props.showMsg(Severities.error, "Errore:", "Riprovare in un altro momento");
         }
     }
@@ -236,7 +238,7 @@ export default function ElencoTable(props) {
     }
 
     const aggiornaStato = async (rowData) => {
-        props.block();
+        content.block();
 
         const nodoChiediStatoRPT = getNodoChiediStatoRPTParam(rowData.codiceContesto, rowData.idDominio, rowData.iuv);
         try {
@@ -257,18 +259,18 @@ export default function ElencoTable(props) {
 
             props.call();
             const count = (await getRptBadgeCount()).filtroFlusso.count;
-            props.setRptBadgeCount(count > 0 ? count : 0);
+            content.setRptBadgeCount(count > 0 ? count : 0);
             props.showMsg(Severities.info, "Info:", "Operazione effettuata con successo. E' possibile consultare l'esito nel pannello dettagli");
         } catch (e) {
             props.showMsg(Severities.error, "Errore di sistema:", e.message);
         } finally {
-            props.unblock();
+            content.unblock();
         }
     };
 
     const aggiornaStatoCarrello = async (rowData) => {
 
-        props.block();
+        content.block();
 
         const statoRPTCopiaRTCarrello = {
             password: propsDominio.pwdPA,
@@ -290,13 +292,13 @@ export default function ElencoTable(props) {
         } catch (e) {
             props.showMsg(Severities.error, "Errore di sistema:", "Riprovare in un altro momento");
         } finally {
-            props.unblock();
+            content.unblock();
         }
     };
 
     const chiediRicevuta = async (rowData) => {
 
-        props.block();
+        content.block();
 
         const nodoChiediCopiaRT = getNodoChiediStatoRPTParam(rowData.codiceContesto, rowData.idDominio, rowData.iuv);
 
@@ -315,13 +317,13 @@ export default function ElencoTable(props) {
         } catch (e) {
             props.showMsg(Severities.error, "Errore:", "Errore nel recupero della ricevuta");
         } finally {
-            props.unblock();
+            content.unblock();
         }
     };
 
     const chiediRicevutaCarrello = async (rowData) => {
 
-        props.block();
+        content.block();
 
         const statoRPTCopiaRTCarrello = {
             password: propsDominio.pwdPA,
@@ -342,13 +344,13 @@ export default function ElencoTable(props) {
         } catch (e) {
             props.showMsg(Severities.error, "Errore di sistema:", "Riprovare in un altro momento");
         } finally {
-            props.unblock();
+            content.unblock();
         }
     };
 
     const downloadAvviso = async (rowData) => {
 
-        props.block();
+        content.block();
 
         let avvisoPagamentoDoc = {
             richiesta: {
@@ -364,7 +366,7 @@ export default function ElencoTable(props) {
         } catch (e) {
             props.showMsg(Severities.warn, "Attenzione:", "Download avviso di pagamento non disponibile");
         } finally {
-            props.unblock();
+            content.unblock();
         }
     }
 

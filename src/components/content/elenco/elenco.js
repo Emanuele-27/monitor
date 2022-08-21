@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 
 import { propsDominio } from 'config/config';
 import './elenco.css';
@@ -6,7 +6,7 @@ import './elenco.css';
 import { columnMapper, deleteEmptyValues, sortMapper } from 'util/util';
 import ElencoTable from "./elenco-table/elenco-table";
 import ElencoForm from "./elenco-form/elenco-form";
-import { initialLazyParams, isFinestraAbilitata, mapFasce, modalitaFinestra } from "../content";
+import { initialLazyParams, isFinestraAbilitata, mapFasce, modalitaFinestra, TabsContext } from "../content";
 import { useParams } from "react-router-dom";
 import { buildFrase, calcolaDataPerFinestra, setLastMinute, transformFinestraToDates } from "util/date-util";
 import { statiPagamento } from "model/tutti-i-stati";
@@ -57,13 +57,15 @@ export default function Elenco(props) {
 
     const fraseFinestra = useRef('');
 
+    const content = useContext(TabsContext);
+
     useEffect(() => {
         call();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [flussoForm, lazyParams]);
 
     const call = async () => {
-        props.block();
+        content.block();
 
         const flussoRequest = prepareFlussoRequest();
 
@@ -85,7 +87,7 @@ export default function Elenco(props) {
         } catch (e) {
             showMsg(Severities.error, "Errore:", "Errore durante il recupero delle informazioni. Riprovare più tardi");
         } finally {
-            props.unblock();
+            content.unblock();
         }
     };
 
@@ -145,11 +147,9 @@ export default function Elenco(props) {
 
     return (<>
         <Message id='elenco-msg' onHide={hideMsg} {...elencoMsg} />
-        <ElencoForm tab={props.tab} aree={props.aree} servizi={props.servizi} resetFiltri={resetFiltri}
-            flussoForm={flussoForm} setFlussoForm={setFlussoForm} fraseFinestra={fraseFinestra.current} />
+        <ElencoForm tab={props.tab} resetFiltri={resetFiltri} flussoForm={flussoForm} setFlussoForm={setFlussoForm} fraseFinestra={fraseFinestra.current} />
         <ElencoTable tab={props.tab} flussiList={flussiList} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
-            block={props.block} unblock={props.unblock} call={call} setRptBadgeCount={props.setRptBadgeCount}
-            showMsg={showMsg} />
+            call={call} showMsg={showMsg} />
     </>
     );
 }

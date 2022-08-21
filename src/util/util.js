@@ -40,3 +40,16 @@ export const buildOptionsStatiEsiti = () => {
     const statiOptions = statiPagamento.filter(stato => stato !== 'RT_ACCETTATA_PA').map(stato => <option key={stato} value={stato}>{replaceUnderscore(stato)}</option>);
     return esitiOptions.concat(statiOptions);
 };
+
+// Costruisce option per le select di servizi e aree
+export const buildServiziEAree = (serviziData, idDominio) => {
+    const serviziDominioCorrente = serviziData.serviziList.filter(servizio => servizio.idDominio === idDominio);
+    const serviziOpt = serviziDominioCorrente.map(servizio =>
+        <option key={servizio.servizio} value={servizio.servizio}>{servizio.servizio + (servizio.denominazioneServizio ? ' ' + servizio.denominazioneServizio : '')}</option>);
+    // Crea una lista di option dalla lista di aree univoche del set
+    const areeOpt = Array.from(new Set(serviziDominioCorrente.map(s => s.area))).map(a => <option key={a} value={a}>{a}</option>);
+    return {
+        servizi: serviziOpt,
+        aree: areeOpt,
+    }
+};

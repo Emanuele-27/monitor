@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 
 import RptForm from "./rpt-form/rpt-form";
 import RptTable from "./rpt-table/rpt-table";
-import { initialLazyParams } from "../content";
+import { initialLazyParams, TabsContext } from "../content";
 import { deleteEmptyValues } from "util/util";
 import { monitorClient } from "clients/monitor-client";
 import { Message, messageDefault, Severities } from "components/message/message";
@@ -27,13 +27,15 @@ export default function Rpt(props) {
 
     const [rptMsg, setRptMsg] = useState(messageDefault);
 
+    const content = useContext(TabsContext);
+
     useEffect(() => {
         call();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [flussoForm, lazyParams]);
 
     const call = async () => {
-        props.block();
+        content.block();
 
         let flussoParam = deleteEmptyValues(structuredClone(flussoForm));
 
@@ -52,7 +54,7 @@ export default function Rpt(props) {
         } catch (e) {
             showMsg(Severities.error, "Errore:", "Errore durante il recupero delle informazioni. Riprovare più tardi");
         } finally {
-            props.unblock();
+            content.unblock();
         }
     };
 
@@ -76,7 +78,7 @@ export default function Rpt(props) {
 
     return (<>
         <Message id='rpt-msg' onHide={hideMsg} {...rptMsg} />
-        <RptForm aree={props.aree} servizi={props.servizi} flussoForm={flussoForm} setFlussoForm={setFlussoForm} resetFiltri={resetFiltri} />
+        <RptForm flussoForm={flussoForm} setFlussoForm={setFlussoForm} resetFiltri={resetFiltri} />
         <RptTable listaRpt={listaRpt} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
             block={props.block} unblock={props.unblock} />
     </>

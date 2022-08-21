@@ -30,6 +30,6 @@ export class LocalStorage {
 }
 
 export const keys = {
-    SERVIZI_AREE: 'servizi-aree',
+    SERVIZI: 'servizi',
     HOME_STATS: 'home-stats'
 }

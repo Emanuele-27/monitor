@@ -1,16 +1,18 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 
 import { propsDominio } from 'config/config';
 
 import { removeSpecialChars } from 'util/string-util';
 import { aggiungiGiorni, formatDateForInput } from "util/date-util";
-import { esitStatiOpt, initialMaxDateForInput, initialMinDate, initialMinDateForInput, isFinestraAbilitata, maxMonth, maxWeek, minMonth, minWeek, modalitaFinestra, oreOpt } from "components/content/content";
+import { esitStatiOpt, initialMaxDateForInput, initialMinDate, initialMinDateForInput, isFinestraAbilitata, maxMonth, maxWeek, minMonth, minWeek, modalitaFinestra, oreOpt, TabsContext } from "components/content/content";
 import { emptyFlussoForm, isFinestraDisabled } from "../elenco";
 
 // Componente condiviso per il tab Elenco e Avvisi, differenziati da props.tab
 export default function ElencoForm(props) {
 
     const [flussoForm, setFlussoForm] = useState(props.flussoForm);
+
+    const content = useContext(TabsContext);
 
     const resetFiltri = () => {
         props.resetFiltri();
@@ -126,7 +128,7 @@ export default function ElencoForm(props) {
                                         <select id="area" name="area" className="form-select" value={flussoForm.area}
                                             onChange={(e) => handleChangeFlusso(e.target.value, "area")}>
                                             <option value={null}></option>
-                                            {props.aree}
+                                            {content.aree}
                                         </select>
                                     </div>
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
@@ -134,7 +136,7 @@ export default function ElencoForm(props) {
                                         <select id="servizio" name="servizio" className="form-select" value={flussoForm.servizio}
                                             onChange={(e) => handleChangeFlusso(e.target.value, "servizio")}>
                                             <option value={null}></option>
-                                            {props.servizi}
+                                            {content.servizi}
                                         </select>
                                     </div>
                                     <div className="col-12 col-xs-12 col-lg-6 col-xl-4">
