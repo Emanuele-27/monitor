@@ -93,9 +93,9 @@ export default function Home() {
         setCollapsed(isCollapsed);
 
         if (!isCollapsed) {
-            buildChart('monitor-pie', stats.monitor.value && stats.monitor.value.isOnline ? dataOK : dataKO);
-            buildChart('monitor-stat-pie', stats.monitorStat.value && stats.monitorStat.value.isOnline ? dataOK : dataKO);
-            buildChart('monitor-acc-pie', stats.monitorAcc.value && stats.monitorAcc.value.isOnline ? dataOK : dataKO);
+            buildChart('monitor-pie', stats.monitor && stats.monitor.value && stats.monitor.value.isOnline ? dataOK : dataKO);
+            buildChart('monitor-stat-pie', stats.monitorStat && stats.monitorStat.value && stats.monitorStat.value.isOnline ? dataOK : dataKO);
+            buildChart('monitor-acc-pie', stats.monitorAcc && stats.monitorAcc.value && stats.monitorAcc.value.isOnline ? dataOK : dataKO);
         }
     }
 
