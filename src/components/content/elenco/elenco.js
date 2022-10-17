@@ -34,12 +34,8 @@ export const emptyFlussoForm = (tab, iuv, codContesto) => {
 }
 
 // Disabled se almeno uno di questi campi è valorizzato
-export const isFinestraDisabled = (flusso) => {
-    if (flusso.iuv || flusso.codiceContesto || flusso.dataRichiestaDa || flusso.dataRichiestaA
-        || flusso.dataRicevutaDa || flusso.dataRicevutaA)
-        return true;
-    return false;
-}
+export const isFinestraDisabled = (flusso) => flusso.iuv || flusso.codiceContesto || flusso.dataRichiestaDa || flusso.dataRichiestaA
+    || flusso.dataRicevutaDa || flusso.dataRicevutaA;
 
 // Componente condiviso per il tab Elenco e Avvisi
 export default function Elenco(props) {

@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { propsDominio } from "config/config";
 import { buildFrase, calcolaDataPerFinestra, transformFinestraToDates } from "util/date-util";
 import { columnMapper, deleteEmptyValues, sortMapper } from "util/util";
-import { initialLazyParams, isFinestraAbilitata, mapFasce, modalitaFinestra } from "../content";
+import { initialLazyParams, isFinestraAbilitata, mapFasce, modalitaFinestra, TabsContext } from "../content";
 import GiornaleForm from "./giornale-form/giornale-form";
 import GiornaleTable from "./giornale-table/giornale-table";
 import { monitorClient } from "clients/monitor-client";
@@ -39,13 +39,15 @@ export default function Giornale(props) {
 
     const fraseFinestra = useRef('');
 
+    const content = useContext(TabsContext);
+
     useEffect(() => {
         call();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [giornaleForm, lazyParams]);
 
     const call = async () => {
-        props.block();
+        content.block();
 
         let giornaleRequest = prepareGiornaleRequest();
 
@@ -67,7 +69,7 @@ export default function Giornale(props) {
         } catch (e) {
             showMsg(Severities.error, "Errore di sistema:", "Riprovare in un altro momento");
         } finally {
-            props.unblock();
+            content.unblock();
         }
     };
 
@@ -117,8 +119,7 @@ export default function Giornale(props) {
         <>
             <Message id='giornale-msg' onHide={hideMsg} {...giornaleMsg} />
             <GiornaleForm resetFiltri={resetFiltri} giornaleForm={giornaleForm} setGiornaleForm={setGiornaleForm} fraseFinestra={fraseFinestra.current} />
-            <GiornaleTable listGiornale={listGiornale} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
-                block={props.block} unblock={props.unblock} />
+            <GiornaleTable listGiornale={listGiornale} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams} />
         </>
     );
 }
