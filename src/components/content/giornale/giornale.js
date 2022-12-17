@@ -3,10 +3,11 @@ import { propsDominio } from "config/config";
 import { buildFrase, calcolaDataPerFinestra, transformFinestraToDates } from "util/date-util";
 import { columnMapper, deleteEmptyValues, sortMapper } from "util/util";
 import { initialLazyParams, isFinestraAbilitata, mapFasce, modalitaFinestra, TabsContext } from "../content";
-import GiornaleForm from "./giornale-form/giornale-form";
 import GiornaleTable from "./giornale-table/giornale-table";
 import { monitorClient } from "clients/monitor-client";
 import { Message, messageDefault, Severities } from "components/message/message";
+import Form from "components/form/form";
+import Accordion from "components/accordion/accordion";
 
 // Disabled se almeno uno di questi campi è valorizzato
 export const isFinestraDisabled = (giornale) => {
@@ -118,7 +119,19 @@ export default function Giornale(props) {
     return (
         <>
             <Message id='giornale-msg' onHide={hideMsg} {...giornaleMsg} />
-            <GiornaleForm resetFiltri={resetFiltri} giornaleForm={giornaleForm} setGiornaleForm={setGiornaleForm} fraseFinestra={fraseFinestra.current} />
+
+            <div className="container">
+                <Accordion header={"Ricerca " + fraseFinestra.current}>
+                    <Form initialFormData={giornaleForm} emptyFormData={emptyGiornaleForm()}
+                        cerca={setGiornaleForm} reset={resetFiltri}
+                        iuv codContesto stato tipoEvento dataEvento finestra={isFinestraAbilitata} />
+                    <p style={{ marginBottom: "0", marginTop: "1rem" }}>
+                        <b>*</b> I campi <b>Iuv</b> e <b>Codice Contesto</b> consentono di effettuare una ricerca puntuale entro gli ultimi {-propsDominio.intervalloDate} mesi a meno che venga specificata la <b>data</b>. <br />
+                        {isFinestraAbilitata && (<><b>**</b> La ricerca per <b>Iuv</b> , <b>Codice Contesto</b> e/o per <b>data</b> disabilita la finestra temporale.</>)}
+                    </p>
+                </Accordion>
+            </div >
+
             <GiornaleTable listGiornale={listGiornale} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams} />
         </>
     );

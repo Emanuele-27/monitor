@@ -1,5 +1,4 @@
 import React from "react";
-import "./rpt-table.css";
 
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';

@@ -16,7 +16,6 @@ import { propsDominio } from "config/config";
 import { monitorClient } from "clients/monitor-client";
 import { aggiungiMesi, buildIntervalliOre, formatDateForInput, formatMonth, getISOWeekDate } from "util/date-util";
 import { Entrypoint } from "../entrypoint/entrypoint";
-import { keys, LocalStorage } from "util/storage-util";
 import { buildOptionsStatiEsiti, buildServiziEAree } from "util/util";
 
 export const initialLazyParams = {
@@ -63,8 +62,6 @@ const outputOre = buildIntervalliOre(propsDominio.intervalloOre);
 export const oreOpt = outputOre.oreOptions;
 export const mapFasce = outputOre.fasce;
 
-const SERVIZI = keys.SERVIZI;
-
 export const TabsContext = React.createContext({});
 
 export default function Content() {
@@ -80,18 +77,12 @@ export default function Content() {
             block();
             getRptBadgeCount().then(res => setRptBadgeCount(res.filtroFlusso.count < 0 ? 0 : res.filtroFlusso.count))
                 .finally(() => unblock());
-            const serviziEAree = buildServiziEAree(LocalStorage.get(SERVIZI) ?? await callServizi(), propsDominio.idDominio);
+            const serviziEAree = buildServiziEAree(await monitorClient.getServizi(), propsDominio.idDominio);
             setServizi(serviziEAree.servizi);
             setAree(serviziEAree.aree);
         };
         getData()
     }, [])
-
-    const callServizi = async () => {
-        const res = await monitorClient.getServizi();
-        LocalStorage.set(SERVIZI, res);
-        return res;
-    }
 
     const block = () => {
         setBlockedContent(true)

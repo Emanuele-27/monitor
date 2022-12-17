@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 
-
-import RptForm from "./rpt-form/rpt-form";
 import RptTable from "./rpt-table/rpt-table";
 import { initialLazyParams, TabsContext } from "../content";
 import { deleteEmptyValues } from "util/util";
 import { monitorClient } from "clients/monitor-client";
 import { Message, messageDefault, Severities } from "components/message/message";
+import Form from "components/form/form";
+import Accordion from "components/accordion/accordion";
 
 export const emptyFlussoForm = {
     // idDominio: propsDominio.idDominio,
@@ -78,7 +78,15 @@ export default function Rpt(props) {
 
     return (<>
         <Message id='rpt-msg' onHide={hideMsg} {...rptMsg} />
-        <RptForm flussoForm={flussoForm} setFlussoForm={setFlussoForm} resetFiltri={resetFiltri} />
+        <div className="container">
+            <Accordion header="Ricerca">
+                <Form iuv codContesto area categoria cerca={setFlussoForm} reset={resetFiltri}
+                    initialFormData={flussoForm} emptyFormData={emptyFlussoForm} />
+                <p style={{ marginBottom: "0", marginTop: "1rem" }}>
+                    <b>*</b> I campi <b>Iuv</b> e <b>Codice Contesto</b> consentono di effettuare una ricerca puntuale.
+                </p>
+            </Accordion>
+        </div>
         <RptTable listaRpt={listaRpt} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
             block={props.block} unblock={props.unblock} />
     </>

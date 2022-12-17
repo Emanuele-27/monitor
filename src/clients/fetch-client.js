@@ -1,4 +1,7 @@
 export class FetchClient {
+
+    gatewayUrl = 'http://localhost:3001/test'
+
     constructor(accept, acceptLanguage) {
         this.headers = {
             'Accept': accept,
@@ -17,10 +20,19 @@ export class FetchClient {
 
     async call(url, method, body) {
         const request = {
-            method: method,
+            method: 'POST',
             headers: this.headers,
-            ...(body && { body: JSON.stringify(body) })
+            body: JSON.stringify(this.body(url, method, body))
         };
-        return (await fetch(url, request)).json();
+        return (await fetch(this.gatewayUrl, request)).json();
+    }
+
+    body(url, method, body) {
+        if (body) {
+            body['endpoint'] = url;
+            body['method'] = method;
+            return body;
+        } else
+            return { endpoint: url, method: method }
     }
 }

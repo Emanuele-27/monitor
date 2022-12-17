@@ -382,6 +382,7 @@ export default function ElencoTable(props) {
                     <Column header="Opzioni comuni" body={columnOpzioniComuni} />}
             </DataTable>
 
+            {/* MODAL */}
             <div className="modal fade" id="dettaglio-modal" tabIndex="-1" aria-labelledby="dettaglio-modal-content" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
                 <div className="modal-dialog modal-dialog-centered modal-xl">
                     <div className="modal-content">
@@ -505,6 +506,8 @@ export default function ElencoTable(props) {
                     </div>
                 </div>
             </div>
+            {/* FINE MODAL */}
+
         </div>
     );
 }

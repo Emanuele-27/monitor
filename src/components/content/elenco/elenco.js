@@ -1,17 +1,17 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 
 import { propsDominio } from 'config/config';
-import './elenco.css';
 
 import { columnMapper, deleteEmptyValues, sortMapper } from 'util/util';
 import ElencoTable from "./elenco-table/elenco-table";
-import ElencoForm from "./elenco-form/elenco-form";
 import { initialLazyParams, isFinestraAbilitata, mapFasce, modalitaFinestra, TabsContext } from "../content";
 import { useParams } from "react-router-dom";
 import { buildFrase, calcolaDataPerFinestra, setLastMinute, transformFinestraToDates } from "util/date-util";
 import { statiPagamento } from "model/tutti-i-stati";
 import { monitorClient } from "clients/monitor-client";
 import { Message, messageDefault, Severities } from "components/message/message";
+import Form from "components/form/form";
+import Accordion from "components/accordion/accordion";
 
 export const emptyFlussoForm = (tab, iuv, codContesto) => {
     return {
@@ -143,7 +143,20 @@ export default function Elenco(props) {
 
     return (<>
         <Message id='elenco-msg' onHide={hideMsg} {...elencoMsg} />
-        <ElencoForm tab={props.tab} resetFiltri={resetFiltri} flussoForm={flussoForm} setFlussoForm={setFlussoForm} fraseFinestra={fraseFinestra.current} />
+
+        <div className="container">
+            <Accordion header={"Ricerca " + fraseFinestra.current}>
+                <Form iuv codContesto stato={props.tab === 'elenco'} area categoria pagatore finestra={isFinestraAbilitata}
+                    versante dataRichiesta dataRicevuta cerca={setFlussoForm} reset={resetFiltri}
+                    initialFormData={flussoForm} emptyFormData={emptyFlussoForm('elenco')} />
+                <p style={{ marginBottom: "0", marginTop: "1rem" }}>
+                    <b>*</b> I campi <b>Iuv</b> e <b>Codice Contesto</b> consentono di effettuare una ricerca puntuale entro gli ultimi {-propsDominio.intervalloDate} mesi a meno che venga specificata la <b>data</b>. <br />
+                    <b>**</b> I campi <b>data</b> consentono di effettuare filtro di ricerca per un intervallo massimo di {-propsDominio.intervalloFiltroDate} giorni.<br />
+                    {isFinestraAbilitata && (<><b>***</b> La ricerca per <b>Iuv</b> , <b>Codice Contesto</b> e/o per <b>data</b> disabilita la finestra temporale.</>)}
+                </p>
+            </Accordion>
+        </div>
+
         <ElencoTable tab={props.tab} flussiList={flussiList} totalRecords={totalRecords} lazyParams={lazyParams} setLazyParams={setLazyParams}
             call={call} showMsg={showMsg} />
     </>
