@@ -21,6 +21,7 @@ const cssFile = new Map([
     [suffissiDomini.suffissoSogei, 'sogei'],
 ])
 
+// Aggiunta dinamica css in base al dominio
 const link = document.createElement('link');
 link.setAttribute('rel', 'stylesheet');
 link.setAttribute('href', '/css/' + cssFile.get(propsDominio.suffissoDom) + '.css');

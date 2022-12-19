@@ -15,7 +15,7 @@ import Accordion from "components/accordion/accordion";
 
 export const emptyFlussoForm = (tab, iuv, codContesto) => {
     return {
-        // idDominio: propsDominio.idDominio,
+        idDominio: propsDominio.idDominio,
         ...(tab === 'avvisi' && { flagAnnullamento: 1 }),
         iuv: iuv || '',
         codiceContesto: codContesto || '',

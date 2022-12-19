@@ -7,9 +7,10 @@ import { monitorClient } from "clients/monitor-client";
 import { Message, messageDefault, Severities } from "components/message/message";
 import Form from "components/form/form";
 import Accordion from "components/accordion/accordion";
+import { propsDominio } from "config/config";
 
 export const emptyFlussoForm = {
-    // idDominio: propsDominio.idDominio,
+    idDominio: propsDominio.idDominio,
     iuv: '',
     codiceContesto: '',
     area: '',

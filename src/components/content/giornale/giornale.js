@@ -18,7 +18,7 @@ export const isFinestraDisabled = (giornale) => {
 
 export const emptyGiornaleForm = () => {
     return {
-        // idDominio: propsDominio.idDominio,
+        idDominio: propsDominio.idDominio,
         iuv: '',
         codiceContesto: '',
         esito: '',
